@@ -65,6 +65,13 @@ export const asyncRouterMap = [
                 meta: { title: '容器管理' },
             },
             {
+                path:'/containerdetails',
+                component: resolve => require(['../components/page/ContainerDetails.vue'],resolve),
+                meta: { title: '容器详情' },
+            },
+
+
+            {
                 path:'/repositorymanage',
                 component: resolve => require(['../components/page/RepositoryManage.vue'],resolve),
                 meta: { title: '仓储管理' },

@@ -57,6 +57,19 @@
                 </el-pagination>
             </div>
 
+            <div>
+                <h2>产品列表</h2>
+                <ul>
+                    <li v-for="product in saleProducts">
+                        <span>{{product.name}}</span>
+                        <span>{{product.price}}</span>
+                    </li>
+                </ul>
+                <el-button @click="reducePrice(4)"></el-button>
+            </div>
+
+
+
         </div>
 
     </div>
@@ -64,6 +77,14 @@
 
 <script>
     export default {
+        computed:{
+            products(){
+                return this.$store.state.products;
+            },
+            saleProducts(){
+                return this.$store.getters.saleProducts;
+            }
+        },
         name: 'UserManage',
         data() {
             return {
@@ -83,6 +104,10 @@
         },
 
         methods: {
+            reducePrice:function(amount){
+              // this.$store.commit('reducePrice');
+              this.$store.dispatch('reducePrice', amount);
+            },
             // 获取用户信息列表
             getPeopleInfo:function () {
                 this.$axios.get('/user/list'+ '?current=1' + "&size=5")
