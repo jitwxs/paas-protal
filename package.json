@@ -13,6 +13,7 @@
     "axios": "^0.15.3",
     "babel-polyfill": "^6.23.0",
     "element-ui": "^2.3.3",
+    "jsoneditor": "^5.19.0",
     "mavon-editor": "^2.5.4",
     "npm": "^6.1.0",
     "vue": "^2.5.16",

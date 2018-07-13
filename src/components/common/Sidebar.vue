@@ -31,81 +31,45 @@
                 collapse: false,
                 items: [
                     {
-                        icon: 'el-icon-setting',
+                        icon: 'el-icon-date',
                         index: 'xitongshouye',
                         title: '系统首页'
                     },
                     {
-                        icon: 'el-icon-tickets',
+                        icon: 'el-icon-service',
                         index: 'usermanage',
                         title: '用户管理'
                     },
                     {
-                        icon: 'el-icon-message',
+                        icon: 'el-icon-tickets',
                         index: 'projectmanage',
                         title: '项目管理'
                     },
                     {
-                        icon: 'el-icon-star-on',
+                        icon: 'el-icon-goods',
                         index: 'containermanage',
                         title: '容器管理'
                     },
                     {
-                        icon: 'el-icon-date',
+                        icon: 'el-icon-printer',
                         index: 'repositorymanage',
                         title: '仓储管理'
                     },
                     {
-                        icon: 'el-icon-rank',
+                        icon: 'el-icon-bell',
                         index: 'imagemanage',
                         title: '镜像管理'
                     },
-
-
-
                     {
-                        icon: 'el-icon-message',
-                        index: 'tabs',
-                        title: 'tab选项卡'
+                        icon: 'el-icon-document',
+                        index: 'logmanage',
+                        title: '日志管理'
                     },
-                    // {
-                    //     icon: 'el-icon-date',
-                    //     index: '3',
-                    //     title: '表单相关',
-                    //     subs: [
-                    //         {
-                    //             index: 'form',
-                    //             title: '基本表单'
-                    //         },
-                    //         {
-                    //             index: 'editor',
-                    //             title: '富文本编辑器'
-                    //         },
-                    //         {
-                    //             index: 'markdown',
-                    //             title: 'markdown编辑器'
-                    //         },
-                    //         {
-                    //             index: 'upload',
-                    //             title: '文件上传'
-                    //         }
-                    //     ]
-                    // },
-                    // {
-                    //     icon: 'el-icon-star-on',
-                    //     index: 'charts',
-                    //     title: 'schart图表'
-                    // },
-                    // {
-                    //     icon: 'el-icon-rank',
-                    //     index: 'drag',
-                    //     title: '拖拽列表'
-                    // },
-                    // {
-                    //     icon: 'el-icon-warning',
-                    //     index: 'permission',
-                    //     title: '权限测试'
-                    // },
+
+
+
+
+
                     {
                         icon: 'el-icon-error',
                         index: '404',

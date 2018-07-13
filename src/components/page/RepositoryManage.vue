@@ -2,7 +2,7 @@
     <div class="imagemanage">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-date"></i>仓储管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-printer"></i>仓储管理</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <!--创建仓储的模态框-->

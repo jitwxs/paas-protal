@@ -2,7 +2,7 @@
     <div class="containermanage">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-date"></i>容器管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-goods"></i>容器管理</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -136,7 +136,6 @@
                                         valArray.push(value[j].HostPort);
                                     }
                                     this.containerInfo[i].port  = this.containerInfo[i].port+ key + ":[" + valArray.join(",") + "]";
-
                                 }
                                 console.log( this.containerInfo[i].port +"------");
                             }
@@ -243,7 +242,7 @@
     }
 
     .handle-select {
-        width: 120px;
+        width: 100px;
     }
 
     .handle-input {

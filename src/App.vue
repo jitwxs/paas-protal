@@ -24,6 +24,7 @@
                 }
                 vm.$router.addRoutes(routerMap);
             },
+
         },
         created(){
             this.getRouterMap();

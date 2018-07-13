@@ -11,7 +11,6 @@ const router =  new Router({
             name:'login',
             component:(resolve) => require(['../components/page/Login.vue'],resolve)
         },
-
     ],
 
     scrollBehavior(to,from,savedPosition) {
@@ -86,7 +85,11 @@ export const asyncRouterMap = [
                 component: resolve => require(['../components/page/ImageDetails.vue'],resolve),
                 meta: { title: '镜像详情' },
             },
-
+            {
+                path:'/logmanage',
+                component: resolve => require(['../components/page/LogManage.vue'],resolve),
+                meta: { title: '日志管理' },
+            },
 
 
             {
@@ -99,52 +102,7 @@ export const asyncRouterMap = [
                 component: resolve => require(['../components/page/404.vue'], resolve),
                 meta: { title: '404页面' }
             },
-            {
-                // vue-schart组件
-                path: '/charts',
-                component: resolve => require(['../components/page/BaseCharts.vue'], resolve),
-                meta: { title: 'schart图表' }
-            },
-            {
-                path: '/form',
-                component: resolve => require(['../components/page/BaseForm.vue'],resolve),
-                meta: { title: 'tab选项卡' }
-            },
 
-            {
-                // 拖拽列表组件
-                path: '/drag',
-                component: resolve => require(['../components/page/DragList.vue'], resolve),
-                meta: { title: '拖拽列表' }
-            },
-            {
-                // markdown组件
-                path: '/markdown',
-                component: resolve => require(['../components/page/Markdown.vue'], resolve),
-                meta: { title: 'markdown编辑器' }
-            },
-            {
-                path: '/permission',
-                component: resolve => require(['../components/page/Permission.vue'], resolve),
-                meta: { title: '权限测试' }
-            },
-            {
-                path: '/tabs',
-                component: resolve => require(['../components/page/Tabs.vue'],resolve),
-                meta: { title: '基础表格' }
-            },
-            {
-                // 图片上传组件
-                path: '/upload',
-                component: resolve => require(['../components/page/Upload.vue'], resolve),
-                meta: { title: '文件上传' }
-            },
-            {
-                // 富文本编辑器组件
-                path: '/editor',
-                component: resolve => require(['../components/page/VueEditor.vue'], resolve),
-                meta: { title: '富文本编辑器' }
-            },
 
         ]
     },
@@ -181,58 +139,58 @@ export const asyncRouterMap = [
 
             {
                 path: '/403',
-                component: resolve => require(['../components/page/403.vue'], resolve),
+                component: resolve => require(['../components/page_u/403.vue'], resolve),
                 meta: { title: '403页面' }
             },
             {
                 path: '/404',
-                component: resolve => require(['../components/page/404.vue'], resolve),
+                component: resolve => require(['../components/page_u/404.vue'], resolve),
                 meta: { title: '404页面' }
             },
             {
                 // vue-schart组件
                 path: '/charts',
-                component: resolve => require(['../components/page/BaseCharts.vue'], resolve),
+                component: resolve => require(['../components/page_u/BaseCharts.vue'], resolve),
                 meta: { title: 'schart图表' }
             },
             {
                 path: '/form',
-                component: resolve => require(['../components/page/BaseForm.vue'],resolve),
+                component: resolve => require(['../components/page_u/BaseForm.vue'],resolve),
                 meta: { title: '基础表单' }
             },
 
             {
                 // 拖拽列表组件
                 path: '/drag',
-                component: resolve => require(['../components/page/DragList.vue'], resolve),
+                component: resolve => require(['../components/page_u/DragList.vue'], resolve),
                 meta: { title: '拖拽列表' }
             },
             {
                 // markdown组件
                 path: '/markdown',
-                component: resolve => require(['../components/page/Markdown.vue'], resolve),
+                component: resolve => require(['../components/page_u/Markdown.vue'], resolve),
                 meta: { title: 'markdown编辑器' }
             },
             {
                 path: '/permission',
-                component: resolve => require(['../components/page/Permission.vue'], resolve),
+                component: resolve => require(['../components/page_u/Permission.vue'], resolve),
                 meta: { title: '权限测试' }
             },
             {
                 path: '/tabs',
-                component: resolve => require(['../components/page/Tabs.vue'],resolve),
+                component: resolve => require(['../components/page_u/Tabs.vue'],resolve),
                 meta: { title: 'tabs选项卡' }
             },
             {
                 // 图片上传组件
                 path: '/upload',
-                component: resolve => require(['../components/page/Upload.vue'], resolve),
+                component: resolve => require(['../components/page_u/Upload.vue'], resolve),
                 meta: { title: '文件上传' }
             },
             {
                 // 富文本编辑器组件
                 path: '/editor',
-                component: resolve => require(['../components/page/VueEditor.vue'], resolve),
+                component: resolve => require(['../components/page_u/VueEditor.vue'], resolve),
                 meta: { title: '富文本编辑器' }
             },
 

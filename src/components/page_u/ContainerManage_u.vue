@@ -28,10 +28,21 @@
                         <el-button size="small" type="success"
                                    style=" text-decoration: none;"
                                    @click="handleEnter(scope.$index, scope.row)"
-                                   ><a href="../../../static/term.html" target="_blank" style="color: white">进入</a></el-button>
+                                   ><a href="../../../static/term.html" target="_blank" style="color: white">终端</a></el-button>
                     </template>
                 </el-table-column>
             </el-table>
+
+            <!--分页区域-->
+            <div class="pagination">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="currentPage"
+                    :page-size="5"
+                    layout="prev, pager, next, jumper"
+                    :total="totalCount">
+                </el-pagination>
+            </div>
         </div>
 
     </div>
@@ -43,9 +54,7 @@
         data(){
             return{
                 // 所有容器列表信息
-                containerInfo:[{
-                    createDate:'dbshdhsah',
-                }],
+                containerInfo:[],
             }
         },
         methods:{
@@ -55,6 +64,26 @@
                     .then(response=>{
                         // console.log(response)
                         this.containerInfo = response.data.data.records;
+
+                        for(var i=0;i<this.containerInfo.length; i++){
+                            var port = this.containerInfo[i].port;
+                            // 去除引号
+                            port = port.toString().replace("\\","");
+                            port = eval('(' + port + ')');
+
+                            this.containerInfo[i].port = "";
+                            for(var key in port){
+                                var value = port[key];
+                                var valArray = new Array();
+                                for(var j=0;j<value.length; j++) {
+                                    valArray.push(value[j].HostPort);
+                                }
+                                this.containerInfo[i].port  = this.containerInfo[i].port+ key + ":[" + valArray.join(",") + "]";
+
+                            }
+                            console.log( this.containerInfo[i].port +"------");
+                        }
+
                     })
                     .catch(function (err) {
                         console.log(err)
@@ -83,17 +112,13 @@
                         sessionStorage.setItem('terminalRows',response.data.data.rows);
                         sessionStorage.setItem('terminalCols',response.data.data.cols);
                         sessionStorage.setItem('terminalUrl',response.data.data.url);
-
-                        // this.$store.state.terminalInfo.cursorBlink = response.data.data.cursorBlink;
-                        // this.$store.state.terminalInfo.rows = response.data.data.rows;
-                        // this.$store.state.terminalInfo.cols = response.data.data.cols;
-                        // this.$store.state.terminalInfo.url = response.data.data.url;
-
-                        console.log(this.$store.state.terminalInfo.url)
                     })
                     .catch(function (err) {
                         console.log(err)
                     })
+            },
+            handleCurrentChange:function () {
+
             }
         },
         created(){

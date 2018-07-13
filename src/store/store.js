@@ -9,13 +9,6 @@ export const store = new Vuex.Store({
             {name:"猪一群", price:100},
             {name:"看风景", price:200},
         ],
-        terminalInfo: {
-            cursorBlink:'',
-            rows:'',
-            cols:'',
-            url:''
-        }
-        ,
     },
     getters:{
         saleProducts:(state) =>{

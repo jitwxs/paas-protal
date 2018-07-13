@@ -53,10 +53,12 @@
                     // 向后台发送用户名和密码获取token
                     this.$axios.post('/login', this.ruleForm)
                         .then(response => {
+                            console.log(response)
                             if (response.data.code == 0){ //登录成功
+                                sessionStorage.setItem('currentRole',response.data.data.roleId);
+                                sessionStorage.setItem('userName',response.data.data.username);
                                 sessionStorage.setItem('userToken',response.headers.authorization);
-                                this.token = response.headers.authorization
-                                this.postToken();
+                                // this.token = response.headers.authorization
                                 // 根据角色id加载路由表
                                 if(sessionStorage.getItem('currentRole') === asyncRouterMap[0].meta.roles){
                                     routerMap.push(asyncRouterMap[0]);
@@ -78,38 +80,29 @@
                             console.log(err);
                         })
                     }
-                               // for (let i=0; i<asyncRouterMap.length; i++) {
-                               //     if (sessionStorage.getItem('currentRole') === asyncRouterMap[i].meta.roles){
-                               //         routerMap.push(asyncRouterMap[i]);
-                               //     }
-                               // }
-                               // vm.$router.addRoutes(routerMap);
-                               // console.log(routerMap)
-                               // vm.$router.push({path:'/dashboard'});
             },
 
-            postToken:function () {
-                // 向后台发送token获取用户角色、ID等信息
-                this.$axios.post('/token',
-                    {
-                        headers:{
-                            'Authorization': 'Bearer ' + this.token,
-                        }
-                    })
-                    .then(response=>{
-                        // console.log(response)
-                        if(response.data.code == 0){
-                            // 把用户信息存入sessionStorage
-                            sessionStorage.setItem('userName',response.data.data.username);
-                            // 根据响应的rolrId判断用户角色
-                            if(response.data.data.roleId == 2) {
-                                sessionStorage.setItem("currentRole", 2)
-                            }else if(response.data.data.roleId == 1){
-                                sessionStorage.setItem("currentRole", 1)
-                            }
-                        }
-                    })
-            }
+            // postToken:function () {
+            //     // 向后台发送token获取用户角色、ID等信息
+            //     this.$axios.post('/token',
+            //         {
+            //             headers:{
+            //                 'Authorization': 'Bearer ' + this.token,
+            //             }
+            //         })
+            //         .then(response=>{
+            //             if(response.data.code == 0){
+            //                 // 把用户信息存入sessionStorage
+            //                 sessionStorage.setItem('userName',response.data.data.username);
+            //                 // 根据响应的rolrId判断用户角色
+            //                 if(response.data.data.roleId == 2) {
+            //                     sessionStorage.setItem("currentRole", 2)
+            //                 }else if(response.data.data.roleId == 1){
+            //                     sessionStorage.setItem("currentRole", 1)
+            //                 }
+            //             }
+            //         })
+            // }
         },
     }
 </script>

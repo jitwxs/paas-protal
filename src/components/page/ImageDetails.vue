@@ -1,73 +1,43 @@
 <template>
-    <div class="">
+    <div class="imagedetails">
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-message"></i> 镜像详情</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
-            <el-tabs v-model="message">
-                <el-tab-pane :label="`详情信息`" name="first">
-                    <el-table :data="detail" :show-header="false" style="width: 100%">
-                        <el-col :span="24" v-for="(item,index) in detail" :key="index">
-                            <el-card shadow="hover">
-                                <ul>
-                                    <li v-for="(v,k) in item">
-                                        {{k}} : {{v}}
-                                    </li>
-                                </ul>
-                            </el-card>
-                        </el-col>
-                    </el-table>
+            <el-tabs v-model="activeName2" >
+                <el-tab-pane label="镜像详情" name="first">
+                    <div class="container">
+                        <el-card shadow="hover">
+                            <!--<div id="jsoneditor" style="width: 400px; height: 400px;">-->
+                                <!--<p>{{xiangQingInfo}}</p>-->
+                            <!--</div>-->
+                    </el-card>
+                    </div>
                 </el-tab-pane>
 
-                <el-tab-pane :label="`历史信息`" name="second" >
-                    <template v-if="message === 'second'">
-                        <el-table :data="history" :show-header="false" style="width: 100%">
-                            <el-col :span="24" v-for="(item,index) in history" :key="index">
-                                <el-card shadow="hover">
-                                    <ul>
-                                        <li v-for="(v,k) in item">
-                                            {{k}} : {{v}}
-                                        </li>
-                                    </ul>
-                                </el-card>
-                            </el-col>
-                        </el-table>
-
-                    </template>
+                <el-tab-pane label="镜像历史" name="second">
+                    <div class="container">
+                        <el-card shadow="hover">
+                            <ul class="time-vertical" v-for="(item,index) in historyInfo">
+                                <li><b></b><span>{{index+1}}</span><a>{{item.Created}}创建了id为{{item.Id}}，标签是{{item.Tags}},容量是{{item.Size}}的容器 </a></li>
+                            </ul>
+                        </el-card>
+                    </div>
                 </el-tab-pane>
 
-                <el-tab-pane :label="`接口信息`" name="third" >
-                    <template v-if="message === 'third'">
-                        <el-table :data="portInfo" :show-header="false" style="width: 100%">
-                            <el-col :span="24" v-for="(item,index) in portInfo" :key="index">
-                                <el-card shadow="hover">
-                                    <ul>
-                                        <li v-for="(v,k) in item">
-                                            {{k}} : {{v}}
-                                        </li>
-                                    </ul>
-                                </el-card>
-                            </el-col>
-                        </el-table>
-                    </template>
+                <el-tab-pane label="暴露端口" name="third">
+                    <div class="container">
+                        <el-card shadow="hover">
+                            <ul v-for="(item, index) in portInfo" style="list-style-type: none">
+                                <li>暴露端口{{index+1}}--{{item}}</li>
+                            </ul>
+                        </el-card>
+                    </div>
                 </el-tab-pane>
+                <el-tab-pane label="删除镜像" name="fourth">
 
-                <el-tab-pane :label="`其他信息`" name="fourth">
-                    <template v-if="message === 'fourth'">
-                        <el-table :data="other" :show-header="false" style="width: 100%">
-                            <el-col :span="24" v-for="(item,index) in other" :key="index">
-                                <el-card shadow="hover">
-                                    <ul>
-                                        <li v-for="(v,k) in item">
-                                            {{k}} : {{v}}
-                                        </li>
-                                    </ul>
-                                </el-card>
-                            </el-col>
-                        </el-table>
-                    </template>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -79,54 +49,84 @@
         name: "ImageDetails",
         data(){
             return{
-                message: 'first',
-                // 镜像id
+                // tab页相关属性
+                activeName2:'first',
+                // 每条镜像信息的id
                 imageId:'',
                 // 详情信息
-                detail:[],
+                xiangQingInfo:'',
                 // 历史信息
-                history:[],
-                // 接口信息
+                historyInfo:[],
+                // 端口信息
                 portInfo:[],
-                // 其他信息
-                other:[],
+
             }
         },
         methods:{
-            // 获取镜像详情信息
-            getDetails:function () {
-                this.$axios.get('/image/inspect/' + this.imageId)
+            // 导出镜像操作
+            exportImage:function(){
+                this.$axios.get('/image/export/' + this.imageId)
                     .then(response=>{
                         console.log(response)
-                        if(response.data.code == 0) {
-                            // 将对象转化成数组
-                            this.detail.push(response.data.data);
-                            console.log(this.detail);
+                        if(response.data.code == 0){
+                            window.open(response.data.data)
                         }else {
                             this.$message.error({
-                                message: "获取本地镜像详情信息失败！",
+                                message: "导出镜像信息失败！",
                                 showClose: true
                             })
                         }
                     })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
             },
-            // 获取镜像历史
-            getHistory:function () {
-              this.$axios.get('/image/history/' + this.imageId)
-                  .then(response=>{
-                      console.log(response)
-                      if(response.data.code == 0){
-                          this.history = response.data.data;
-                      }else {
-                          this.$message.error({
-                              message: "获取本地镜像历史信息失败！",
-                              showClose: true
-                          })
-                      }
-                  })
-                  .catch(function (err) {
-                      console.log(err)
-                  })
+            // 获取详情信息
+            getXiangQingInfo:function(){
+                this.$axios.get('/image/inspect/' + this.imageId)
+                    .then(response=>{
+                        if(response.data.code == 0){
+                            var obj = new Object();
+                            obj = response.data.data;
+                            // var arr = new Array();
+                            // for(var key in obj){
+                            //     var value = obj[key];
+                            //     arr.push( key + ":" + value);
+                            // }
+                            // this.xiangQingInfo = arr;
+                            this.xiangQingInfo = JSON.stringify(obj,undefined,2);
+                            console.log(this.xiangQingInfo);
+
+
+
+                        }else {
+                            this.$message.error({
+                                message: "获取镜像详情信息失败！",
+                                showClose: true
+                            })
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
+            },
+            // 获取历史信息
+            getHistoryInfo:function(){
+                this.$axios.get('/image/history/' + this.imageId)
+                    .then(response=>{
+                        // console.log(response)
+                        if(response.data.code == 0){
+                            this.historyInfo = response.data.data;
+                        }else{
+                            this.$message.error({
+                                message: "获取镜像历史信息失败！",
+                                showClose: true
+                            })
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
             },
             // 获取镜像接口信息
             getPortInfo:function(){
@@ -167,13 +167,64 @@
         },
         created(){
             this.imageId = this.$route.query.id;
-            this.getDetails();
-            this.getHistory();
+            this.getXiangQingInfo();
+            this.getHistoryInfo();
+            this.getPortInfo();
             this.getOther();
         }
     }
 </script>
 
 <style scoped>
+    .handle-box {
+        margin-bottom: 20px;
+    }
 
+    .handle-select {
+        width: 100px;
+    }
+
+    .handle-input {
+        width: 300px;
+        display: inline-block;
+    }
+    /*纵向时间轴*/
+    .time-vertical {
+        list-style-type: none;
+        border-left: 1px solid #707070;
+        padding: 0px;
+        height: 70px;
+    }
+
+    .time-vertical li {
+        height: 100px;
+        position: relative;
+    }
+
+    .time-vertical li a {
+        display: inline-block;
+        margin-left: 20px;
+        margin-top: 15px;
+        text-decoration: none;
+        color: #000;
+    }
+
+    .time-vertical li b:before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: -12px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #409EFF;
+        border-radius: 10px;
+        background: #409EFF;
+    }
+
+    .time-vertical li span {
+        position: absolute;
+        color: #fff;
+        top: 15px;
+        left: -6px;
+    }
 </style>

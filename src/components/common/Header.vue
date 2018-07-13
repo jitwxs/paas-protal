@@ -69,6 +69,10 @@
                     sessionStorage.setItem('userName',null);
                     sessionStorage.setItem('userToken', null);
                     sessionStorage.setItem('currentRole',null);
+                    sessionStorage.setItem('terminalCursorBlink',null);
+                    sessionStorage.setItem('terminalRows',null);
+                    sessionStorage.setItem('terminalCols',null);
+                    sessionStorage.setItem('terminalUrl',null);
                 }
             },
             // 侧边栏折叠
