@@ -1,8 +1,8 @@
 <template>
-    <div class="imagedetails">
+    <div class="userlocalimage">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-message"></i> 镜像详情</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-message"></i>本地用户镜像</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -10,10 +10,10 @@
                 <el-tab-pane label="镜像详情" name="first">
                     <div class="container">
                         <el-card shadow="hover">
-                            <!--<div id="jsoneditor" style="width: 400px; height: 400px;">-->
-                                <!--<p>{{xiangQingInfo}}</p>-->
-                            <!--</div>-->
-                    </el-card>
+                            <ul v-for="item in xiangQingInfo" style="list-style-type: none">
+                                <li>{{item}}</li>
+                            </ul>
+                        </el-card>
                     </div>
                 </el-tab-pane>
 
@@ -36,9 +36,7 @@
                         </el-card>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="删除镜像" name="fourth">
 
-                </el-tab-pane>
             </el-tabs>
         </div>
     </div>
@@ -46,7 +44,7 @@
 
 <script>
     export default {
-        name: "ImageDetails",
+        name: "UserLocalImage",
         data(){
             return{
                 // tab页相关属性
@@ -59,7 +57,6 @@
                 historyInfo:[],
                 // 端口信息
                 portInfo:[],
-
             }
         },
         methods:{
@@ -67,7 +64,7 @@
             exportImage:function(){
                 this.$axios.get('/image/export/' + this.imageId)
                     .then(response=>{
-                        console.log(response)
+                        // console.log(response)
                         if(response.data.code == 0){
                             window.open(response.data.data)
                         }else {
@@ -88,17 +85,14 @@
                         if(response.data.code == 0){
                             var obj = new Object();
                             obj = response.data.data;
-                            // var arr = new Array();
-                            // for(var key in obj){
-                            //     var value = obj[key];
-                            //     arr.push( key + ":" + value);
-                            // }
-                            // this.xiangQingInfo = arr;
-                            this.xiangQingInfo = JSON.stringify(obj,undefined,2);
-                            console.log(this.xiangQingInfo);
-
-
-
+                            var arr = new Array();
+                            for(var key in obj){
+                                var value = obj[key];
+                                arr.push( key + ":" + value);
+                            }
+                            this.xiangQingInfo = arr;
+                            // this.xiangQingInfo = JSON.stringify(obj,undefined,2);
+                            // console.log(this.xiangQingInfo);
                         }else {
                             this.$message.error({
                                 message: "获取镜像详情信息失败！",
@@ -130,32 +124,14 @@
             },
             // 获取镜像接口信息
             getPortInfo:function(){
-              this.$axios.get('/image/' + this.imageId + '/exportPort')
-                  .then(response=>{
-                      console.log(response)
-                      if(response.data.code == 0){
-                          this.portInfo = response.data.data;
-                      }else {
-                          this.$message.error({
-                              message: "获取镜像接口信息失败！",
-                              showClose: true
-                          })
-                      }
-                  })
-                  .catch(function (err) {
-                      console.log(err)
-                  })
-            },
-            // 获取镜像其他详细信息
-            getOther:function () {
-                this.$axios.get('/image/list/local' + "?type=1" + "&name=nginx" +"&current=" +this.currentPage_Public + "&size=5")
+                this.$axios.get('/image/' + this.imageId + '/exportPort')
                     .then(response=>{
-                        console.log(response)
+                        // console.log(response)
                         if(response.data.code == 0){
-                            this.other = response.data.data.records;
+                            this.portInfo = response.data.data;
                         }else {
                             this.$message.error({
-                                message: "获取本地公用信息失败！",
+                                message: "获取镜像接口信息失败！",
                                 showClose: true
                             })
                         }
@@ -163,14 +139,14 @@
                     .catch(function (err) {
                         console.log(err)
                     })
-            }
+            },
+
         },
         created(){
             this.imageId = this.$route.query.id;
             this.getXiangQingInfo();
             this.getHistoryInfo();
             this.getPortInfo();
-            this.getOther();
         }
     }
 </script>
@@ -224,7 +200,7 @@
     .time-vertical li span {
         position: absolute;
         color: #fff;
-        top: 15px;
-        left: -6px;
+        top: 18px;
+        left: -5px;
     }
 </style>

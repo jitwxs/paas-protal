@@ -2,7 +2,7 @@
     <div class="usermanage">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-service"></i> 用户管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-news"></i> 用户管理</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -61,14 +61,15 @@
                     layout="prev, pager, next, jumper"
                     :total="totalCount">
                 </el-pagination>
-            </div>-->
+            </div>
+            <!--用户信息模态框-->
             <el-dialog title="用户信息" :visible.sync="xinXiVisible">
-            <el-card shadow="hover">
-                <ul v-for="item in xinXiInfo" style="list-style-type: none">
-                    <li>{{item}}</li>
-                </ul>
-            </el-card>
-        </el-dialog>
+                <el-card shadow="hover">
+                    <ul v-for="item in xinXiInfo" style="list-style-type: none">
+                        <li>{{item}}</li>
+                    </ul>
+                </el-card>
+            </el-dialog>
             <!--用户详情按钮的模态框-->
             <el-dialog title="用户详情" :visible.sync="xiangQingVisible">
                 <el-card shadow="hover">
@@ -293,6 +294,29 @@
                 this.$axios.get('/user/list' + '?current=' + val + "&size=5")
                     .then(response=>{
                         // console.log(response)
+                        if (response.data.code == 0){
+                            this.peopleInfo = response.data.data.records;
+                            for(var i=0; i<response.data.data.records.length; i++){
+                                if(response.data.data.records[i].roleId == 2) {
+                                    this.peopleInfo[i].roleId = "管理员";
+                                }else if (response.data.data.records[i].roleId == 1) {
+                                    this.peopleInfo[i].roleId = "普通用户";
+                                }
+                                if(response.data.data.records[i].email == null){
+                                    this.peopleInfo[i].email = "无";
+                                }
+                                if(response.data.data.records[i].hasFreeze){
+                                    this.peopleInfo[i].hasFreeze = "已冻结";
+                                }else {
+                                    this.peopleInfo[i].hasFreeze = "未冻结";
+                                }
+                            }
+                        }else {
+                            this.$message.error({
+                                message:"获取用户信息失败！",
+                                showClose:true
+                            })
+                        }
                         this.peopleInfo = response.data.data.records;
                     })
                     .catch(function (err) {

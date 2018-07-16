@@ -31,12 +31,12 @@
                 collapse: false,
                 items: [
                     {
-                        icon: 'el-icon-date',
+                        icon: 'el-icon-document',
                         index: 'xitongshouye',
                         title: '系统首页'
                     },
                     {
-                        icon: 'el-icon-service',
+                        icon: 'el-icon-news',
                         index: 'usermanage',
                         title: '用户管理'
                     },
@@ -51,30 +51,51 @@
                         title: '容器管理'
                     },
                     {
-                        icon: 'el-icon-printer',
-                        index: 'repositorymanage',
-                        title: '仓储管理'
-                    },
-                    {
                         icon: 'el-icon-bell',
                         index: 'imagemanage',
                         title: '镜像管理'
                     },
                     {
-                        icon: 'el-icon-document',
-                        index: 'logmanage',
-                        title: '日志管理'
+                        icon: 'el-icon-phone-outline',
+                        index: 'networkmanage',
+                        title: '网络管理'
+                    },
+                    {
+                        icon: 'el-icon-printer',
+                        index: 'volumesmanage',
+                        title: '数据卷管理'
+                    },
+                    {
+                        icon: 'el-icon-service',
+                        index: 'servicemanage',
+                        title: '服务管理'
+                    },
+                    {
+                        icon: 'el-icon-view',
+                        index: 'monitormanage',
+                        title: '监控管理'
+                    },
+                    {
+                        icon: 'el-icon-setting',
+                        index: 'systemmanage',
+                        title: '系统管理',
+                        subs: [
+                            {
+                                index: 'systemlog',
+                                title: '系统日志'
+                            },
+                            {
+                                index: 'programmanage',
+                                title: '程序管理'
+                            },
+                        ]
                     },
 
-
-
-
-
-                    {
-                        icon: 'el-icon-error',
-                        index: '404',
-                        title: '404页面'
-                    }
+                    // {
+                    //     icon: 'el-icon-error',
+                    //     index: '404',
+                    //     title: '404页面'
+                    // }
                 ]
             }
         },

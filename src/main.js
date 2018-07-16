@@ -8,6 +8,9 @@ import 'element-ui/lib/theme-chalk/index.css';    // 默认主题
 import "babel-polyfill";
 import qs from 'qs'
 import {store} from './store/store'
+import echarts from "echarts"
+
+Vue.prototype.$echarts = echarts;
 
 Vue.use(ElementUI, { size: 'small' });
 
@@ -37,7 +40,7 @@ router.beforeEach((to, from, next) => {
 axios.interceptors.request.use( (config) => {
     if (sessionStorage.userToken) {
         // 判断是否存在token，如果存在的话，则每个http header都加上token
-        config.headers.Authorization = `Bearer ${sessionStorage.userToken}`;
+        config.headers.Authorization = `${sessionStorage.userToken}`;
     }
     if (config.method=="post"){
         config.data = qs.stringify(config.data);

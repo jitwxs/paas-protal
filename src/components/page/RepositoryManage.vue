@@ -103,28 +103,9 @@
                     })
             },
             createRepository:function () {
-                this.$axios.post('/repository/create',{
-                    "type": this.repositoryForm.type,
-                    "address": this.repositoryForm.address,
-                })
-                    .then(response=>{
-                        console.log(response)
-                        if(response.data.code == 0) {
-                            this.dialogFormVisible = false,
 
-                            this.getRepositoryInfo();
-                            this.repositoryForm = []
-                        }else {
-                            this.$message.error({
-                                message:"获取仓储信息失败！",
-                                showClose:true
-                            })
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log(err)
-                    })
             }
+
         },
         created(){
             this.getRepositoryInfo();

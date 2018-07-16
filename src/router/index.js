@@ -44,19 +44,9 @@ export const asyncRouterMap = [
                 meta: { title: '用户管理' },
             },
             {
-                path: '/usertoproject',
-                component: resolve => require(['../components/page/UserToProject.vue'],resolve),
-                meta: { title: '用户的项目' },
-            },
-            {
                 path:'/projectmanage',
                 component: resolve => require(['../components/page/ProjectManage.vue'],resolve),
                 meta: { title: '项目管理' },
-            },
-            {
-                path:'/projecttocontainer',
-                component: resolve => require(['../components/page/ProjectToContainer.vue'],resolve),
-                meta: { title: '项目的容器' },
             },
             {
                 path:'/containermanage',
@@ -68,30 +58,51 @@ export const asyncRouterMap = [
                 component: resolve => require(['../components/page/ContainerDetails.vue'],resolve),
                 meta: { title: '容器详情' },
             },
-
-
-            {
-                path:'/repositorymanage',
-                component: resolve => require(['../components/page/RepositoryManage.vue'],resolve),
-                meta: { title: '仓储管理' },
-            },
             {
                 path:'/imagemanage',
                 component: resolve => require(['../components/page/ImageManage.vue'],resolve),
                 meta: { title: '镜像管理' },
             },
             {
-                path:'/imagedetails',
-                component: resolve => require(['../components/page/ImageDetails.vue'],resolve),
-                meta: { title: '镜像详情' },
+                path:'/publiclocalimage',
+                component: resolve => require(['../components/page/PublicLocalImage.vue'],resolve),
+                meta: { title: '公共镜像详情' },
             },
             {
-                path:'/logmanage',
-                component: resolve => require(['../components/page/LogManage.vue'],resolve),
-                meta: { title: '日志管理' },
+                path:'/userlocalimage',
+                component: resolve => require(['../components/page/UserLocalImage.vue'],resolve),
+                meta: { title: '用户镜像详情' },
             },
-
-
+            {
+                path:'/networkmanage',
+                component: resolve => require(['../components/page/NetworkManage.vue'],resolve),
+                meta: { title: '网络管理' },
+            },
+            {
+                path:'/volumesmanage',
+                component: resolve => require(['../components/page/VolumesManage.vue'],resolve),
+                meta: { title: '数据卷管理' },
+            },
+            {
+                path:'/systemlog',
+                component: resolve => require(['../components/page/SystemLog.vue'],resolve),
+                meta: { title: '系统日志' },
+            },
+            {
+                path:'/programmanage',
+                component: resolve => require(['../components/page/ProgramManage.vue'],resolve),
+                meta: { title: '程序管理' },
+            },
+            {
+                path:'/servicemanage',
+                component: resolve => require(['../components/page/ServiceManage.vue'],resolve),
+                meta: { title: '服务管理' },
+            },
+            {
+                path:'/monitormanage',
+                component: resolve => require(['../components/page/MonitorManage.vue'],resolve),
+                meta: { title: '监控管理' },
+            },
             {
                 path: '/403',
                 component: resolve => require(['../components/page/403.vue'], resolve),
@@ -102,6 +113,7 @@ export const asyncRouterMap = [
                 component: resolve => require(['../components/page/404.vue'], resolve),
                 meta: { title: '404页面' }
             },
+
 
 
         ]
