@@ -16,27 +16,21 @@
                 <!-- 消息中心 -->
                 <div class="btn-bell">
                     <el-tooltip effect="dark" :content="message?`有${message}条未读消息`:`消息中心`" placement="bottom">
-                        <router-link to="/tabs">
+                        <router-link to="/NoticePage">
                             <i class="el-icon-bell"></i>
                         </router-link>
                     </el-tooltip>
                     <span class="btn-bell-badge" v-if="message"></span>
                 </div>
                 <!-- 用户头像 -->
-                <div class="user-avator"><img src="static/img/img.jpg"></div>
+                <div class="user-avator"><img src="static/img/rabbit.jpg"></div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
                         {{username}} <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <a href="#" target="_blank">
-                            <el-dropdown-item>关于作者</el-dropdown-item>
-                        </a>
-                        <a href="#" target="_blank">
-                            <el-dropdown-item>项目仓库</el-dropdown-item>
-                        </a>
-                        <el-dropdown-item divided  command="loginout">退出登录</el-dropdown-item>
+                        <el-dropdown-item   command="loginout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
@@ -56,23 +50,31 @@
         },
         computed:{
             username(){
-                let username = localStorage.getItem('ms_username');
-                return username ? username : this.name;
+                let username = sessionStorage.getItem('userName');
+                return username ;
             }
         },
         methods:{
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
-                    this.$router.push('/');
-                    sessionStorage.setItem('userName',null);
-                    sessionStorage.setItem('userToken', null);
-                    sessionStorage.setItem('currentRole',null);
-                    sessionStorage.setItem('terminalCursorBlink',null);
-                    sessionStorage.setItem('terminalRows',null);
-                    sessionStorage.setItem('terminalCols',null);
-                    sessionStorage.setItem('terminalUrl',null);
+                    // localStorage.removeItem('ms_username')
+                    this.$axios.get('/user/logout')
+                        .then(response=>{
+                            if (response.data.code===0){
+                                this.$router.push('/');
+                            }
+                        }).catch(function (err) {
+                            console.log(err);
+                    })
+
+                    // sessionStorage.setItem('userName',null);
+                    // sessionStorage.setItem('userToken', null);
+                    // sessionStorage.setItem('currentRole',null);
+                    // sessionStorage.setItem('terminalCursorBlink',null);
+                    // sessionStorage.setItem('terminalRows',null);
+                    // sessionStorage.setItem('terminalCols',null);
+                    // sessionStorage.setItem('terminalUrl',null);
                 }
             },
             // 侧边栏折叠

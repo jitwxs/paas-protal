@@ -223,7 +223,7 @@
                 formLabelWidth: '120px',
 
                 // 上传文件相关属性
-                url: 'http://192.168.100.142:8080/image/import',
+                url: 'http://192.168.100.151:8080/image/import',
                 name: 'a.tar.gz',
                 fileList: [],
                 // headers: {
@@ -411,12 +411,19 @@
             },
             // 导入镜像
             importImage:function(){
+                var CancelToken = this.$axios.CancelToken;
+                var source = CancelToken.source();
+
                 this.importImageVisible = false,
                 this.$axios.post('/image/import',
                     {
                         "file":this.importImageInfo.file,
                         "name": this.importImageInfo.name,
                         "tag": this.importImageInfo.tag,
+                    },{
+                        header:{
+                            'Content-Type': 'multipart/form-data',
+                        }
                     })
                     .then(response=>{
                         if(response.data.code == 0) {
@@ -427,7 +434,7 @@
                             this.getUserLocalImage();
                         }else {
                             this.$message.error({
-                                message: "导入镜像信息失败！",
+                                message: response.data.message,
                                 showClose: true
                             })
                         }
@@ -462,11 +469,11 @@
                 this.$axios.get('/image/export/' + row.id)
                     .then(response=>{
                         if(response.data.code == 0){
+                            window.open(response.data.data);
                             this.$message.success({
                                 message:"导出镜像成功！",
                                 showClose:true
-                            })
-                            window.open(response.data.data)
+                            });
                         }else {
                             this.$message.error({
                                 message: "导出镜像信息失败！",
@@ -510,7 +517,7 @@
 
             // 初始化websocket
             initWebSocket:function(){ //初始化weosocket
-                this.websock = new WebSocket("ws://192.168.100.142:9999/ws/1231451941131");
+                this.websock = new WebSocket("ws://192.168.100.151:9999/ws/1231451941131");
 
                 this.websock.onopen = this.websocketonopen;
 

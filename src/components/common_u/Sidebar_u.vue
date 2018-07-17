@@ -33,28 +33,38 @@
                     {
                         icon: 'el-icon-setting',
                         index: 'xitongshouye_u',
-                        title: '系统首页'
+                        title: '仪表盘'
                     },
                     {
                         icon: 'el-icon-tickets',
-                        index: 'projectmanage_u',
-                        title: '项目管理'
+                        index: 'projectPage',
+                        title: '项目'
                     },
                     {
                         icon: 'el-icon-date',
-                        index: 'containermanage_u',
-                        title: '容器管理'
+                        index: 'containerAllList',
+                        title: '容器'
                     },
-                    // {
-                    //     icon: 'el-icon-tickets',
-                    //     index: 'usermanage',
-                    //     title: '用户管理'
-                    // },
-                    // {
-                    //     icon: 'el-icon-message',
-                    //     index: 'projectmanage',
-                    //     title: '项目管理'
-                    // },
+                    {
+                        icon: 'el-icon-date',
+                        index: 'addService',
+                        title: '服务'
+                    },
+                    {
+                        icon: 'el-icon-date',
+                        index: 'addService',
+                        title: '镜像'
+                    },
+                    {
+                        icon: 'el-icon-date',
+                        index: 'addService',
+                        title: '网络'
+                    },
+                    {
+                        icon: 'el-icon-setting',
+                        index: 'addService',
+                        title: '系统'
+                    },
                     // {
                     //     icon: 'el-icon-date',
                     //     index: 'repositorymanage',
@@ -65,55 +75,6 @@
                     //     index: 'imagemanage',
                     //     title: '镜像管理'
                     // },
-
-                    {
-                        icon: 'el-icon-message',
-                        index: 'tabs',
-                        title: 'tab选项卡'
-                    },
-                    {
-                        icon: 'el-icon-date',
-                        index: '3',
-                        title: '表单相关',
-                        subs: [
-                            {
-                                index: 'form',
-                                title: '基本表单'
-                            },
-                            {
-                                index: 'editor',
-                                title: '富文本编辑器'
-                            },
-                            {
-                                index: 'markdown',
-                                title: 'markdown编辑器'
-                            },
-                            {
-                                index: 'upload',
-                                title: '文件上传'
-                            }
-                        ]
-                    },
-                    {
-                        icon: 'el-icon-star-on',
-                        index: 'charts',
-                        title: 'schart图表'
-                    },
-                    {
-                        icon: 'el-icon-rank',
-                        index: 'drag',
-                        title: '拖拽列表'
-                    },
-                    {
-                        icon: 'el-icon-warning',
-                        index: 'permission',
-                        title: '权限测试'
-                    },
-                    {
-                        icon: 'el-icon-error',
-                        index: '404',
-                        title: '404页面'
-                    }
                 ]
             }
         },

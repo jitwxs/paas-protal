@@ -133,7 +133,7 @@
                     id:'',
                     file:''
                 },
-                url:'http://192.168.100.142:8080/volumes/upload',
+                url:'http://192.168.100.151:8080/volumes/upload',
                 name:'request',
                 headers:{
                     Authorization: 'Bearer ' + sessionStorage.getItem('userToken')

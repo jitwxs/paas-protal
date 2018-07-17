@@ -7,7 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css';    // 默认主题
 // import '../static/css/theme-green/index.css';       // 浅绿色主题
 import "babel-polyfill";
 import qs from 'qs'
-import {store} from './store/store'
+import store from './store/store'
 import echarts from "echarts"
 
 Vue.prototype.$echarts = echarts;
@@ -19,6 +19,8 @@ Vue.prototype.$axios = axios;
 axios.defaults.baseURL = '/api'
 
 Vue.config.productionTip = false
+
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
@@ -44,7 +46,7 @@ axios.interceptors.request.use( (config) => {
     }
     if (config.method=="post"){
         config.data = qs.stringify(config.data);
-        config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        // config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     }
     return config;
 },  (error) => {
@@ -66,5 +68,6 @@ axios.interceptors.response.use(function (res) {
 new Vue({
     store:store,
     router,
+    store,
     render: h => h(App)
 }).$mount('#app');

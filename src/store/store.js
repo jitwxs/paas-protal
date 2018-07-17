@@ -1,38 +1,61 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from 'vue'
+import Vuex from 'vuex'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
-export const store = new Vuex.Store({
-    state:{
-        products:[
-            {name:"猪一群", price:100},
-            {name:"看风景", price:200},
-        ],
+const state={
+  token:'',
+  userInfo:{},
+  projectId:'',
+  editeContainerProjectId:''
+}
+const mutations={
+  SET_TOKEN(state, token) {
+    state.token = token
+    sessionStorage.token = token
+  },
+  DEL_TOKEN(state){
+    state.token = ''
+    sessionStorage.removeItem('token');
+  },
+  CHANGE_USER_INFO(state,userInfo) {
+    state.userInfo = userInfo
+  },
+  SET_PROJECT_ID(state,projectId) {
+    state.projectId = projectId
+  },
+  SET_EDITE_CONTAINER_PROJECT_ID(state,editeContainerId){
+    state.editeContainerProjectId = editeContainerId
+  }
+}
+const actions={
+  changeUserInfo({commit},userInfo){
+    commit('CHANGE_USER_INFO',userInfo)
+  },
+  setProjectId({commit},projectId) {
+
+    commit("SET_PROJECT_ID",projectId)
+  },
+  setEditeContainerProjectId({commit},id){
+    commit("SET_EDITE_CONTAINER_PROJECT_ID",id)
+}
+}
+const getters= {
+    getUserInfo(state){
+      return state.userInfo
     },
-    getters:{
-        saleProducts:(state) =>{
-            var saleProducts = state.products.map(product =>{
-                    return{
-                        name:"**" + product.name + "**",
-                        price:product.price/2
-                    };
-                });
-                return saleProducts;
-        }
+    getProjectId(state){
+      return state.projectId;
     },
-    mutations:{
-        reducePrice:(state, payload) =>{
-            state.products.forEach(product =>{
-                product.price -= payload;
-            })
-        }
-    },
-    actions:{
-        reducePrice:(context, payload)=>{
-            setTimeout(function () {
-                context.commit("reducePrice", payload);
-            },2000);
-        }
-    }
-});
+  getEidteContainerProjectId(state) {
+
+      return state.editeContainerProjectId;
+  }
+}
+export default new Vuex.Store({
+  state,
+  mutations,
+  actions,
+  getters
+})
+

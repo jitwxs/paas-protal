@@ -391,6 +391,7 @@
                 for(var i=0; i<this.multipleSelection.length; i++){
                     this.ids.push(this.multipleSelection[i].id);
                 }
+                console.log(this.ids);
             },
             // 根据id获取用户信息
             getXinXiInfo:function (index,row) {
@@ -440,14 +441,7 @@
                     .then(response=>{
                         if(response.data.code == 0){
                             this.xiangQingInfo = response.data.data;
-                            // var obj = new Object();
-                            // obj = response.data.data;
-                            // var arr = new Array();
-                            // for(var key in obj){
-                            //     var value = obj[key];
-                            //     arr.push( key + ":" + value);
-                            // }
-                            // this.xiangQingInfo = arr;
+
                         }else {
                             this.$message.error({
                                 message:"获取用户信息失败！",

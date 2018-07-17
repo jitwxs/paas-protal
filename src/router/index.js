@@ -130,6 +130,11 @@ export const asyncRouterMap = [
                 component: resolve => require(['../components/page/404.vue'], resolve),
                 meta: { title: '404页面' }
             },
+            {
+                path:'/NoticePage',
+                component: resolve => require(['../components/page/NoticePage.vue'], resolve),
+                meta: { title: '个人通知' }
+            }
         ]
     },
     {
@@ -147,8 +152,8 @@ export const asyncRouterMap = [
                 meta: { title: '系统首页' }
             },
             {
-                path: '/projectmanage_u',
-                component: resolve => require(['../components/page_u/ProjectManage_u.vue'], resolve),
+                path: '/projectPage',
+                component: resolve => require(['../components/page_u/projectPage.vue'], resolve),
                 meta: { title: '项目管理' }
             },
             {
@@ -219,6 +224,26 @@ export const asyncRouterMap = [
                 component: resolve => require(['../components/page_u/VueEditor.vue'], resolve),
                 meta: { title: '富文本编辑器' }
             },
+            {
+                path:'/projectContainer',
+                component: resolve => require(['../components/page_u/projectContainer.vue'], resolve),
+                meta: { title: '项目容器' }
+            },
+            {
+                path:'/containerAllList',
+                component: resolve => require(['../components/page_u/containerAllList.vue'], resolve),
+                meta: { title: '项目容器' }
+            },
+            {
+                path:'/addContainer',
+                component: resolve => require(['../components/page_u/addContainer.vue'], resolve),
+                meta: { title: '项目容器' }
+            },
+            {
+                path:'/addService',
+                component: resolve => require(['../components/page_u/addService.vue'], resolve),
+                meta: { title: '服务管理' }
+            }
 
         ]
     }

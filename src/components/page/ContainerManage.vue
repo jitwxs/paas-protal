@@ -1019,7 +1019,7 @@
                         console.log(err)
                     });
 
-                this.websock = new WebSocket("ws://192.168.100.142:9999/ws/1241414124156");
+                this.websock = new WebSocket("ws://192.168.100.151:9999/ws/1241414124156");
 
                 this.websock.onopen = this.websocketonopen;
 
