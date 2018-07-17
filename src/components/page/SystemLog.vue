@@ -71,6 +71,10 @@
                   .then(response=>{
                       // console.log(response)
                       if(response.data.code == 0){
+                          this.$message.success({
+                              message:"获取系统日志信息成功！",
+                              showClose:true
+                          })
                           this.logInfo = response.data.data.records;
                           for(var i=0; i< this.logInfo.length; i++){
                               if(this.logInfo[i].hasException ){

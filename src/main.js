@@ -51,6 +51,18 @@ axios.interceptors.request.use( (config) => {
     return Promise.reject(error);
 });
 
+axios.interceptors.response.use(function (res) {
+    if (res.data.code===28 || res.data.code===29 || res.data.code===30){
+        router.replace({
+            path:'/'
+        })
+    }
+    return res;
+}, (err)=>{
+    return Promise.reject(error);
+});
+
+
 new Vue({
     store:store,
     router,

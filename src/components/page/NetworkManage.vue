@@ -103,10 +103,10 @@
                 totalCount:0,
                 // 创建网络发送的信息
                 networkForm:{
-                "name": '',
-                "driver": '',
-                "labels": '',
-                "hasIpv6": ''
+                name: '',
+                driver: '',
+                labels: '',
+                hasIpv6: ''
                 },
                 networkFormVisible:false,
                 formLabelWidth:'120px'
@@ -117,8 +117,11 @@
             getNetworkInfo:function(){
                 this.$axios.get('/network/listAll' + "?current=" + this.currentPage + "&size=5")
                     .then(response=>{
-                        // console.log(response);
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message: "获取网络信息成功！",
+                                showClose: true
+                            })
                             this.netWorkInfo = response.data.data.records;
                             for(var i=0; i< this.netWorkInfo.length; i++){
                                 if(this.netWorkInfo[i].hasPublic){
@@ -150,6 +153,10 @@
                     .then(response=>{
                         // console.log(response)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message: "搜索网络信息成功！",
+                                showClose: true
+                            })
                             this.netWorkInfo = response.data.data.records;
                             for(var i=0; i< this.netWorkInfo.length; i++){
                                 if(this.netWorkInfo[i].hasPublic){
@@ -179,7 +186,17 @@
             syncNetwork:function () {
                 this.$axios.get('/network/sync')
                     .then(response=>{
-                        // console.log(response);
+                        if(response.data.code == 0){
+                            this.$message.success({
+                                message: "同步网络信息成功！",
+                                showClose: true
+                            })
+                        }else {
+                            this.$message.error({
+                                message: "同步网络信息失败！",
+                                showClose: true
+                            })
+                        }
                     })
                     .catch(function (err) {
                         console.log(err)
@@ -193,14 +210,18 @@
             createNetwork:function(){
                 this.networkFormVisible = false;
                 this.$axios.post('/network/public/create',{
-                    "name": this.createInfo.name,
-                    "driver":this.createInfo.driver,
-                    "labels": this.createInfo.labels,
-                    "hasIpv6": this.createInfo.hasIpv6
+                    name: this.networkForm.name,
+                    driver:this.networkForm.driver,
+                    labels: this.networkForm.labels,
+                    hasIpv6: this.networkForm.hasIpv6
                 })
                     .then(response=>{
-                        // console.log(response)
+                        console.log(response)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message: "创建网络信息成功！",
+                                showClose: true
+                            })
                             this.getNetworkInfo();
                         }else {
                             this.$message.error({
@@ -217,7 +238,17 @@
             handleDelete:function(index, row){
                 this.$axios.delete('/network/delete/' + row.id)
                     .then(response=>{
-                        console.log(response)
+                        if(response.data.code == 0){
+                            this.$message.success({
+                                message: "删除网络信息成功！",
+                                showClose: true
+                            })
+                        }else{
+                            this.$message.error({
+                                message: "删除网络信息失败！",
+                                showClose: true
+                            })
+                        }
                     })
                     .catch(function (err) {
                         console.log(err)
@@ -227,7 +258,6 @@
             handleCurrentChange:function (val) {
                 this.$axios.get('/network/listAll' + "?current=" + val + "&size=5")
                     .then(response=>{
-                        console.log(response);
                         if(response.data.code == 0){
                             this.netWorkInfo = response.data.data.records;
                             for(var i=0; i< this.netWorkInfo.length; i++){

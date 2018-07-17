@@ -44,10 +44,21 @@ export const asyncRouterMap = [
                 meta: { title: '用户管理' },
             },
             {
+                path: '/tokenmanage',
+                component: resolve => require(['../components/page/TokenManage.vue'],resolve),
+                meta: { title: 'Token管理' },
+            },
+            {
                 path:'/projectmanage',
                 component: resolve => require(['../components/page/ProjectManage.vue'],resolve),
                 meta: { title: '项目管理' },
             },
+            {
+                path:'/projectdetails',
+                component: resolve => require(['../components/page/ProjectsDetails.vue'],resolve),
+                meta: { title: '项目详情' },
+            },
+
             {
                 path:'/containermanage',
                 component: resolve => require(['../components/page/ContainerManage.vue'],resolve),
@@ -84,6 +95,21 @@ export const asyncRouterMap = [
                 meta: { title: '数据卷管理' },
             },
             {
+                path:'/servicemanage',
+                component: resolve => require(['../components/page/ServiceManage.vue'],resolve),
+                meta: { title: '服务管理' },
+            },
+            {
+                path:'/servicedetails',
+                component: resolve => require(['../components/page/ServiceDetails.vue'],resolve),
+                meta: { title: '服务详情' },
+            },
+            {
+                path:'/noticemanage',
+                component: resolve => require(['../components/page/NoticeManage.vue'],resolve),
+                meta: { title: '通知管理' },
+            },
+            {
                 path:'/systemlog',
                 component: resolve => require(['../components/page/SystemLog.vue'],resolve),
                 meta: { title: '系统日志' },
@@ -93,16 +119,7 @@ export const asyncRouterMap = [
                 component: resolve => require(['../components/page/ProgramManage.vue'],resolve),
                 meta: { title: '程序管理' },
             },
-            {
-                path:'/servicemanage',
-                component: resolve => require(['../components/page/ServiceManage.vue'],resolve),
-                meta: { title: '服务管理' },
-            },
-            {
-                path:'/monitormanage',
-                component: resolve => require(['../components/page/MonitorManage.vue'],resolve),
-                meta: { title: '监控管理' },
-            },
+
             {
                 path: '/403',
                 component: resolve => require(['../components/page/403.vue'], resolve),
@@ -113,9 +130,6 @@ export const asyncRouterMap = [
                 component: resolve => require(['../components/page/404.vue'], resolve),
                 meta: { title: '404页面' }
             },
-
-
-
         ]
     },
     {

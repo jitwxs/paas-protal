@@ -22,63 +22,9 @@
                 <el-table-column label="操作" >
                     <template slot-scope="scope">
                         <ul style="float: left;list-style-type: none" >
-                            <li style="float: left;color: #409EFF;cursor: pointer" @click="projectInfoClick(scope.$index, scope.row)">详情</li>
-
-                            <el-dialog title="项目详情" :visible.sync="projectmore"  @open = "opendialog">
-                                <el-tabs v-model="activeName" @tab-click="projectTabSwitch">
-                                    <el-tab-pane  label="项目详情" name="first">
-                                        <el-form :label-position='labelpos' label-width="80px" >
-                                            <el-form-item label="项目id">
-                                                <p>{{projectid}}</p>
-                                            </el-form-item>
-                                            <el-form-item label="项目名称">
-                                                <p>{{projectname}}</p>
-                                            </el-form-item>
-                                            <el-form-item label="用户名">
-                                                <p>{{projectuserName}}</p>
-                                            </el-form-item>
-                                            <el-form-item label="项目描述">
-                                                <p>{{projectdescription}}</p>
-                                            </el-form-item>
-                                            <el-form-item label="创建日期">
-                                                <p>{{projectcreateDate}}</p>
-                                            </el-form-item>
-                                            <el-form-item label="修改日期">
-                                                <p>{{projectupdateDate}}</p>
-                                            </el-form-item>
-                                        </el-form>
-                                    </el-tab-pane>
-                                    <el-tab-pane label="项目日志" name="second">
-
-                                        <el-table
-                                            :data="logdata"
-                                            style="width: 100%">
-                                            <el-table-column
-                                                prop="createDate"
-                                                label="时间">
-                                            </el-table-column>
-                                            <el-table-column
-                                                prop="containerName"
-                                                label="容器名称">
-                                            </el-table-column>
-                                            <el-table-column
-                                                prop="description"
-                                                label="事件">
-                                            </el-table-column>
-                                        </el-table>
-
-                                        <div class="pagination">
-                                            <el-pagination
-                                                @current-change="logPage"
-                                                :current-page.sync="logPageContent"
-                                                :page-size="10"
-                                                layout="prev, pager, next, jumper"
-                                                :total="logTotal">
-                                            </el-pagination>
-                                        </div>
-                                    </el-tab-pane>
-                                </el-tabs>
-                            </el-dialog>
+                            <router-link :to="{path:'/ProjectDetails', query:{id:scope.row.id}}">
+                                <li style="float: left;margin-left: 5px;color: #409EFF;cursor:pointer">详情</li>
+                            </router-link>
                         </ul>
                     </template>
                 </el-table-column>
@@ -118,13 +64,7 @@
                 projectmore: false,
                 activeName: 'first',
                 projectTab:[],
-                projectid:'',
-                projectuserId:'',
-                projectname:'',
-                projectuserName:'',
-                projectdescription:'',
-                projectcreateDate:'',
-                projectupdateDate:'',
+
                 labelpos:'left',
                 logTotal:0,
                 logPageContent:0,
@@ -140,44 +80,9 @@
                 this.logdata = [{createDate:'',containerName:'',description:'',}];
             },
 
-            logPage:function(val){
-                console.log(this.rowid);
-                this.$axios.get('/project/log/?projectId='+this.rowid+'&?current=' + val + '&size=10')
-                    .then(response => {
-                        this.logdata = response.data.data.records;
-                    }).catch(function (err) {
-                    console.log(err)
-                })
-            },
 
-            projectInfoClick:function(index,row){
-                this.projectmore= true;
-                this.$axios.get('/project/'+row.id)
-                    .then(response => {
-                        this.projectid =response.data.data.id;
-                        this.projectuserName = response.data.data.username;
-                        this.projectname = response.data.data.name;
-                        this.projectdescription =response.data.data.description;
-                        this.projectcreateDate = response.data.data.createDate;
-                        this.projectupdateDate = response.data.data.updateDate;
-                        this.rowid = row.id;
-                    }).catch(function (err) {
-                    console.log(err);
-                })
-            },
-            // 实现获取项目信息的功能
-            projectTabSwitch(tab, event) {
-                if(this.activeName==='second'){
-                    this.$axios.get('/project/log/?projectId='+this.rowid)
-                        .then(response => {
-                            console.log(response.data.data.records);
-                            this.logdata = response.data.data.records;
-                            this.logTotal = response.data.data.total;
-                        }).catch(function (err) {
-                        console.log(err)
-                    })
-                }
-            },
+
+
 
             getProjectInfo: function () {
                 this.$axios.get('/project/list' + '?current=' + this.currentPage + "&size=5")

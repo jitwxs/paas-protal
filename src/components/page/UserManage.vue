@@ -62,21 +62,66 @@
                     :total="totalCount">
                 </el-pagination>
             </div>
+
             <!--用户信息模态框-->
             <el-dialog title="用户信息" :visible.sync="xinXiVisible">
-                <el-card shadow="hover">
-                    <ul v-for="item in xinXiInfo" style="list-style-type: none">
-                        <li>{{item}}</li>
-                    </ul>
-                </el-card>
+                <el-form :label-position='labelpos' label-width="120px" >
+                    <el-form-item label="创建日期">
+                        <p>{{xinXiInfo.createDate}}</p>
+                    </el-form-item>
+                    <el-form-item label="更新日期">
+                        <p>{{xinXiInfo.updateDate}}</p>
+                    </el-form-item>
+                    <el-form-item label="用户id">
+                        <p>{{xinXiInfo.id}}</p>
+                    </el-form-item>
+                    <el-form-item label="用户名称">
+                        <p>{{xinXiInfo.username}}</p>
+                    </el-form-item>
+                    <el-form-item label="用户密码">
+                        <p>{{xinXiInfo.password}}</p>
+                    </el-form-item>
+                    <el-form-item label="用户邮箱">
+                        <p>{{xinXiInfo.email}}</p>
+                    </el-form-item>
+                    <el-form-item label="是否冻结">
+                        <p>{{xinXiInfo.hasFreeze}}</p>
+                    </el-form-item>
+                    <el-form-item label="角色id">
+                        <p>{{xinXiInfo.roleId}}</p>
+                    </el-form-item>
+                </el-form>
             </el-dialog>
+
+
             <!--用户详情按钮的模态框-->
             <el-dialog title="用户详情" :visible.sync="xiangQingVisible">
-                <el-card shadow="hover">
-                    <ul v-for="item in xiangQingInfo" style="list-style-type: none">
-                        <li>{{item}}</li>
-                    </ul>
-                </el-card>
+                <el-form :label-position='labelpos' label-width="120px" >
+                    <el-form-item label="上次登录时间">
+                        <p>{{xiangQingInfo.lastLogin}}</p>
+                    </el-form-item>
+                    <el-form-item label="项目数量">
+                        <p>{{xiangQingInfo.projectNum}}</p>
+                    </el-form-item>
+                    <el-form-item label="容器数量">
+                        <p>{{xiangQingInfo.containerNum}}</p>
+                    </el-form-item>
+                    <el-form-item label="容器启动数量">
+                        <p>{{xiangQingInfo.containerRunningNum}}</p>
+                    </el-form-item>
+                    <el-form-item label="容器暂停数量">
+                        <p>{{xiangQingInfo.containerPauseNum}}</p>
+                    </el-form-item>
+                    <el-form-item label="容器停止数量">
+                        <p>{{xiangQingInfo.containerStopNum}}</p>
+                    </el-form-item>
+                    <el-form-item label="上传镜像数量">
+                        <p>{{xiangQingInfo.uploadImageNum}}</p>
+                    </el-form-item>
+                    <el-form-item label="hub镜像数量">
+                        <p>{{xiangQingInfo.hubImageNum}}</p>
+                    </el-form-item>
+                </el-form>
             </el-dialog>
         </div>
     </div>
@@ -104,10 +149,11 @@
 
                 // 信息模态框属性
                 xinXiVisible:false,
-                xinXiInfo:[],
+                xinXiInfo:{},
+                labelpos:'left',
                 // 详情模态框属性
                 xiangQingVisible:false,
-                xiangQingInfo:[]
+                xiangQingInfo:{}
             }
         },
         methods: {
@@ -117,6 +163,10 @@
                     .then(response=>{
                         // console.log(response)
                         if (response.data.code == 0){
+                            this.$message.success({
+                                message:"获取用户信息成功！",
+                                showClose:true
+                            })
                             this.peopleInfo = response.data.data.records;
                             for(var i=0; i<response.data.data.records.length; i++){
                                 if(response.data.data.records[i].roleId == 2) {
@@ -151,8 +201,11 @@
                 if(this.hasFreeze == "true") {
                     this.$axios.get('/user/list' + "?hasFreeze=true" + "&current=" + this.currentPage + "&size=5" + "&username=" + this.select_username + "&email=" + this.select_email)
                         .then(response=>{
-                            // console.log(response)
                             if (response.data.code == 0){
+                                // this.$message.success({
+                                //     message:"搜索用户信息成功！",
+                                //     showClose:true
+                                // })
                                 this.peopleInfo = response.data.data.records;
                                 for(var i=0; i<response.data.data.records.length; i++){
                                     if(response.data.data.records[i].roleId == 2) {
@@ -172,7 +225,7 @@
                                 this.totalCount = response.data.data.total;
                             }else{
                                 this.$message.error({
-                                    message:"获取用户信息失败！",
+                                    message:"搜索用户信息失败！",
                                     showClose:true
                                 })
                             }
@@ -217,7 +270,7 @@
                 }else if(this.hasFreeze === ""){
                     this.$axios.get('/user/list' + "?hasFreeze=" + "&current=" + this.currentPage + "&size=5" + "&username=" + this.select_username + "&email=" + this.select_email)
                         .then(response=>{
-                            console.log(response)
+                            // console.log(response)
                             if (response.data.code == 0){
                                 this.peopleInfo = response.data.data.records;
                                 for(var i=0; i<response.data.data.records.length; i++){
@@ -254,8 +307,12 @@
                     ids:this.ids.toString(),
                 })
                     .then(response=>{
-                        console.log(response)
+                        // console.log(response)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message:"冻结用户信息成功！",
+                                showClose:true
+                            })
                             this.getPeopleInfo();
                         }else {
                             this.$message.error({
@@ -274,12 +331,16 @@
                     "ids":this.ids.toString(),
                 })
                     .then(response=>{
-                        console.log(response)
+                        // console.log(response)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message:"解除冻结用户信息成功！",
+                                showClose:true
+                            })
                             this.getPeopleInfo();
                         }else {
                             this.$message.error({
-                                message:"冻结用户信息失败！",
+                                message:"解除冻结用户信息失败！",
                                 showClose:true
                             })
                         }
@@ -325,6 +386,7 @@
             },
             // 获取选中用户信息的id信息
             handleSelectionChange:function (val) {
+                console.log(val)
                 this.multipleSelection = val;
                 for(var i=0; i<this.multipleSelection.length; i++){
                     this.ids.push(this.multipleSelection[i].id);
@@ -332,20 +394,34 @@
             },
             // 根据id获取用户信息
             getXinXiInfo:function (index,row) {
-                console.log(row.id)
+                // console.log(row.id)
                 this.xinXiVisible = true;
                 this.$axios.get('/user/list' + "?id=" + row.id)
                     .then(response=>{
                         if(response.data.code == 0){
-                            var obj = new Object();
-                            obj = response.data.data.records[0];
-
-                            var arr = new Array();
-                            for(var key in obj){
-                                var value = obj[key];
-                                arr.push( key + ":" + value);
-                            }
-                            this.xinXiInfo = arr;
+                            this.xinXiInfo = response.data.data.records[0];
+                                if(this.xinXiInfo.roleId == 2) {
+                                    this.xinXiInfo.roleId = "管理员";
+                                }else if (this.xinXiInfo.roleId == 1) {
+                                    this.xinXiInfo.roleId = "普通用户";
+                                }
+                                if(this.xinXiInfo.email == null){
+                                    this.xinXiInfo.email = "无";
+                                }
+                                if(this.xinXiInfo.hasFreeze){
+                                    this.xinXiInfo.hasFreeze = "已冻结";
+                                }else {
+                                    this.xinXiInfo.hasFreeze = "未冻结";
+                                }
+                            // var obj = new Object();
+                            // obj = response.data.data.records[0];
+                            //
+                            // var arr = new Array();
+                            // for(var key in obj){
+                            //     var value = obj[key];
+                            //     arr.push( key + ":" + value);
+                            // }
+                            // this.xinXiInfo = arr;
                         }else {
                             this.$message.error({
                                 message:"获取用户信息失败！",
@@ -362,16 +438,16 @@
                 this.xiangQingVisible = true;
                 this.$axios.get('/monitor/' + row.id + '/info')
                     .then(response=>{
-                        console.log(response)
                         if(response.data.code == 0){
-                            var obj = new Object();
-                            obj = response.data.data;
-                            var arr = new Array();
-                            for(var key in obj){
-                                var value = obj[key];
-                                arr.push( key + ":" + value);
-                            }
-                            this.xiangQingInfo = arr;
+                            this.xiangQingInfo = response.data.data;
+                            // var obj = new Object();
+                            // obj = response.data.data;
+                            // var arr = new Array();
+                            // for(var key in obj){
+                            //     var value = obj[key];
+                            //     arr.push( key + ":" + value);
+                            // }
+                            // this.xiangQingInfo = arr;
                         }else {
                             this.$message.error({
                                 message:"获取用户信息失败！",

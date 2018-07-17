@@ -7,7 +7,7 @@
         </div>
         <div class="container">
             <!--echarts图表展示区域-->
-            <div class="conta" v-show="isShow" style="z-index: 2;position: absolute;background-color: white;width: 900px;height: 700px;margin-left: 18%;margin-top: -10%;">
+            <div id="sideMenuContainer" class="conta" v-show="isShow" style="z-index: 2;position: absolute;background-color: white;width: 900px;height: 700px;margin-left: 18%;margin-top: -15%;">
                 <h4 style="font-family: 微软雅黑;margin-bottom: 2%">容器实时监控</h4>
                 <p style="font-family: 微软雅黑;font-size: 14px;color: #409EFF;margin-bottom: 2%;margin-left: 1%;cursor: pointer" @click="isShow=false">返回</p>
                 <div id="main" style="width: 300px;height:200px;float: left"></div>
@@ -57,6 +57,11 @@
                     prop="name"
                 >
                 </el-table-column>
+                <el-table-column label="监控" width="80">
+                    <template slot-scope="scope">
+                        <i class="el-icon-view" style="float: left;margin-left: 10px;margin-top: 8px;cursor: pointer" @click="handleView(scope.row)"></i>
+                    </template>
+                </el-table-column>
                 <el-table-column
                     label="容器状态"
                     width="200">
@@ -64,7 +69,6 @@
                         <div slot="reference" class="name-wrapper" style="float: left">
                             <el-tag size="medium">{{ scope.row.statusName }}</el-tag>
                         </div>
-                        <i class="el-icon-view" style="float: left;margin-left: 10px;margin-top: 8px;cursor: pointer" @click="handleView"></i>
                     </template>
                 </el-table-column>
 
@@ -114,6 +118,7 @@
         name: "ContainerManage",
         data(){
             return{
+                chartid:'',
                 flag :0,
                 data:[],
                 data2:[],
@@ -541,7 +546,6 @@
         },
         methods:{
             createEcharts:function () {
-                // var echarts = require('echarts');
                 let myChart = this.$echarts.init(document.getElementById('main'));
                 let chart2 = this.$echarts.init(document.getElementById('main2'));
                 let chart3 = this.$echarts.init(document.getElementById('main3'));
@@ -552,9 +556,33 @@
                 let chart8 = this.$echarts.init(document.getElementById('main8'));
                 let chart9 = this.$echarts.init(document.getElementById('main9'));
 
-                this.$axios.get('/monitor/container/actual/fba35fda5b0f274ef5132a5ace51406871d18e4111a7755cb1d78c8c9a4fd6f2')
+
+                myChart.setOption(this.option);
+                chart2.setOption(this.option2);
+                chart3.setOption(this.option3);
+                chart4.setOption(this.option4);
+                chart5.setOption(this.option5);
+                chart6.setOption(this.option6);
+                chart7.setOption(this.option7);
+                chart8.setOption(this.option8);
+                chart9.setOption(this.option9);
+            },
+            // 查看echarts图表
+            handleView:function(row){
+                this.isShow = true;
+                let myChart = this.$echarts.init(document.getElementById('main'));
+                let chart2 = this.$echarts.init(document.getElementById('main2'));
+                let chart3 = this.$echarts.init(document.getElementById('main3'));
+                let chart4 = this.$echarts.init(document.getElementById('main4'));
+                let chart5 = this.$echarts.init(document.getElementById('main5'));
+                let chart6 = this.$echarts.init(document.getElementById('main6'));
+                let chart7 = this.$echarts.init(document.getElementById('main7'));
+                let chart8 = this.$echarts.init(document.getElementById('main8'));
+                let chart9 = this.$echarts.init(document.getElementById('main9'));
+
+
+                this.$axios.get('/monitor/container/actual/'+row.id)
                     .then(response=>{
-                        // console.log(response);
                         if(response.data.code == 0) {
                             this.content = response.data.data;
                             this.content = this.content.toString().replace("\\", "");
@@ -596,15 +624,6 @@
                                 let memoryUtilization2 = this.content[this.content.length - 1].memoryUtilization.toString();
                                 let blockRead2 = this.content[this.content.length - 1].blockRead.toString();
                                 let blockWrite2 = this.content[this.content.length - 1].blockWrite.toString();
-                                // data.shift();
-                                // data2.shift();
-                                // data3.shift();
-                                // data4.shift();
-                                // data5.shift();
-                                // data6.shift();
-                                // data7.shift();
-                                // data8.shift();
-                                // data9.shift();
                                 this.data.push(timestamp2, [timestamp2, rxbyte2]);
                                 this.data2.push(timestamp2, [timestamp2, txbyte2]);
                                 this.data3.push(timestamp2, [timestamp2, rxPackets2]);
@@ -670,7 +689,7 @@
 
                 var that = this;
                 setInterval(function () {
-                    that.$axios.get('/monitor/container/actual/fba35fda5b0f274ef5132a5ace51406871d18e4111a7755cb1d78c8c9a4fd6f2')
+                    that.$axios.get('/monitor/container/actual/'+row.id)
                         .then(response=>{
                             // console.log(response);
                             if(response.data.code == 0){
@@ -714,15 +733,6 @@
                                     let memoryUtilization2 = that.content[that.content.length-1].memoryUtilization.toString();
                                     let blockRead2 = that.content[that.content.length-1].blockRead.toString();
                                     let blockWrite2 = that.content[that.content.length-1].blockWrite.toString();
-                                    // data.shift();
-                                    // data2.shift();
-                                    // data3.shift();
-                                    // data4.shift();
-                                    // data5.shift();
-                                    // data6.shift();
-                                    // data7.shift();
-                                    // data8.shift();
-                                    // data9.shift();
                                     that.data.push(timestamp2, [timestamp2, rxbyte2]);
                                     that.data2.push(timestamp2, [timestamp2, txbyte2]);
                                     that.data3.push(timestamp2, [timestamp2, rxPackets2]);
@@ -785,19 +795,6 @@
                             console.log(err)
                         })
                 },10000);
-                myChart.setOption(this.option);
-                chart2.setOption(this.option2);
-                chart3.setOption(this.option3);
-                chart4.setOption(this.option4);
-                chart5.setOption(this.option5);
-                chart6.setOption(this.option6);
-                chart7.setOption(this.option7);
-                chart8.setOption(this.option8);
-                chart9.setOption(this.option9);
-            },
-            // 查看echarts图表
-            handleView:function(){
-                this.isShow = true;
 
             },
             // 同步
@@ -846,10 +843,7 @@
                             console.log(err)
                         })
                 } else{
-                    this.$notify.error({
-                        title: '请先启动容器',
-                        message: '容器开启失败'
-                    });
+                    this.$message("请先开启容器");
                 }
             },
 
@@ -1093,13 +1087,6 @@
                         }).catch(function (err) {
                         console.log(err);
                     });
-                    this.loadbutton1=false;
-                    this.loadbutton2=false;
-                    this.loadbutton3=false;
-                    this.loadbutton4=false;
-                    this.loadbutton5=false;
-                    this.loadbutton6=false;
-                    this.loadbutton7=false;
                     this.$notify({
                         title: e.message,
                         message: this.openmessage,
@@ -1111,6 +1098,13 @@
                         message: '容器开启失败'
                     });
                 }
+                this.loadbutton1=false;
+                this.loadbutton2=false;
+                this.loadbutton3=false;
+                this.loadbutton4=false;
+                this.loadbutton5=false;
+                this.loadbutton6=false;
+                this.loadbutton7=false;
 
             },
 

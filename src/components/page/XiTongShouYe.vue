@@ -20,13 +20,13 @@
                             <div slot="header" class="clearfix">
                                 <h4>宿主机详情</h4>
                             </div>
-                        <ul style="list-style-type: none;">
-                            <li style="margin-bottom: 15px">宿主机名称：{{hostInfo.hostName}}</li>
-                            <li style="margin-bottom: 15px">系统类型：{{hostInfo.architecture}}</li>
-                            <li style="margin-bottom: 15px">内核名称：{{hostInfo.osName}}</li>
-                            <li style="margin-bottom: 15px">docker版本：{{hostInfo.dockerVersion}}</li>
-                            <li style="margin-bottom: 15px">内存大小：{{hostInfo.memorySize}}</li>
-                        </ul>
+                            <ul style="list-style-type: none;">
+                                <li style="margin-bottom: 15px">宿主机名称：{{hostInfo.hostName}}</li>
+                                <li style="margin-bottom: 15px">系统类型：{{hostInfo.architecture}}</li>
+                                <li style="margin-bottom: 15px">内核名称：{{hostInfo.osName}}</li>
+                                <li style="margin-bottom: 15px">docker版本：{{hostInfo.dockerVersion}}</li>
+                                <li style="margin-bottom: 15px">内存大小：{{hostInfo.memorySize}}G</li>
+                            </ul>
                         </el-card>
                     </el-col>
                 </el-row>
@@ -75,7 +75,7 @@
                     <div slot="header" class="clearfix">
                         <span>容器数据</span>
                     </div>
-                    <div id="main" style="width: 600px;height: 400px">
+                    <div id="main" style="width: 700px;height: 300px;margin-left: 30px">
 
                     </div>
 
@@ -97,112 +97,189 @@
                 roleId: sessionStorage.getItem('currentRole'),
                 // 宿主机的信息
                 hostInfo: {
-                    "hostName": "bogon",
-                    "architecture": "x86_64",
-                    "osName": "CentOS Linux 7 (Core)",
-                    "cupNum": 1,
-                    "memorySize": 0.95,
-                    "dockerVersion": "17.09.0-ce",
-                    "imageNum": 8,
-                    "containerNum": 3,
-                    "containerRunningNum": 3,
-                    "containerPauseNum": 0,
-                    "containerStopNum": 0,
-                    "time": "2018-07-09 14:39:43"
+                    // "hostName": "bogon",
+                    // "architecture": "x86_64",
+                    // "osName": "CentOS Linux 7 (Core)",
+                    // "cupNum": 1,
+                    // "memorySize": '0.95',
+                    // "dockerVersion": "17.09.0-ce",
+                    // "imageNum": 8,
+                    // "containerNum": 3,
+                    // "containerRunningNum": 3,
+                    // "containerPauseNum": 0,
+                    // "containerStopNum": 0,
+                    // "time": "2018-07-09 14:39:43"
                 },
                 containerNum:7,
                 runningNum:7,
                 pauseNum:0,
                 stopNum:0,
                 // 绘制echarts表格相关属性
-                option: {
-                    title: {
-                        text: '宿主机容器信息',
-                        x: 'center'
-                    },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter: "{a} <br/>{b} : {c} ({d}%)"
-                    },
-                    legend: {
-                        x: 'center',
-                        y: 'bottom',
-                        data: ['容器总数', '容器启动数', '容器暂停数', '容器停止数']
-                    },
-                    toolbox: {
-                        show: true,
-                        feature: {
-                            mark: {show: true},
-                            dataView: {show: true, readOnly: false},
-                            magicType: {
-                                show: true,
-                                type: ['pie', 'funnel']
-                            },
-                            restore: {show: true},
-                            saveAsImage: {show: true}
-                        }
-                    },
-                    calculable: true,
-                    series: [
-                        {
-                            name: '半径模式',
-                            type: 'pie',
-                            radius: [20, 110],
-                            center: ['25%', '50%'],
-                            roseType: 'radius',
-                            label: {
-                                normal: {
-                                    show: false
-                                },
-                                emphasis: {
-                                    show: true
-                                }
-                            },
-                            lableLine: {
-                                normal: {
-                                    show: false
-                                },
-                                emphasis: {
-                                    show: true
-                                }
-                            },
-                            data: [
-                                {data: 10, name: '容器总数',itemStyle: {
-                                        color: '#F0F0F0'
-                                    }},
-                                {value: 5, name: '容器启动数',itemStyle: {
-                                        color: 'rgb(242, 94, 67)'
-                                    }},
-                                {value: 15, name: '容器暂停数',itemStyle: {
-                                        color: 'rgb(100, 213, 114)'
-                                    }},
-                                {value: 25, name: '容器停止数',itemStyle: {
-                                        color: 'rgb(45, 140, 240)'
-                                    }},
-                            ]
-                        },]
-                },
+                // option :{
+                //     // backgroundColor: '#2c343c',
+                //
+                //     title: {
+                //         text: '容器状态',
+                //         left: 'center',
+                //         top: 20,
+                //         textStyle: {
+                //             color: '#ccc'
+                //         }
+                //     },
+                //
+                //     tooltip : {
+                //         trigger: 'item',
+                //         formatter: "{a} <br/>{b} : {c} ({d}%)"
+                //     },
+                //     legend: {
+                //         orient: 'vertical',
+                //         x: 'right',
+                //         data:['运行的容器','暂停的容器','停止的容器']
+                //     },
+                //     series : [
+                //         {
+                //             name:'访问来源',
+                //             type:'pie',
+                //             radius : '55%',
+                //             center: ['50%', '50%'],
+                //             data:[
+                //                 {value:335, name:'运行的容器'},
+                //                 {value:310, name:'暂停的容器'},
+                //                 {value:310, name:'停止的容器'},
+                //             ].sort(function (a, b) { return a.value - b.value; }),
+                //             roseType: 'radius',
+                //             label: {
+                //                 normal: {
+                //                     position: 'inner',
+                //                     textStyle: {
+                //                         color: 'rgba(255, 255, 255, 0.3)'
+                //                     }
+                //                 }
+                //             },
+                //             labelLine: {
+                //                 normal: {
+                //                     lineStyle: {
+                //                         color: 'rgba(255, 255, 255, 0.3)'
+                //                     },
+                //                     smooth: 0.2,
+                //                     length: 10,
+                //                     length2: 20
+                //                 }
+                //             },
+                //             itemStyle: {
+                //                 normal: {
+                //                     // color: '#c23531',
+                //                     // shadowBlur: 200,
+                //                     // shadowColor: 'rgba(0, 0, 0, 0.5)'
+                //                 }
+                //             },
+                //
+                //             animationType: 'scale',
+                //             animationEasing: 'elasticOut',
+                //             animationDelay: function (idx) {
+                //                 return Math.random() * 200;
+                //             }
+                //         }
+                //     ]
+                // },
             }
         },
         methods:{
-        //获取宿主机信息
-         getHostInfo:function () {
-             this.$axios.get('/monitor/host')
-                 .then(response=>{
-                     console.log(response);
-                     if(response.data.code == 0){
-                         this.hostInfo = response.data.data;
-                     }else{
-                         this.$message.error({
-                             message:"获取宿主机信息失败！",
-                             showClose:true
-                         })
-                     }
-                 })
-                 .catch(function (err) {
-                     console.log(err)
-                 })
-         },
+            //获取宿主机信息
+            getHostInfo:function () {
+                this.$axios.get('/monitor/host')
+                    .then(response=>{
+                        console.log(response);
+                        if(response.data.code == 0){
+                            console.log(response.data.data);
+                            this.hostInfo = response.data.data;
+
+                            let myChart = this.$echarts.init(document.getElementById('main'));
+                            myChart.setOption({
+                                // title: {
+                                //     text: '容器状态',
+                                //     left: 'center',
+                                //     top: 20,
+                                //     textStyle: {
+                                //         color: '#ccc'
+                                //     }
+                                // },
+
+                                tooltip : {
+                                    trigger: 'item',
+                                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                },
+
+                                legend: {
+                                    orient: 'vertical',
+                                    x: 'right',
+                                    data:['运行的容器','暂停的容器','停止的容器']
+                                },
+                                series : [
+                                    {
+                                        name:'访问来源',
+                                        type:'pie',
+                                        radius : '55%',
+                                        center: ['50%', '50%'],
+                                        data:[
+                                            {value:this.hostInfo.containerRunningNum, name:'运行的容器', selected:true},
+                                            {value:this.hostInfo.containerPauseNum, name:'暂停的容器'},
+                                            {value:this.hostInfo.containerStopNum, name:'停止的容器'},
+                                        ],
+                                        // roseType: 'radius',
+                                        label: {
+                                            normal: {
+                                                position: 'inner',
+                                                textStyle: {
+                                                    color: 'rgba(255, 255, 255, 0.3)'
+                                                }
+                                            }
+                                        },
+                                        labelLine: {
+                                            normal: {
+                                                lineStyle: {
+                                                    color: 'rgba(255, 255, 255, 0.3)'
+                                                },
+                                                smooth: 0.2,
+                                                length: 10,
+                                                length2: 20
+                                            }
+                                        },
+                                        itemStyle: {
+                                            normal: {
+                                                // color: '#c23531',
+                                                // shadowBlur: 200,
+                                                // shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                            }
+                                        },
+
+                                        animationType: 'scale',
+                                        animationEasing: 'elasticOut',
+                                        animationDelay: function (idx) {
+                                            return Math.random() * 200;
+                                        }
+                                    }
+                                ]
+                                // series: [{
+                                //     data: [
+                                //         {value:this.hostInfo.containerRunningNum, name:'运行的容器'},
+                                //         {value:this.hostInfo.containerPauseNum, name:'暂停的容器'},
+                                //         {value:this.hostInfo.containerStopNum, name:'停止的容器'},
+                                //     ],
+                                // }]
+                            });
+
+                        }else{
+                            this.$message.error({
+                                message:"获取宿主机信息失败！",
+                                showClose:true
+                            })
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
+            },
             // 绘制关于容器数据的echarts
             createEcharts:function () {
                 let myChart = this.$echarts.init(document.getElementById('main'));

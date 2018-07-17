@@ -39,6 +39,10 @@
                             label="镜像类型"
                             prop="type">
                         </el-table-column>
+                        <el-table-column
+                            label="镜像仓库"
+                            prop="repo">
+                        </el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
                                 <ul style="float: left;list-style-type: none" >
@@ -69,7 +73,7 @@
                     <div class="handle-box">
                         <el-input v-model="select_userImage" placeholder="输入镜像名称" class="handle-input mr10"></el-input>
                         <el-button type="primary" icon="el-icon-search" @click="searchUserImage">搜索</el-button>
-                        <el-button type="primary"  @click="importImage">导入</el-button>
+                        <el-button type="primary"  @click="handleImport">导入</el-button>
                     </div>
                     <el-table
                         :data="userLocalImage"
@@ -124,64 +128,6 @@
                         </el-pagination>
                     </div>
                 </el-tab-pane>
-
-                <!--<el-tab-pane label="Hub镜像" name="third">-->
-                    <!--&lt;!&ndash;搜索Hub镜像&ndash;&gt;-->
-                    <!--<div class="handle-box">-->
-                        <!--<el-input v-model="select_hubImage" placeholder="输入镜像名称" class="handle-input mr10"></el-input>-->
-                        <!--<el-button type="primary" icon="el-icon-search" @click="searchHubImage">搜索</el-button>-->
-                        <!--<el-button type="primary"  @click="uploadImage">上传</el-button>-->
-                        <!--<el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage_hub">同步</el-button>-->
-                    <!--</div>-->
-                    <!--<el-table-->
-                        <!--:data="hubImage"-->
-                        <!--style="width: 100%">-->
-                        <!--<el-table-column-->
-                            <!--label="镜像名称"-->
-                            <!--prop="name">-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column-->
-                            <!--label="镜像标签">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<div slot="reference" class="name-wrapper">-->
-                                    <!--<el-tag size="medium">{{ scope.row.tag }}</el-tag>-->
-                                <!--</div>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column-->
-                            <!--label="容量大小"-->
-                            <!--prop="size">-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column-->
-                            <!--label="镜像类型"-->
-                            <!--prop="type">-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column label="操作">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<ul style="float: left;list-style-type: none" >-->
-                                    <!--<li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer" @click="handleXiangQing(scope.$index, scope.row)">详情</li>-->
-                                    <!--<li style="float: left;color: #409EFF;cursor: pointer" @click="handleExport(scope.$index, scope.row)">导出</li>-->
-                                <!--</ul>-->
-                                <!--<el-button-->
-                                    <!--size="mini"-->
-                                    <!--type="danger"-->
-                                    <!--style="margin-left: 20px"-->
-                                    <!--@click="handleDelete(scope.$index, scope.row)">删除</el-button>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                    <!--</el-table>-->
-
-                    <!--&lt;!&ndash;分页区域&ndash;&gt;-->
-                    <!--<div class="pagination">-->
-                        <!--<el-pagination-->
-                            <!--@current-change="handleCurrentChange_Hub"-->
-                            <!--:current-page.sync="currentPage_Hub"-->
-                            <!--:page-size="5"-->
-                            <!--layout="prev, pager, next, jumper"-->
-                            <!--:total="totalCount_Hub">-->
-                        <!--</el-pagination>-->
-                    <!--</div>-->
-                <!--</el-tab-pane>-->
 
                 <!--导入镜像的模态框-->
                 <div class="importImage">
@@ -290,8 +236,11 @@
             getPublicLocalImage:function(){
                 this.$axios.get('/image/list/local' + "?type=1"  +"&current=1"+ "&size=5" )
                     .then(response=>{
-                        console.log(response)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message: "获取本地公用信息成功！",
+                                showClose: true
+                            })
                             this.publicLocalImage = response.data.data.records;
                             for(var i=0; i< this.publicLocalImage.length ; i++){
                                 if(this.publicLocalImage[i].type = 1){
@@ -319,6 +268,13 @@
                     .then(response=>{
                         if(response.data.code == 0){
                             this.publicLocalImage = response.data.data.records;
+                            for(var i=0; i< this.publicLocalImage.length ; i++){
+                                if(this.publicLocalImage[i].type = 1){
+                                    this.publicLocalImage[i].type = "公共镜像";
+                                }else if(this.publicLocalImage[i].type = 2){
+                                    this.publicLocalImage[i].type = "用户镜像";
+                                }
+                            }
                         }else {
                             this.$message.error({
                                 message: "获取本地公共镜像失败！",
@@ -336,6 +292,10 @@
                     .then(response=>{
                         // console.log(response)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message: "搜索本地公用信息成功！",
+                                showClose: true
+                            })
                             this.publicLocalImage = response.data.data.records;
                             this.totalCount_Public = response.data.data.total;
                         }else {
@@ -356,7 +316,19 @@
                     .then(response=>{
                         // console.log(response)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message: "获取本地用户镜像信息成功！",
+                                showClose: true
+                            })
                             this.userLocalImage = response.data.data.records;
+                            for(var i=0; i< this.userLocalImage.length ; i++){
+                                if(this.userLocalImage[i].type = 1){
+                                    this.userLocalImage[i].type = "公共镜像";
+                                }else if(this.userLocalImage[i].type = 2){
+                                    this.userLocalImage[i].type = "用户镜像";
+                                }
+                            }
+
                             for(var i=0; i<this.userLocalImage.length; i++){
                                 if(this.userLocalImage[i].hasOpen){
                                     this.userLocalImage[i].hasOpen = "已公开";
@@ -399,6 +371,10 @@
                     .then(response=>{
                         // console.log(response)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message: "搜索本地用户信息成功！",
+                                showClose: true
+                            })
                             this.userLocalImage = response.data.data.records;
                             this.totalCount_User = response.data.data.total;
                         }else {
@@ -412,36 +388,6 @@
                         console.log(err)
                     })
             },
-
-            // 获取hub镜像信息
-            getHubImage:function(){
-                this.$axios.get('/image/list/hub' + "?limit=20")
-                    .then(response=>{
-                        // console.log(response)
-                    })
-                    .catch(function (err) {
-                        console.log(err)
-                    })
-            },
-            // hub分页
-            handleCurrentChange_Hub:function(){
-
-            },
-            // 搜索hub镜像
-            searchHubImage:function(){
-
-            },
-            // hub镜像同步
-            syncImage_hub:function(){
-                this.$axios.get('/repository/image/sync')
-                    .then(response=>{
-                        console.log(response)
-                    })
-                    .catch(function (err) {
-                        console.log(err)
-                    })
-            },
-
             // 上传镜像
             uploadImage:function(){
 
@@ -473,12 +419,15 @@
                         "tag": this.importImageInfo.tag,
                     })
                     .then(response=>{
-                        // console.log(response)
                         if(response.data.code == 0) {
+                            this.$message.success({
+                                message: "导入镜像信息成功！",
+                                showClose: true
+                            })
                             this.getUserLocalImage();
                         }else {
                             this.$message.error({
-                                message: "获取镜像信息失败！",
+                                message: "导入镜像信息失败！",
                                 showClose: true
                             })
                         }
@@ -491,7 +440,17 @@
             syncImage:function(){
                 this.$axios.get('/image/sync')
                     .then(response=>{
-                        // console.log(response)
+                     if(response.data.code == 0){
+                         this.$message.success({
+                             message:"镜像同步成功！",
+                             showClose:true
+                         })
+                     }else {
+                         this.$message.error({
+                             message:"镜像同步失败！",
+                             showClose:true
+                         })
+                     }
                     })
                     .catch(function (err) {
                         console.log(err);
@@ -502,8 +461,11 @@
             handleExport:function(index,row){
                 this.$axios.get('/image/export/' + row.id)
                     .then(response=>{
-                        console.log(response.data.data)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message:"导出镜像成功！",
+                                showClose:true
+                            })
                             window.open(response.data.data)
                         }else {
                             this.$message.error({
@@ -525,7 +487,19 @@
                 this.deleteDialogVisible = false;
                 this.$axios.delete('/image/delete/' + this.imageId)
                     .then(response=>{
-                        // console.log(response)
+                     if(response.data.code == 0){
+                         this.$message.success({
+                             message: "导出镜像信息成功！",
+                             showClose: true
+                         })
+                         this.getPublicLocalImage();
+                         this.getUserLocalImage();
+                     }else {
+                         this.$message.error({
+                             message: "导出镜像信息失败！",
+                             showClose: true
+                         })
+                     }
                     })
                     .catch(function (err) {
                         console.log(err)

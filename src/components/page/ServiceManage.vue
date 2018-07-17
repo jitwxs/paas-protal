@@ -7,12 +7,6 @@
         </div>
         <div class="container">
 
-            <div class="handle-box">
-                <div style="margin-top: -10px;margin-bottom: 10px">
-                    <el-button type="primary" icon="el-icon-circle-plus-outline" @click="handleCreate">创建</el-button>
-                </div>
-            </div>
-
             <!--服务信息展示部分-->
             <el-table
                 :data="serviceInfo"
@@ -31,7 +25,9 @@
                 <el-table-column label="操作" >
                     <template slot-scope="scope">
                         <ul style="float: left;list-style-type: none" >
-                            <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer">更多</li>
+                            <router-link :to="{path:'/servicedetails', query:{id:scope.row.id}}">
+                                <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer">更多</li>
+                            </router-link>
                             <li style="float: left;margin-left: 5px;cursor: pointer"><i class="el-icon-delete" @click="handleDelete(scope.$index, scope.row)"></i></li>
                         </ul>
                     </template>
@@ -49,30 +45,6 @@
                 </el-pagination>
             </div>
 
-            <!--创建服务信息的form表单-->
-            <div class="createService">
-                <el-dialog title="创建服务" :visible.sync="serviceFormVisible" >
-                    <el-form :model="serviceForm" >
-                        <el-form-item label="镜像id" :label-width="formLabelWidth"  :rules="{
-                             required: true, message: '镜像id不能为空', trigger: 'blur' }">
-                            <el-input v-model="serviceForm.imageId" auto-complete="off"></el-input>
-                        </el-form-item>
-                        <el-form-item label="服务名称" :label-width="formLabelWidth" :rules="{
-                             required: true, message: '服务名称不能为空', trigger: 'blur' }">
-                            <el-input v-model="serviceForm.driver" auto-complete="off"></el-input>
-                        </el-form-item>
-                        <el-form-item label="网络标签" :label-width="formLabelWidth">
-                            <el-input v-model="serviceForm.labels" auto-complete="off"></el-input>
-                        </el-form-item>
-                        <el-form-item label="是否开启ipv6" :label-width="formLabelWidth">
-                            <el-input v-model="serviceForm.hasIpv6" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-form>
-                    <div slot="footer" class="dialog-footer">
-                        <el-button type="primary" @click="create">确 定</el-button>
-                    </div>
-                </el-dialog>
-            </div>
     </div>
     </div>
 </template>
@@ -80,40 +52,38 @@
 <script>
     export default {
         name: "ServiceManage",
-        data(){
-            return{
+        data() {
+            return {
                 // 服务信息列表
-                serviceInfo:[],
-                // 创建服务信息的表单
-                serviceFormVisible:false,
-                formLabelWidth:'120px',
-                serviceForm:{
+                serviceInfo: [],
 
-                },
                 // 分页信息
-                currentPage:1,
-                totalCount:0,
-
-
+                currentPage: 1,
+                totalCount: 0,
             }
         },
-        methods:{
+        methods: {
             // 获取服务信息
-            getServiceInfo:function(){
+            getServiceInfo: function () {
                 this.$axios.get('/service/list' + "?current=1" + "&size=5")
-                    .then(response=>{
+                    .then(response => {
                         // console.log(response)
-                        if(response.data.code == 0){
+                        if (response.data.code == 0) {
                             this.$message.success({
-                                message:"获取服务信息成功！",
-                                showClose:true
+                                message: "获取服务信息成功！",
+                                showClose: true
                             })
                             this.serviceInfo = response.data.data.records;
+                            for (var i = 0; i < this.serviceInfo.length; i++) {
+                                if (this.serviceInfo[i].statusName == null) {
+                                    this.serviceInfo[i].statusName = '无'
+                                }
+                            }
                             this.totalCount = response.data.data.total;
-                        }else{
+                        } else {
                             this.$message.error({
-                                message:"获取服务信息失败！",
-                                showClose:true
+                                message: "获取服务信息失败！",
+                                showClose: true
                             })
                         }
                     })
@@ -121,27 +91,19 @@
                         console.log(err)
                     })
             },
-            // 点击创建按钮触发的操作
-            handleCreate:function(){
-                this.serviceFormVisible = true;
-            },
-            // 创建服务信息
-            create:function(){
-                this.serviceFormVisible = false;
-            },
             // 删除服务信息
-            handleDelete:function(index,row){
+            handleDelete: function (index, row) {
                 this.$axios.delete('/service/delete/' + row.id)
-                    .then(response=>{
-                        if(response.data.code == 0){
+                    .then(response => {
+                        if (response.data.code == 0) {
                             this.$message.success({
-                                message:"删除服务信息成功！",
-                                showClose:true
+                                message: "删除服务信息成功！",
+                                showClose: true
                             })
-                        }else {
+                        } else {
                             this.$message.error({
-                                message:"删除服务信息失败！",
-                                showClose:true
+                                message: "删除服务信息失败！",
+                                showClose: true
                             })
                         }
                     })
@@ -150,26 +112,31 @@
                     })
             },
             // 分页信息
-            handleCurrentChange:function (val) {
-                this.$axios.get('/service/list' + "?current=" + val +  "&size=5")
-                    .then(response=>{
-                        if(response.data.code == 0){
+            handleCurrentChange: function (val) {
+                this.$axios.get('/service/list' + "?current=" + val + "&size=5")
+                    .then(response => {
+                        if (response.data.code == 0) {
                             this.$message.success({
-                                message:"获取服务信息成功！",
-                                showClose:true
+                                message: "获取服务信息成功！",
+                                showClose: true
                             })
                             this.serviceInfo = response.data.data.records;
-                        }else{
+                            for (var i = 0; i < this.serviceInfo.length; i++) {
+                                if (this.serviceInfo.statusName == null) {
+                                    this.serviceInfo.statusName = '无'
+                                }
+                            }
+                        } else {
                             this.$message.error({
-                                message:"获取服务信息失败！",
-                                showClose:true
+                                message: "获取服务信息失败！",
+                                showClose: true
                             })
                         }
                     })
                     .catch(function (err) {
                         console.log(err)
                     })
-            }
+            },
 
         },
         created(){

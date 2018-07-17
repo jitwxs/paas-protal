@@ -111,6 +111,10 @@
                     .then(response=>{
                         // console.log(response)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message: "获取程序信息成功！",
+                                showClose: true
+                            })
                             this.programInfo = response.data.data.records;
                             for(var i=0; i<this.programInfo.length; i++){
                                 if(this.programInfo[i].remark == null){
@@ -143,8 +147,11 @@
                     port:this.programForm.port,
                 })
                     .then(response=>{
-                        // console.log(response)
                         if(response.data.code == 0){
+                            this.$message.success({
+                                message:"创建程序成功！",
+                                showClose: true
+                            })
                             this.getProgramInfo();
                         }else{
                             this.$message.error({
@@ -165,7 +172,7 @@
             },
             // 发送更新程序请求
             updateProgram:function(){
-                console.log(this.programId)
+                // console.log(this.programId)
                 this.$axios.put('/program/update',{
                     id:this.programId,
                     name:this.programForm.name,
@@ -174,7 +181,18 @@
                     port:this.programForm.port,
                 })
                     .then(response=>{
-                        console.log(response)
+                        // console.log(response)
+                        if(response.data.code == 0){
+                            this.$message.success({
+                                message:"更新程序信息成功！",
+                                showClose:true
+                            })
+                        }else {
+                            this.$message.error({
+                                message:"更新程序信息失败！",
+                                showClose:true
+                            })
+                        }
                     })
                     .catch(function (err) {
                         console.log(err)
@@ -193,11 +211,11 @@
 
             // 获取选中条数的id
             handleSelectionChange:function(val){
+                // console.log(val);
                 this.multipleSelection = val;
                 for(var i=0; i<this.multipleSelection.length; i++){
                     this.ids.push(this.multipleSelection[i].id.toString());
                 }
-                console.log(this.ids);
             },
             // 删除程序
             handleDelete:function(){
@@ -205,8 +223,18 @@
                     ids:this.ids.join(",")
                 })
                     .then(response=>{
-                        // console.log(response)
-                        this.getProgramInfo();
+                        if(response.data.code == 0){
+                            this.$message.success({
+                                message:"删除程序信息成功！",
+                                showClose:true
+                            })
+                            this.getProgramInfo();
+                        }else {
+                            this.$message.error({
+                                message:"删除程序信息失败！",
+                                showClose:true
+                            })
+                        }
                     })
                     .catch(function (err) {
                         console.log(err)

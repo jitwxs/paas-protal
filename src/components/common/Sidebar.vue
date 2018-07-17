@@ -38,8 +38,20 @@
                     {
                         icon: 'el-icon-news',
                         index: 'usermanage',
-                        title: '用户管理'
+                        title: '用户管理',
+                        subs: [
+                            {
+                                index: 'usermanage',
+                                title: '用户管理'
+                            },
+                            {
+                                index: 'tokenmanage',
+                                title: 'Token管理'
+                            },]
+
                     },
+
+
                     {
                         icon: 'el-icon-tickets',
                         index: 'projectmanage',
@@ -70,11 +82,7 @@
                         index: 'servicemanage',
                         title: '服务管理'
                     },
-                    {
-                        icon: 'el-icon-view',
-                        index: 'monitormanage',
-                        title: '监控管理'
-                    },
+
                     {
                         icon: 'el-icon-setting',
                         index: 'systemmanage',
@@ -87,6 +95,10 @@
                             {
                                 index: 'programmanage',
                                 title: '程序管理'
+                            },
+                            {
+                                index: 'noticemanage',
+                                title: '通知管理'
                             },
                         ]
                     },

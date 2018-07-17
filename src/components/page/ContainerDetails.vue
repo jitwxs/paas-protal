@@ -45,6 +45,17 @@
                     </el-form>
                 </el-tab-pane>
                 <el-tab-pane  :disabled="tabbool" label="容器进程" name="second">
+
+                    <el-select v-model="value"  placeholder="请选择刷新间隔" style="margin-bottom: 20px">
+                        <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-button icon="el-icon-refresh" circle @click="refreshNow"></el-button>
+
                     <el-table :data="jsonmessage" style="width: 100%">
                         <el-table-column prop="UID" label="UID" ></el-table-column>
                         <el-table-column prop="PID" label="PID" ></el-table-column>
@@ -66,6 +77,25 @@
         name: "ContainerDetails",
         data(){
             return{
+                options: [{
+                    value: 10000,
+                    label: '10秒'
+                }, {
+                    value: 60000,
+                    label: '1分钟'
+                }, {
+                    value:  300000,
+                    label: '5分钟'
+                }, {
+                    value: 1800000,
+                    label: '半小时'
+                }, {
+                    value: 3600000,
+                    label: '一小时'
+                }],
+                value:10000,
+
+
                 activeName:'first',
                 labelpos:'left',
                 id:'',
@@ -86,7 +116,32 @@
             }
         },
         methods:{
+            refreshNow:function(){
+                this.jsonmessage=[];
+                this.$axios.get('/container/top/'+this.id)
+                    .then(response=>{
+                        if (this.status ===1){
+                            // $("#showjson").html(JSON.strsingify(respone.data.data, null, 4));
+                            for (var i=0 ; i<response.data.data.Processes.length; i++){
+                                var json = {};
+                                json.UID = response.data.data.Processes[i][0];
+                                json.PID = response.data.data.Processes[i][1];
+                                json.PPID = response.data.data.Processes[i][2];
+                                json.C = response.data.data.Processes[i][3];
+                                json.STIME = response.data.data.Processes[i][4];
+                                json.TTY = response.data.data.Processes[i][5];
+                                json.TIME = response.data.data.Processes[i][6];
+                                json.CMD = response.data.data.Processes[i][7];
+                                this.jsonmessage.push(json);
+                            }
+                        }
+                    }).catch(function (err) {
+                    console.log(err)
+                })
+            },
+
             projectTabSwitch:function () {
+                this.jsonmessage=[];
                 if(this.activeName === 'second'){
                     this.$axios.get('/container/top/'+this.id)
                         .then(respone=>{
@@ -109,12 +164,41 @@
                         console.log(err);
                     })
                 }
+            },
+
+            refresh:function () {
+                var that=this;
+                setInterval(function () {
+                    that.jsonmessage=[];
+                    that.$axios.get('/container/top/'+this.id)
+                        .then(response=>{
+                            if (this.status ===1){
+                                // $("#showjson").html(JSON.strsingify(respone.data.data, null, 4));
+                                for (var i=0 ; i<response.data.data.Processes.length; i++){
+                                    var json = {};
+                                    json.UID = response.data.data.Processes[i][0];
+                                    json.PID = response.data.data.Processes[i][1];
+                                    json.PPID = response.data.data.Processes[i][2];
+                                    json.C = response.data.data.Processes[i][3];
+                                    json.STIME = response.data.data.Processes[i][4];
+                                    json.TTY = response.data.data.Processes[i][5];
+                                    json.TIME = response.data.data.Processes[i][6];
+                                    json.CMD = response.data.data.Processes[i][7];
+                                    this.jsonmessage.push(json);
+                                }
+                            }
+                        }).catch(function (err) {
+                        console.log(err)
+                    })
+                },this.value);
             }
+
         },
 
-        // beforeRouteEnter (){
-        //     console.log("destory");
-        // },
+        mounted() {
+            this.refresh();
+        },
+
 
         created(){
             this.activeName = 'first';
@@ -154,7 +238,7 @@
 
                     if (this.status===1){
                         this.tabbool=false;
-                        console.log(this.tabbool);
+                        // console.log(this.tabbool);
                     }
                 }).catch(function (err) {
                 console.log(err);
