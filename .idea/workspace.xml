@@ -1,31 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="58362d93-6be0-4dfd-9bc4-bde4dc157450" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/components/page/NoticePage.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/page_u/addContainer.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/page_u/addService.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/page_u/containerAllList.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/page_u/containerList.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/page_u/projectContainer.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/page_u/projectPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/common/Header.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/common/Header.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/common_u/Header_u.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/common_u/Header_u.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/common_u/Sidebar_u.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/common_u/Sidebar_u.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/page/ContainerManage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/page/ContainerManage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/page/ImageManage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/page/ImageManage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/page/NoticeManage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/page/NoticeManage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/page/UserManage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/page/UserManage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/page/VolumesManage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/page/VolumesManage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/page/XiTongShouYe.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/page/XiTongShouYe.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/page_u/ProjectManage_u.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/store/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/store.js" afterDir="false" />
-    </list>
+    <list default="true" id="58362d93-6be0-4dfd-9bc4-bde4dc157450" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -400,12 +376,12 @@
       <workItem from="1531528269276" duration="99181000" />
       <workItem from="1531787613848" duration="8272000" />
       <workItem from="1531797467861" duration="17671000" />
-      <workItem from="1531824066059" duration="200000" />
+      <workItem from="1531824066059" duration="563000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="436713000" />
+    <option name="totallyTimeSpent" value="437076000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
