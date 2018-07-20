@@ -21,9 +21,9 @@
             <!--用户信息展示部分-->
             <el-table
                 :data="volumesInfo"
-                tooltip-effect="dark"
+                tooltip-effect="light"
                 style="width: 100%">
-                <el-table-column prop="Name" label="数据卷名称" >
+                <el-table-column prop="Name" label="数据卷名称" width="500px" show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column prop="Driver" label="数据卷驱动" >
                 </el-table-column>
@@ -48,29 +48,29 @@
                     :visible.sync="xiangQingVisible"
                     width="50%">
                     <el-form :label-position='labelpos' label-width="80px" :model="xiangQingInfo">
-                        <el-form-item label="容器Id">
-                            <p>{{xiangQingInfo.Name}}</p>
+                        <el-form-item label="Name"  width="300" >
+                            <p class="infoP">{{xiangQingInfo.Name}}</p>
                         </el-form-item>
-                        <el-form-item label="容器名称">
-                            <p>{{xiangQingInfo.Driver}}</p>
+                        <el-form-item label="Driver">
+                            <p class="infoP">{{xiangQingInfo.Driver}}</p>
                         </el-form-item>
-                        <el-form-item label="项目Id">
-                            <p>{{xiangQingInfo.DriverOpts}}</p>
+                        <el-form-item label="DriverOpts">
+                            <p class="infoP">{{xiangQingInfo.DriverOpts}}</p>
                         </el-form-item>
-                        <el-form-item label="项目名称">
-                            <p>{{xiangQingInfo.Options}}</p>
+                        <el-form-item label="Options">
+                            <p class="infoP">{{xiangQingInfo.Options}}</p>
                         </el-form-item>
-                        <el-form-item label="默认指令">
-                            <p>{{xiangQingInfo.Labels}}</p>
+                        <el-form-item label="Labels">
+                            <p class="infoP">{{xiangQingInfo.Labels}}</p>
                         </el-form-item>
-                        <el-form-item label="默认端口">
-                            <p>{{xiangQingInfo.Mountpoint}}</p>
+                        <el-form-item label="Mountpoint">
+                            <p class="infoP">{{xiangQingInfo.Mountpoint}}</p>
                         </el-form-item>
-                        <el-form-item label="镜像名称">
-                            <p>{{xiangQingInfo.Scope}}</p>
+                        <el-form-item label="Scope">
+                            <p class="infoP">{{xiangQingInfo.Scope}}</p>
                         </el-form-item>
-                        <el-form-item label="环境参数">
-                            <p>{{xiangQingInfo.Status}}</p>
+                        <el-form-item label="Status">
+                            <p class="infoP">{{xiangQingInfo.Status}}</p>
                         </el-form-item>
 
                     </el-form>
@@ -81,13 +81,29 @@
             <div class="upload">
                 <el-dialog title="上传文件" :visible.sync="uploadFormVisible">
                     <el-form :model="uploadForm">
-                        <el-form-item label="数据卷id" :label-width="formLabelWidth">
-                            <el-input v-model="uploadForm.id" auto-complete="off"></el-input>
-                        </el-form-item>
-                        <el-form-item label="选择文件" :label-width="formLabelWidth">
+                        <!--<el-form-item label="数据卷id" :label-width="formLabelWidth">-->
+                            <!--<el-input v-model="uploadForm.id" auto-complete="off"></el-input>-->
+                        <!--</el-form-item>-->
+                        <el-form-item  :label-width="formLabelWidth">
                             <!--<el-input v-model="uploadForm.file" auto-complete="off"></el-input>-->
+                            <!--<el-upload-->
+                                <!--class="upload-demo"-->
+                                <!--:action=url-->
+                                <!--:name=name-->
+                                <!--:headers="headers"-->
+                                <!--:data="uploadForm"-->
+                                <!--:before-upload="beforeUpload"-->
+                                <!--:on-preview="handlePreview"-->
+                                <!--:on-remove="handleRemove"-->
+                                <!--:on-success="handleSuccess"-->
+                                <!--:before-remove="beforeRemove"-->
+                                <!--:limit="1">-->
+                                <!--<el-button size="small" type="primary">上传文件</el-button>-->
+                                <!--<div slot="tip" class="el-upload__tip"></div>-->
+                            <!--</el-upload>-->
                             <el-upload
                                 class="upload-demo"
+                                drag
                                 :action=url
                                 :name=name
                                 :headers="headers"
@@ -97,9 +113,11 @@
                                 :on-remove="handleRemove"
                                 :on-success="handleSuccess"
                                 :before-remove="beforeRemove"
-                                :limit="1">
-                                <el-button size="small" type="primary">上传视频</el-button>
-                                <div slot="tip" class="el-upload__tip"></div>
+                                :limit="1"
+                                >
+                                <i class="el-icon-upload"></i>
+                                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                                <!--<div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
                             </el-upload>
                         </el-form-item>
                     </el-form>
@@ -154,10 +172,6 @@
                     .then(response=>{
                         // console.log(response)
                         if (response.data.code == 0){
-                            this.$message.success({
-                                message:"获取容器数据卷信息成功！",
-                                showClose:true
-                            })
                             this.volumesInfo = response.data.data.Volumes;
                             for(var i=0; i< this.volumesInfo.length; i++){
                                 if(this.volumesInfo[i].Scope == 'local'){
@@ -184,10 +198,6 @@
                     .then(response=>{
                         // console.log(response)
                         if (response.data.code == 0){
-                            this.$message.success({
-                                message:"获取服务数据卷信息成功！",
-                                showClose:true
-                            })
                             this.volumesInfo = response.data.data.Volumes;
                             for(var i=0; i< this.volumesInfo.length; i++){
                                 if(this.volumesInfo[i].Scope == 'local'){
@@ -259,8 +269,11 @@
             },
 
             handleUpload:function(index, row){
+
+                console.log(row)
                 this.uploadFormVisible = true;
                 this.volumesId = row.id;
+                this.uploadForm.id = row.id;
             },
             beforeUpload:function(){
                 if (this.uploadForm.id == "" || this.uploadForm.file == "") {
@@ -270,6 +283,7 @@
                     })
                 } else{
                     this.url = this.url  + this.uploadForm;
+                    console.log(this.url)
                 }
             },
             handlePreview:function(){
@@ -287,9 +301,10 @@
 
             // 上传数据卷
             uploadVolumes:function () {
+                console.log(this.uploadForm)
                 this.uploadFormVisible = false;
                 this.$axios.post('/volumes/upload',{
-                    id: this.volumesId,
+                    id:this.uploadForm.id,
                     file: this.uploadForm.file
                 })
                     .then(response=>{
@@ -315,10 +330,6 @@
                     .then(response=>{
                         console.log(response)
                         if(response.data.code == 0){
-                            this.$message.success({
-                                message:"获取数据卷详情成功！",
-                                showClose:true
-                            })
                             this.xiangQingInfo = response.data.data;
                         }else {
                             this.$message.error({
@@ -350,5 +361,9 @@
     .handle-input {
         width: 150px;
         display: inline-block;
+    }
+    .infoP{
+
+        color: rgba(76, 0, 0, 0.55);
     }
 </style>

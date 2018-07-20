@@ -40,35 +40,40 @@
             }
         },
         methods:{
+            //获取token表格
+            getToken(){
+                this.tokenInfo = []
+                this.$axios.get('/token/list')
+                    .then(response=>{
+                        var json = response.data.data;
+                        console.log(json);
+                        for (var i in json){
+                            var obj = {};
+                            obj.userName = i;
+                            obj.token = json[i].token;
+                            obj.createDate = json[i].createDate;
+                            this.tokenInfo.push(obj);
+                        }
+                    }).catch(function (err) {
+                    console.log(err)
+                })
+            },
             deleteToken:function (row) {
                 this.$axios.delete('/token/delete/'+row.userName)
                     .then(response=>{
                         if (response.data.code===0){
                             this.$message(response.data.message);
+                            this.getToken();
                         }
+
                     }).catch(function (err) {
                     console.log(err);
                 })
             }
         },
         created(){
-            this.$axios.get('/token/list')
-                .then(response=>{
-                    var json = response.data.data;
-                    console.log(json);
-                    for (var i in json){
-                        var obj = {};
-                        obj.userName = i;
-                        obj.token = json[i].token;
-                        obj.createDate = json[i].createDate;
-                        if (obj.createDate==='已过期'){
-                            obj.createDate='未申请'
-                        }
-                        this.tokenInfo.push(obj);
-                    }
-                }).catch(function (err) {
-                console.log(err)
-            })
+
+            this.getToken();
         }
     }
 </script>

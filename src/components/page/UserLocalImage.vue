@@ -6,24 +6,50 @@
             </el-breadcrumb>
         </div>
         <div class="container">
-            <el-tabs v-model="activeName2" >
-                <el-tab-pane label="镜像详情" name="first">
+            <el-tabs v-model="activeName2">
+                <el-tab-pane label="镜像详情" name="first" class="pane">
                     <pre id="showjson"></pre>
                 </el-tab-pane>
 
-                <el-tab-pane label="镜像历史" name="second">
+                <el-tab-pane label="镜像历史" name="second" class="pane">
                     <div class="container">
-                            <ul class="time-vertical" v-for="(item,index) in historyInfo">
-                                <li><b></b><span>{{index+1}}</span><a>{{item.Created}}创建了id为{{item.Id}}，标签是{{item.Tags}},容量是{{item.Size}}的容器 </a></li>
-                            </ul>
+
+                        <el-table :data="historyInfo" >
+                            <el-table-column label="id" show-overflow-tooltip >
+                                <template slot-scope="scope">
+                                    <p>{{ scope.row.Id }}</p>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="Tags"
+                                label="标签"
+                                width="250"
+                                show-overflow-tooltip>
+                            </el-table-column>
+                            <el-table-column
+                                prop="Size"
+                                label="大小"
+                                width="180">
+                            </el-table-column>
+                            <el-table-column label="创建时间" >
+                                <template slot-scope="scope">
+                                    <span> {{ scope.row.Created }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="Comment"
+                                label="说明"
+                                width="180">
+                            </el-table-column>
+
+                        </el-table>
                     </div>
                 </el-tab-pane>
 
-                <el-tab-pane label="暴露端口" name="third">
-                    <div class="container">
-                            <ul v-for="(item, index) in portInfo" style="list-style-type: none">
-                                <li>暴露端口{{index+1}}--{{item}}</li>
-                            </ul>
+                <el-tab-pane label="暴露端口" name="third" class="pane">
+                    <div class="containerBylc">
+
+                        <el-tag v-for="(item, index) in portInfo" style="margin-left: 10px;">{{item}}</el-tag>
                     </div>
                 </el-tab-pane>
 
@@ -35,26 +61,26 @@
 <script>
     export default {
         name: "UserLocalImage",
-        data(){
-            return{
+        data() {
+            return {
                 // tab页相关属性
-                activeName2:'first',
+                activeName2: 'first',
                 // 每条镜像信息的id
-                imageId:'',
+                imageId: '',
                 // 详情信息
-                xiangQingInfo:{},
+                xiangQingInfo: {},
                 // 历史信息
-                historyInfo:[],
+                historyInfo: [],
                 // 端口信息
-                portInfo:[],
+                portInfo: [],
             }
         },
-        methods:{
+        methods: {
             // 获取详情信息
-            getXiangQingInfo:function(){
+            getXiangQingInfo: function () {
                 this.$axios.get('/image/inspect/' + this.imageId)
-                    .then(response=>{
-                        if(response.data.code == 0){
+                    .then(response => {
+                        if (response.data.code == 0) {
                             $("#showjson").html(JSON.stringify(response.data.data, null, 4));
                             // var obj = new Object();
                             // obj = response.data.data;
@@ -66,7 +92,7 @@
                             // this.xiangQingInfo = arr;
                             // this.xiangQingInfo = JSON.stringify(obj,undefined,2);
                             // console.log(this.xiangQingInfo);
-                        }else {
+                        } else {
                             this.$message.error({
                                 message: "获取镜像详情信息失败！",
                                 showClose: true
@@ -78,13 +104,20 @@
                     })
             },
             // 获取历史信息
-            getHistoryInfo:function(){
+            getHistoryInfo: function () {
                 this.$axios.get('/image/history/' + this.imageId)
-                    .then(response=>{
+                    .then(response => {
                         // console.log(response)
-                        if(response.data.code == 0){
+                        if (response.data.code == 0) {
                             this.historyInfo = response.data.data;
-                        }else{
+                            this.historyInfo.forEach((item, index) => {
+
+
+                                this.historyInfo[index].Size = bitConvert(item.Size);
+                                this.historyInfo[index].Created = getLocalTime(item.Created);
+                                console.log(this.historyInfo[index].Created)
+                            })
+                        } else {
                             this.$message.error({
                                 message: "获取镜像历史信息失败！",
                                 showClose: true
@@ -96,12 +129,12 @@
                     })
             },
             // 获取镜像接口信息
-            getPortInfo:function(){
+            getPortInfo: function () {
                 this.$axios.get('/image/' + this.imageId + '/exportPort')
-                    .then(response=>{
-                        if(response.data.code == 0){
+                    .then(response => {
+                        if (response.data.code == 0) {
                             this.portInfo = response.data.data;
-                        }else {
+                        } else {
                             this.$message.error({
                                 message: "获取镜像接口信息失败！",
                                 showClose: true
@@ -114,7 +147,7 @@
             },
 
         },
-        created(){
+        created() {
             this.imageId = this.$route.query.id;
             this.getXiangQingInfo();
             this.getHistoryInfo();
@@ -136,6 +169,7 @@
         width: 300px;
         display: inline-block;
     }
+
     /*纵向时间轴*/
     .time-vertical {
         list-style-type: none;
@@ -174,5 +208,15 @@
         color: #fff;
         top: 18px;
         left: -5px;
+        min-height: 500px;
+    }
+
+    .pane {
+        min-height: 630px;
+        border-radius: 15px;
+    }
+
+    .containerBylc {
+        min-height: 500px;
     }
 </style>

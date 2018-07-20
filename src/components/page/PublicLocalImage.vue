@@ -12,21 +12,46 @@
                 </el-tab-pane>
 
                 <el-tab-pane label="镜像历史" name="second">
-                    <div class="container">
-                            <ul class="time-vertical" v-for="(item,index) in historyInfo">
-                                <li><b></b><span>{{index+1}}</span><a>{{item.Created}}创建了id为{{item.Id}}，标签是{{item.Tags}},容量是{{item.Size}}的容器 </a></li>
-                            </ul>
-                    </div>
+                    <el-table
+                        :data="historyInfo"
+                    >
+                        <el-table-column
+                            label="id"
+                            show-overflow-tooltip
+                        >
+                            <template slot-scope="scope">
+                                <p>{{ scope.row.Id }}</p>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                            prop="Tags"
+                            label="标签"
+                            width="180"
+                            show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                            prop="Size"
+                            label="大小"
+                            width="180">
+                        </el-table-column>
+                        <el-table-column label="创建时间" >
+                            <template slot-scope="scope">
+                                <span> {{ scope.row.Created }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                            prop="Comment"
+                            label="说明"
+                            width="180">
+                        </el-table-column>
+                    </el-table>
                 </el-tab-pane>
 
                 <el-tab-pane label="暴露端口" name="third">
                     <div class="container">
-                            <ul v-for="(item, index) in portInfo" style="list-style-type: none">
-                                <li>暴露端口{{index+1}}--{{item}}</li>
-                            </ul>
+                        <el-tag v-for="(item, index) in portInfo" style="margin-left: 10px;">{{item}}</el-tag>
                     </div>
                 </el-tab-pane>
-
             </el-tabs>
         </div>
     </div>
@@ -55,7 +80,7 @@
             getXiangQingInfo:function(){
                 this.$axios.get('/image/inspect/' + this.imageId)
                     .then(response=>{
-                        if(response.data.code == 0){
+                        if(response.data.code === 0){
                             this.xiangQingInfo = response.data.data;
                             $("#showjson").html(JSON.stringify(response.data.data, null, 4));
                             // var obj = new Object();
@@ -84,6 +109,14 @@
                         // console.log(response)
                         if(response.data.code == 0){
                             this.historyInfo = response.data.data;
+
+                            this.historyInfo.forEach((item,index)=>{
+
+
+                                this.historyInfo[index].Size=bitConvert(item.Size);
+                                this.historyInfo[index].Created = getLocalTime(item.Created);
+                                console.log( this.historyInfo[index].Created)
+                            })
                         }else{
                             this.$message.error({
                                 message: "获取镜像历史信息失败！",

@@ -42,11 +42,11 @@
                         subs: [
                             {
                                 index: 'usermanage',
-                                title: '用户管理'
+                                title: '用户信息'
                             },
                             {
                                 index: 'tokenmanage',
-                                title: 'Token管理'
+                                title: 'Token信息'
                             },]
 
                     },
@@ -82,7 +82,26 @@
                         index: 'servicemanage',
                         title: '服务管理'
                     },
-
+                    {
+                        icon: 'el-icon-message',
+                        index: 'noticemanage',
+                        title: '通知管理'
+                    },
+                    {
+                        icon: 'el-icon-view',
+                        title: '三方监控',
+                        index:' ',
+                        subs: [
+                            {
+                                index:'portainer',
+                                title: 'portainer监控'
+                            },
+                            {
+                                index:'visualizer',
+                                title: 'visualizer监控'
+                            }
+                        ]
+                    },
                     {
                         icon: 'el-icon-setting',
                         index: 'systemmanage',
@@ -94,20 +113,16 @@
                             },
                             {
                                 index: 'programmanage',
-                                title: '程序管理'
-                            },
-                            {
-                                index: 'noticemanage',
-                                title: '通知管理'
-                            },
+                                title: '程序信息'
+                            }
                         ]
                     },
 
-                    // {
-                    //     icon: 'el-icon-error',
-                    //     index: '404',
-                    //     title: '404页面'
-                    // }
+                    {
+                        icon: 'el-icon-error',
+                        index: '404',
+                        title: '404页面'
+                    }
                 ]
             }
         },

@@ -100,7 +100,7 @@
               this.total = res.data.data.total;
               this.containerList = res.data.data.records;
 
-              console.log(this.total)
+              // console.log(this.total)
               for(var i=0;i<this.containerList.length; i++){
                 var port = this.containerList[i].port;
                 // 去除引号

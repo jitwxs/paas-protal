@@ -9,6 +9,8 @@ import "babel-polyfill";
 import qs from 'qs'
 import store from './store/store'
 import echarts from "echarts"
+import semantic from 'semantic'
+import '../node_modules/semantic-ui-css/semantic.min.css'
 
 Vue.prototype.$echarts = echarts;
 
@@ -16,9 +18,9 @@ Vue.use(ElementUI, { size: 'small' });
 
 //axios全局配置
 Vue.prototype.$axios = axios;
-axios.defaults.baseURL = '/api'
+axios.defaults.baseURL = '/api';
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
@@ -44,7 +46,7 @@ axios.interceptors.request.use( (config) => {
         // 判断是否存在token，如果存在的话，则每个http header都加上token
         config.headers.Authorization = `${sessionStorage.userToken}`;
     }
-    if (config.method=="post"){
+    if (config.method=="post" || config.method =="put"){
         config.data = qs.stringify(config.data);
         // config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     }
@@ -66,8 +68,8 @@ axios.interceptors.response.use(function (res) {
 
 
 new Vue({
-    store:store,
-    router,
+    el: '#app',
     store,
+    router,
     render: h => h(App)
 }).$mount('#app');

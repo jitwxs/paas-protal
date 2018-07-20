@@ -28,6 +28,8 @@ module.exports = {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
       'static': path.resolve(__dirname, '../static'),
+    // Semantic-UI
+    'semantic'  : path.resolve(__dirname, '../node_modules/semantic-ui-css/semantic.min.js')
     }
   },
   module: {

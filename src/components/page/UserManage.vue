@@ -28,19 +28,21 @@
                 :data="peopleInfo"
                 tooltip-effect="dark"
                 style="width: 100%"
-                @selection-change="handleSelectionChange">
+                @selection-change="handleSelectionChange"
+
+               >
                 <el-table-column
                     type="selection"
                     label="选择"
                     width="65">
                 </el-table-column>
-                <el-table-column prop="roleId" label="角色" >
-                </el-table-column>
                 <el-table-column prop="username" label="用户账号" >
                 </el-table-column>
-                <el-table-column prop="hasFreeze" label="冻结状态" >
-                </el-table-column>
                 <el-table-column prop="email" label="用户邮箱" >
+                </el-table-column>
+                <el-table-column prop="roleId" label="角色" >
+                </el-table-column>
+                <el-table-column prop="hasFreeze" label="冻结状态" >
                 </el-table-column>
                 <el-table-column label="操作" >
                     <template slot-scope="scope">
@@ -57,29 +59,22 @@
                 <el-pagination
                     @current-change="handleCurrentChange"
                     :current-page.sync="currentPage"
-                    :page-size="5"
-                    layout="prev, pager, next, jumper"
-                    :total="totalCount">
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="totalCount"
+                    @size-change="handleSizeChange"
+                    :page-sizes="[10, 20, 50, 100]"
+                    :page-size="10">
                 </el-pagination>
             </div>
 
             <!--用户信息模态框-->
             <el-dialog title="用户信息" :visible.sync="xinXiVisible">
                 <el-form :label-position='labelpos' label-width="120px" >
-                    <el-form-item label="创建日期">
-                        <p>{{xinXiInfo.createDate}}</p>
-                    </el-form-item>
-                    <el-form-item label="更新日期">
-                        <p>{{xinXiInfo.updateDate}}</p>
-                    </el-form-item>
-                    <el-form-item label="用户id">
+                    <el-form-item label="用户ID">
                         <p>{{xinXiInfo.id}}</p>
                     </el-form-item>
                     <el-form-item label="用户名称">
                         <p>{{xinXiInfo.username}}</p>
-                    </el-form-item>
-                    <el-form-item label="用户密码">
-                        <p>{{xinXiInfo.password}}</p>
                     </el-form-item>
                     <el-form-item label="用户邮箱">
                         <p>{{xinXiInfo.email}}</p>
@@ -87,8 +82,11 @@
                     <el-form-item label="是否冻结">
                         <p>{{xinXiInfo.hasFreeze}}</p>
                     </el-form-item>
-                    <el-form-item label="角色id">
+                    <el-form-item label="角色">
                         <p>{{xinXiInfo.roleId}}</p>
+                    </el-form-item>
+                    <el-form-item label="注册日期">
+                        <p>{{xinXiInfo.createDate}}</p>
                     </el-form-item>
                 </el-form>
             </el-dialog>
@@ -153,20 +151,21 @@
                 labelpos:'left',
                 // 详情模态框属性
                 xiangQingVisible:false,
-                xiangQingInfo:{}
+                xiangQingInfo:{},
+                pageSize:10
             }
         },
         methods: {
             // 获取用户信息列表
             getPeopleInfo:function () {
-                this.$axios.get('/user/list'+ '?current=1' + "&size=5")
+                this.$axios.get('/user/list'+ '?current='+this.currentPage + "&size="+this.pageSize)
                     .then(response=>{
                         // console.log(response)
                         if (response.data.code == 0){
-                            this.$message.success({
-                                message:"获取用户信息成功！",
-                                showClose:true
-                            })
+                            // this.$message.success({
+                            //     message:"获取用户信息成功！",
+                            //     showClose:true
+                            // })
                             this.peopleInfo = response.data.data.records;
                             for(var i=0; i<response.data.data.records.length; i++){
                                 if(response.data.data.records[i].roleId == 2) {
@@ -351,47 +350,51 @@
             },
             // 实现分页功能
             handleCurrentChange:function (val) {
-                console.log(val);
-                this.$axios.get('/user/list' + '?current=' + val + "&size=5")
-                    .then(response=>{
-                        // console.log(response)
-                        if (response.data.code == 0){
-                            this.peopleInfo = response.data.data.records;
-                            for(var i=0; i<response.data.data.records.length; i++){
-                                if(response.data.data.records[i].roleId == 2) {
-                                    this.peopleInfo[i].roleId = "管理员";
-                                }else if (response.data.data.records[i].roleId == 1) {
-                                    this.peopleInfo[i].roleId = "普通用户";
-                                }
-                                if(response.data.data.records[i].email == null){
-                                    this.peopleInfo[i].email = "无";
-                                }
-                                if(response.data.data.records[i].hasFreeze){
-                                    this.peopleInfo[i].hasFreeze = "已冻结";
-                                }else {
-                                    this.peopleInfo[i].hasFreeze = "未冻结";
-                                }
-                            }
-                        }else {
-                            this.$message.error({
-                                message:"获取用户信息失败！",
-                                showClose:true
-                            })
-                        }
-                        this.peopleInfo = response.data.data.records;
-                    })
-                    .catch(function (err) {
-                        console.log(err)
-                    })
+
+                this.currentPage = val;
+                this.getPeopleInfo();
+                // console.log(val);
+                // this.$axios.get('/user/list' + '?current=' + val + "&size=5")
+                //     .then(response=>{
+                //         // console.log(response)
+                //         if (response.data.code == 0){
+                //             this.peopleInfo = response.data.data.records;
+                //             for(var i=0; i<response.data.data.records.length; i++){
+                //                 if(response.data.data.records[i].roleId == 2) {
+                //                     this.peopleInfo[i].roleId = "管理员";
+                //                 }else if (response.data.data.records[i].roleId == 1) {
+                //                     this.peopleInfo[i].roleId = "普通用户";
+                //                 }
+                //                 if(response.data.data.records[i].email == null){
+                //                     this.peopleInfo[i].email = "无";
+                //                 }
+                //                 if(response.data.data.records[i].hasFreeze){
+                //                     this.peopleInfo[i].hasFreeze = "已冻结";
+                //                 }else {
+                //                     this.peopleInfo[i].hasFreeze = "未冻结";
+                //                 }
+                //             }
+                //         }else {
+                //             this.$message.error({
+                //                 message:"获取用户信息失败！",
+                //                 showClose:true
+                //             })
+                //         }
+                //         this.peopleInfo = response.data.data.records;
+                //     })
+                //     .catch(function (err) {
+                //         console.log(err)
+                //     })
             },
             // 获取选中用户信息的id信息
             handleSelectionChange:function (val) {
-                console.log(val)
+
+                this.ids=[]
                 this.multipleSelection = val;
                 for(var i=0; i<this.multipleSelection.length; i++){
                     this.ids.push(this.multipleSelection[i].id);
                 }
-                console.log(this.ids);
+                console.log(this.ids)
             },
             // 根据id获取用户信息
             getXinXiInfo:function (index,row) {
@@ -410,9 +413,9 @@
                                     this.xinXiInfo.email = "无";
                                 }
                                 if(this.xinXiInfo.hasFreeze){
-                                    this.xinXiInfo.hasFreeze = "已冻结";
+                                    this.xinXiInfo.hasFreeze = "是";
                                 }else {
-                                    this.xinXiInfo.hasFreeze = "未冻结";
+                                    this.xinXiInfo.hasFreeze = "否";
                                 }
                             // var obj = new Object();
                             // obj = response.data.data.records[0];
@@ -453,6 +456,14 @@
                         console.log(err)
                     })
 
+            },
+
+            //获取分页的size
+            handleSizeChange(val){
+
+                this.pageSize = val;
+
+                this.getPeopleInfo();
             }
         },
         created(){

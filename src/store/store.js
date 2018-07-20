@@ -3,59 +3,92 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-const state={
-  token:'',
-  userInfo:{},
-  projectId:'',
-  editeContainerProjectId:''
-}
-const mutations={
-  SET_TOKEN(state, token) {
-    state.token = token
-    sessionStorage.token = token
-  },
-  DEL_TOKEN(state){
-    state.token = ''
-    sessionStorage.removeItem('token');
-  },
-  CHANGE_USER_INFO(state,userInfo) {
-    state.userInfo = userInfo
-  },
-  SET_PROJECT_ID(state,projectId) {
-    state.projectId = projectId
-  },
-  SET_EDITE_CONTAINER_PROJECT_ID(state,editeContainerId){
-    state.editeContainerProjectId = editeContainerId
-  }
-}
-const actions={
-  changeUserInfo({commit},userInfo){
-    commit('CHANGE_USER_INFO',userInfo)
-  },
-  setProjectId({commit},projectId) {
+const state = {
+    token: '',
+    userInfo: {},
+    projectId: '',
+    editeContainerProjectId: '',
+    containerId :'',
+    hostaddr:'192.168.100.151:9999',
+    serviceId:'',
+    currentMirrorId:''
+};
 
-    commit("SET_PROJECT_ID",projectId)
-  },
-  setEditeContainerProjectId({commit},id){
-    commit("SET_EDITE_CONTAINER_PROJECT_ID",id)
-}
-}
-const getters= {
-    getUserInfo(state){
-      return state.userInfo
+const mutations = {
+    SET_CONTAINERID(state, containerId){
+        state.containerId = containerId;
     },
-    getProjectId(state){
-      return state.projectId;
-    },
-  getEidteContainerProjectId(state) {
 
-      return state.editeContainerProjectId;
-  }
+    SET_TOKEN(state, token) {
+        state.token = token
+        sessionStorage.token = token
+    },
+    DEL_TOKEN(state) {
+        state.token = ''
+        sessionStorage.removeItem('token');
+    },
+    CHANGE_USER_INFO(state, userInfo) {
+        state.userInfo = userInfo
+    },
+    SET_PROJECT_ID(state, projectId) {
+        state.projectId = projectId
+    },
+    SET_EDITE_CONTAINER_PROJECT_ID(state, editeContainerId) {
+        state.editeContainerProjectId = editeContainerId
+    },
+    SET_SERVICE_ID(state,serviceId){
+        state.serviceId = serviceId
+    },
+    SET_CURRENTMIRROR_ID(state,mirrorId){
+        state.currentMirrorId = mirrorId;
+    },
+}
+const actions = {
+    changeUserInfo({commit}, userInfo) {
+        commit('CHANGE_USER_INFO', userInfo)
+    },
+    setProjectId({commit}, projectId) {
+
+        commit("SET_PROJECT_ID", projectId)
+    },
+    setEditeContainerProjectId({commit}, id) {
+        commit("SET_EDITE_CONTAINER_PROJECT_ID", id)
+    },
+    setContainerId({commit},containerId){
+        commit("SET_CONTAINERID",containerId)
+    },
+    saveServiceId({commit},id){
+        commit("SET_SERVICE_ID",id)
+    }
+}
+const getters = {
+    getUserInfo(state) {
+        return state.userInfo
+    },
+    getProjectId(state) {
+        return state.projectId;
+    },
+    getEidteContainerProjectId(state) {
+
+        return state.editeContainerProjectId;
+    },
+    getContainerId(state){
+        return state.containerId;
+    },
+    gethostaddr(state){
+        return state.hostaddr;
+    },
+    getServiceId(state){
+        return state.serviceId;
+    },
+    getCurrentMirrorId(state){
+        return state.currentMirrorId;
+    }
 }
 export default new Vuex.Store({
-  state,
-  mutations,
-  actions,
-  getters
+    state,
+    mutations,
+    actions,
+    getters
 })
 

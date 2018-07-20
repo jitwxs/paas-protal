@@ -1,0 +1,79 @@
+.json-editor { 
+  margin-left: 10px;
+  padding: 20px;
+}
+
+.json-editor.expanded .item { 
+  display: block !important;
+}
+
+.json-editor .property,
+.json-editor .value { 
+  border: none;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding: 3px;
+  margin-right: 2px;
+}
+
+.json-editor .value { 
+  background-color: #ECF3C3;
+  width: 600px;
+}
+.json-editor .property { 
+  width: 154px;
+  background-color: #B1C639;
+  color: white;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px black;
+}
+.json-editor button.property { 
+  width: 160px;
+}
+
+.json-editor .editing { 
+  border: 1px solid gray;
+  outline: none;
+}
+
+.json-editor .item { 
+  line-height: 20px;
+  margin-top: 2px;
+}
+.json-editor .item:last-child { 
+  border-bottom: none;
+}
+
+.json-editor .item > .item { 
+  margin-left: 30px;
+  display: none;
+}
+
+.json-editor .item.expanded > .item { 
+  display: block;
+}
+
+.json-editor .expander { 
+  background: url("add.png") no-repeat center center;
+  width: 16px;
+  height: 11px;
+  display: inline-block;
+  margin-left: -15px;
+  cursor: pointer;
+}
+.json-editor .item.expanded > .expander { 
+  background: url("sub.png") no-repeat center center;
+}
+
+.json-editor .item.appender > .property { 
+   background-color: #999999; 
+   cursor: pointer;
+   width: 100px;
+}
+.json-editor .item.string > .property { background-color: #009408; }
+.json-editor .item.array  > .property { background-color: #2D5B89; }
+.json-editor .item.object > .property { background-color: #E17000; }
+.json-editor .item.number > .property { background-color: #497B8D; }
+/*.json-editor .item.boolean { background-color:  }*/
+/*.json-editor .item.null { background-color:  }*/

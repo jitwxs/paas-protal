@@ -24,7 +24,7 @@
 </template>
 
 <script>
-    import bus from '../common/bus';
+    import bus from '../common_u/bus';
     export default {
         data() {
             return {
@@ -32,49 +32,39 @@
                 items: [
                     {
                         icon: 'el-icon-setting',
-                        index: 'xitongshouye_u',
+                        index: '/xitongshouye_u',
                         title: '仪表盘'
                     },
                     {
                         icon: 'el-icon-tickets',
-                        index: 'projectPage',
+                        index: '/projectPage',
                         title: '项目'
                     },
                     {
-                        icon: 'el-icon-date',
-                        index: 'containerAllList',
+                        icon: 'el-icon-mobile-phone',
+                        index: '/containerAllList',
                         title: '容器'
                     },
                     {
                         icon: 'el-icon-date',
-                        index: 'addService',
+                        index: '/service',
                         title: '服务'
                     },
                     {
-                        icon: 'el-icon-date',
-                        index: 'addService',
+                        icon: 'el-icon-document',
+                        index: '/mirror',
                         title: '镜像'
                     },
                     {
-                        icon: 'el-icon-date',
-                        index: 'addService',
+                        icon: 'el-icon-goods',
+                        index: '/netWork',
                         title: '网络'
                     },
                     {
                         icon: 'el-icon-setting',
-                        index: 'addService',
+                        index: '/system',
                         title: '系统'
                     },
-                    // {
-                    //     icon: 'el-icon-date',
-                    //     index: 'repositorymanage',
-                    //     title: '仓储管理'
-                    // },
-                    // {
-                    //     icon: 'el-icon-rank',
-                    //     index: 'imagemanage',
-                    //     title: '镜像管理'
-                    // },
                 ]
             }
         },

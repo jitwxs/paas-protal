@@ -14,9 +14,7 @@
                 style="width: 100%">
                 <el-table-column prop="name" label="服务名称" >
                 </el-table-column>
-                <el-table-column prop="statusName" label="服务状态" >
-                </el-table-column>
-                <el-table-column prop="projectName" label="服务项目" >
+                <el-table-column prop="projectName" label="所属项目" >
                 </el-table-column>
                 <el-table-column prop="image" label="服务镜像" >
                 </el-table-column>
@@ -68,11 +66,7 @@
                 this.$axios.get('/service/list' + "?current=1" + "&size=5")
                     .then(response => {
                         // console.log(response)
-                        if (response.data.code == 0) {
-                            this.$message.success({
-                                message: "获取服务信息成功！",
-                                showClose: true
-                            })
+                        if (response.data.code === 0) {
                             this.serviceInfo = response.data.data.records;
                             for (var i = 0; i < this.serviceInfo.length; i++) {
                                 if (this.serviceInfo[i].statusName == null) {
@@ -95,7 +89,7 @@
             handleDelete: function (index, row) {
                 this.$axios.delete('/service/delete/' + row.id)
                     .then(response => {
-                        if (response.data.code == 0) {
+                        if (response.data.code === 0) {
                             this.$message.success({
                                 message: "删除服务信息成功！",
                                 showClose: true
@@ -115,13 +109,13 @@
             handleCurrentChange: function (val) {
                 this.$axios.get('/service/list' + "?current=" + val + "&size=5")
                     .then(response => {
-                        if (response.data.code == 0) {
+                        if (response.data.code === 0) {
                             this.$message.success({
                                 message: "获取服务信息成功！",
                                 showClose: true
-                            })
+                            });
                             this.serviceInfo = response.data.data.records;
-                            for (var i = 0; i < this.serviceInfo.length; i++) {
+                            for (let i = 0; i < this.serviceInfo.length; i++) {
                                 if (this.serviceInfo.statusName == null) {
                                     this.serviceInfo.statusName = '无'
                                 }

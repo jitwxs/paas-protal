@@ -326,7 +326,8 @@
     computed:{
       ...mapGetters({
         projectId:'getProjectId',
-        userInfo:'getUserInfo'
+        userInfo:'getUserInfo',
+          hostaddr:'gethostaddr',
       })
     },
     methods:{
@@ -684,7 +685,7 @@
       //初始化websocket
       initWebSocket(){
 
-        this.websock = new WebSocket("ws://192.168.100.151:9999/ws/"+this.userInfo.userId);
+        this.websock = new WebSocket("ws://" + this.hostaddr + "/ws/"+this.userInfo.userId);
         this.websock.onopen = this.websocketonopen;
 
         this.websock.onerror = this.websocketonerror;
@@ -700,7 +701,7 @@
       },
       //打开错误
       websocketonerror:function(e) { //错误
-        this.websock = new WebSocket("ws://192.168.100.142:9999/ws/"+this.userInfo.userId);
+        this.websock = new WebSocket("ws://" + this.hostaddr + "/ws/"+this.userInfo.userId);
         this.time1 = setInterval(this.start,5000);
 
       },
@@ -735,7 +736,7 @@
       //关闭
       websocketclose:function(e){
         console.log("connection closed (" + e.code + ")");
-        this.websock = new WebSocket("ws://192.168.100.142:9999/ws/"+this.userInfo.userId);
+        this.websock = new WebSocket("ws://"+this.hostaddr+"/ws/"+this.userInfo.userId);
       },
       start: function(){
         this.websock.send("HeartBeat");

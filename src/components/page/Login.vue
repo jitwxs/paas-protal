@@ -12,7 +12,7 @@
                 <div class="login-btn">
                     <el-button type="primary" @click.native="login">登录</el-button>
                 </div>
-                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填。</p>
+                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 请输入用户名和密码</p>
             </el-form>
         </div>
     </div>
@@ -20,6 +20,7 @@
 
 <script>
     import {router,asyncRouterMap} from '../../router/index.js'
+    import {mapGetters} from 'vuex'
     export default {
         data: function(){
             return {
@@ -36,7 +37,8 @@
                     password: [
                         { required: true, message: '请输入密码', trigger: 'blur' }
                     ]
-                }
+                },
+                containerStatus:[{labels:'',values:''},{labels:'',values:''},{labels:'',values:''},{labels:'',values:''}]
             }
         },
         methods:{
@@ -44,7 +46,7 @@
                 let vm = this;
                 let routerMap = new Array();
                 //发送请求之前判断输入是否为空
-                if (this.ruleForm.username == "" || this.ruleForm.password == ""){
+                if (this.ruleForm.username === "" || this.ruleForm.password === ""){
                     this.$message.warning({
                         message:"用户名/密码不能为空",
                         showClose:true
@@ -53,11 +55,12 @@
                     // 向后台发送用户名和密码获取token
                     this.$axios.post('/login', this.ruleForm)
                         .then(response => {
-                            console.log(response)
-                            if (response.data.code == 0){ //登录成功
+                            if (response.data.code === 0){ //登录成功
                                 sessionStorage.setItem('currentRole',response.data.data.roleId);
                                 sessionStorage.setItem('userName',response.data.data.username);
                                 sessionStorage.setItem('userToken',response.headers.authorization);
+
+                                this.$store.dispatch('changeUserInfo',response.data.data);
                                 // this.token = response.headers.authorization
                                 // 根据角色id加载路由表
                                 if(sessionStorage.getItem('currentRole') === asyncRouterMap[0].meta.roles){
@@ -80,8 +83,7 @@
                             console.log(err);
                         })
                     }
-            },
-
+            }
             // postToken:function () {
             //     // 向后台发送token获取用户角色、ID等信息
             //     this.$axios.post('/token',

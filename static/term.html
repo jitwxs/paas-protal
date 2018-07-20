@@ -19,7 +19,7 @@
             cols: sessionStorage.getItem('terminalCols'),
         });
         term.open(document.getElementById('xterm'));
-        var socket = new WebSocket(sessionStorage.getItem('terminalUrl'));
+        let socket = new WebSocket(sessionStorage.getItem('terminalUrl'));
         term.attach(socket);
         term.focus();
     </script>

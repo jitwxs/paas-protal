@@ -289,7 +289,8 @@
     computed:{
       ...mapGetters({
         projectId:'getProjectId',
-        userInfo:'getUserInfo'
+        userInfo:'getUserInfo',
+          hostaddr:'gethostaddr',
       })
     },
    methods:{
@@ -503,7 +504,6 @@
      onSubmit(){
        //判断必填的端口号是否已经填写
 
-
        if (this.container.port.length >0) {
 
 
@@ -554,7 +554,8 @@
        })
          .then((res)=>{
            if (res.data.code == 0){
-             this.$message.success("正在创建容器")
+             this.$message.success("正在创建容器");
+               this.$router.push('/projectPage');
            } else {
              this.$message.error("配置错误")
            }
@@ -610,7 +611,7 @@
      //初始化websocket
      initWebSocket(){
 
-       this.websock = new WebSocket("ws://192.168.100.151:9999/ws/"+this.userInfo.userId);
+       this.websock = new WebSocket("ws://" + this.hostaddr + "/ws/"+this.userInfo.userId);
        this.websock.onopen = this.websocketonopen;
 
        this.websock.onerror = this.websocketonerror;
@@ -626,7 +627,7 @@
      },
      //打开错误
      websocketonerror:function(e) { //错误
-       this.websock = new WebSocket("ws://192.168.100.142:9999/ws/"+this.userInfo.userId);
+       this.websock = new WebSocket("ws://" + this.hostaddr + "/ws/"+this.userInfo.userId);
        this.time1 = setInterval(this.start,5000);
 
      },
@@ -661,7 +662,7 @@
      //关闭
      websocketclose:function(e){
        console.log("connection closed (" + e.code + ")");
-       this.websock = new WebSocket("ws://192.168.100.142:9999/ws/"+this.userInfo.userId);
+       this.websock = new WebSocket("ws://"+this.hostaddr+"/ws/"+this.userInfo.userId);
      },
      start: function(){
        this.websock.send("HeartBeat");

@@ -8,9 +8,14 @@ const router =  new Router({
     routes: [
         {
             path:'/',
-            name:'login',
-            component:(resolve) => require(['../components/page/Login.vue'],resolve)
+            name:'index',
+            component:(resolve) => require(['../components/page_u/index.vue'],resolve)
         },
+        {
+            path:'/Login',
+            name:'Login',
+            component:(resolve) => require(['../components/page/Login.vue'],resolve)
+        }
     ],
 
     scrollBehavior(to,from,savedPosition) {
@@ -18,7 +23,7 @@ const router =  new Router({
             return savedPosition;
         }
     }
-})
+});
 
 export default router;
 
@@ -134,6 +139,16 @@ export const asyncRouterMap = [
                 path:'/NoticePage',
                 component: resolve => require(['../components/page/NoticePage.vue'], resolve),
                 meta: { title: '个人通知' }
+            },
+            {
+                path:'/portainer',
+                component: resolve => require(['../components/page/Portainer.vue'], resolve),
+                meta: { title: 'portainer监控' }
+            },
+            {
+                path:'/visualizer',
+                component: resolve => require(['../components/page/Visualizer.vue'], resolve),
+                meta: { title: 'visualizer监控' }
             }
         ]
     },
@@ -237,14 +252,71 @@ export const asyncRouterMap = [
             {
                 path:'/addContainer',
                 component: resolve => require(['../components/page_u/addContainer.vue'], resolve),
-                meta: { title: '项目容器' }
+                meta: { title: '添加容器' }
             },
             {
                 path:'/addService',
                 component: resolve => require(['../components/page_u/addService.vue'], resolve),
-                meta: { title: '服务管理' }
+                meta: { title: '添加服务' }
+            },
+            {
+                path:'/service',
+                component: resolve => require(['../components/page_u/service.vue'], resolve),
+                meta: { title: '服务' }
+            },
+            {
+                path:'/serviceDetails_u',
+                component: resolve => require(['../components/page_u/serviceDetails.vue'], resolve),
+                meta: { title: '服务详情' }
+            },
+            {
+                path:'/system',
+                component: resolve => require(['../components/page_u/system.vue'], resolve),
+                meta: { title: '系统' }
+            },
+            {
+                path:'/containerDetails',
+                component: resolve => require(['../components/page_u/containerDetails.vue'], resolve),
+                meta: { title: '容器详情' }
+            },
+            {
+                path:'/image',
+                component: resolve=> require(['../components/page_u/image.vue'],resolve),
+                meta: {title:'镜像'}
+            },
+            {
+                path:'/netWork',
+                component: resolve=> require(['../components/page_u/netWork.vue'],resolve),
+                meta: {title:'网络'}
+            },
+            {
+                path:'/createNetwork',
+                component: resolve=> require(['../components/page_u/createNetwork.vue'],resolve),
+                meta: {title:'创建网络'}
+            },
+            {
+                path:'/mirror',
+                name:'mirror',
+                component: resolve=> require(['../components/page_u/mirror/mirror.vue'],resolve),
+                meta: {title:'镜像'}
+            },
+            {
+                path:'/mirrorDetail',
+                name:'mirrorDetail',
+                component: resolve=> require(['../components/page_u/mirror/mirrorDetail.vue'],resolve),
+                children:[
+                    {
+                        path:'detail',
+                        component:resolve => require(['../components/page_u/mirror/detail.vue'], resolve),
+                        meta: {title:'镜像详情'}
+                    },
+                    {
+                        path:'history',
+                        component:resolve => require(['../components/page_u/mirror/history.vue'], resolve),
+                        meta: {title:'镜像历史'}
+                    },
+                ]
             }
-
         ]
     }
 ]

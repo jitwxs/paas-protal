@@ -7,14 +7,15 @@
         </div>
 
         <div class="container">
-            <el-tabs v-model="activeName1" >
+            <el-tabs v-model="activeName1">
                 <el-tab-pane label="本地公共镜像" name="first">
                     <!--搜索本地公共镜像-->
                     <div class="handle-box">
-                        <el-input v-model="select_publicImage" placeholder="输入镜像名称" class="handle-input mr10"></el-input>
+                        <el-input v-model="select_publicImage" placeholder="输入镜像名称"
+                                  class="handle-input mr10"></el-input>
                         <el-button type="primary" icon="el-icon-search" @click="searchPublicImage">搜索</el-button>
-                        <el-button type="primary"  @click="handleImport">导入</el-button>
-                        <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage">同步</el-button>
+                        <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage">同步
+                        </el-button>
                     </div>
                     <el-table
                         :data="publicLocalImage"
@@ -26,9 +27,9 @@
                         <el-table-column
                             label="镜像标签">
                             <template slot-scope="scope">
-                                    <div slot="reference" class="name-wrapper">
-                                        <el-tag size="medium">{{ scope.row.tag }}</el-tag>
-                                    </div>
+                                <div slot="reference" class="name-wrapper">
+                                    <el-tag size="medium">{{ scope.row.tag }}</el-tag>
+                                </div>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -45,12 +46,17 @@
                         </el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
-                                <ul style="float: left;list-style-type: none" >
-                                    <router-link style=" text-decoration: none;" :to="{path:'/publiclocalimage', query:{id:scope.row.id}}">
-                                        <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer">更多</li>
+                                <ul style="float: left;list-style-type: none">
+                                    <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer"
+                                        @click="handleExport(scope.$index, scope.row)">导出
+                                    </li>
+                                    <router-link style=" text-decoration: none;"
+                                                 :to="{path:'/publiclocalimage', query:{id:scope.row.id}}">
+                                        <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer">详情</li>
                                     </router-link>
-                                    <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer" @click="handleExport(scope.$index, scope.row)">导出</li>
-                                    <li style="float: left;margin-left: 5px;cursor: pointer"><i class="el-icon-delete" @click="handleDelete(scope.$index, scope.row)"></i></li>
+                                    <li style="float: left;margin-left: 5px;cursor: pointer">
+                                        <i class="el-icon-delete" @click="handleDelete(scope.$index, scope.row)"></i>
+                                    </li>
                                 </ul>
                             </template>
                         </el-table-column>
@@ -73,7 +79,9 @@
                     <div class="handle-box">
                         <el-input v-model="select_userImage" placeholder="输入镜像名称" class="handle-input mr10"></el-input>
                         <el-button type="primary" icon="el-icon-search" @click="searchUserImage">搜索</el-button>
-                        <el-button type="primary"  @click="handleImport">导入</el-button>
+                        <el-button type="primary" @click="handleImport">导入</el-button>
+                        <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage">同步
+                        </el-button>
                     </div>
                     <el-table
                         :data="userLocalImage"
@@ -99,20 +107,27 @@
                             prop="type">
                         </el-table-column>
                         <el-table-column
+                            label="所属用户"
+                            prop="username">
+                        </el-table-column>
+                        <el-table-column
                             label="是否公开"
                             prop="hasOpen">
                         </el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
-                                <ul style="float: left;list-style-type: none" >
-                                    <router-link style=" text-decoration: none;" :to="{path:'/userlocalimage', query:{id:scope.row.id}}">
-                                    <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer">详情</li>
+                                <ul style="float: left;list-style-type: none">
+                                    <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer"
+                                        @click="handleExport(scope.$index, scope.row)">导出
+                                    </li>
+                                    <router-link style=" text-decoration: none;"
+                                                 :to="{path:'/userlocalimage', query:{id:scope.row.id}}">
+                                        <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer">详情</li>
                                     </router-link>
-
-                                    <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer" @click="handleExport(scope.$index, scope.row)">导出</li>
-                                    <li style="float: left;margin-left: 5px;cursor: pointer"><i class="el-icon-delete" @click="handleDelete(scope.$index, scope.row)"></i></li>
+                                    <li style="float: left;margin-left: 5px;cursor: pointer">
+                                        <i class="el-icon-delete" @click="handleDelete(scope.$index, scope.row)"></i>
+                                    </li>
                                 </ul>
-
                             </template>
                         </el-table-column>
                     </el-table>
@@ -131,7 +146,7 @@
 
                 <!--导入镜像的模态框-->
                 <div class="importImage">
-                    <el-dialog title="导入镜像" :visible.sync="importImageVisible" >
+                    <el-dialog title="导入镜像" :visible.sync="importImageVisible">
                         <el-form :model="importImageInfo">
                             <el-form-item label="选择镜像文件" :label-width="formLabelWidth"></el-form-item>
                             <el-upload
@@ -175,6 +190,8 @@
 </template>
 
 <script>
+    import {mapGetters} from 'vuex'
+
     export default {
         name: "ImageManage",
         data() {
@@ -212,7 +229,6 @@
                 // 当前行镜像的id
                 imageId: '',
 
-
                 // 导入镜像模态框的相关属性
                 importImageVisible: false,
                 importImageInfo: {
@@ -231,26 +247,42 @@
                 // },
             }
         },
+        computed: {
+            ...mapGetters({
+                userInfo: 'getUserInfo'
+            })
+        },
         methods: {
+            // 格式化镜像数据
+            formatImageData: function (data) {
+                for (let i = 0; i < data.length; i++) {
+                    data[i].size = bitConvert(data[i].size);
+                    if (data[i].hasOpen) {
+                        data[i].hasOpen = "已公开";
+                    } else {
+                        data[i].hasOpen = "未公开";
+                    }
+                    switch (data[i].type) {
+                        case 1:
+                            data[i].type = "公共镜像";
+                            break;
+                        case 2:
+                            data[i].type = "用户镜像";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return data;
+            },
             // 获取本地公共镜像
-            getPublicLocalImage:function(){
-                this.$axios.get('/image/list/local' + "?type=1"  +"&current=1"+ "&size=5" )
-                    .then(response=>{
-                        if(response.data.code == 0){
-                            this.$message.success({
-                                message: "获取本地公用信息成功！",
-                                showClose: true
-                            })
-                            this.publicLocalImage = response.data.data.records;
-                            for(var i=0; i< this.publicLocalImage.length ; i++){
-                                if(this.publicLocalImage[i].type = 1){
-                                    this.publicLocalImage[i].type = "公共镜像";
-                                }else if(this.publicLocalImage[i].type = 2){
-                                    this.publicLocalImage[i].type = "用户镜像";
-                                }
-                            }
+            getPublicLocalImage: function () {
+                this.$axios.get('/image/list/local' + "?type=1" + "&current=1" + "&size=10")
+                    .then(response => {
+                        if (response.data.code === 0) {
+                            this.publicLocalImage = this.formatImageData(response.data.data.records);
                             this.totalCount_Public = response.data.total;
-                        }else {
+                        } else {
                             this.$message.error({
                                 message: "获取本地公用信息失败！",
                                 showClose: true
@@ -262,20 +294,12 @@
                     })
             },
             // 本地公用镜像的分页操作
-            handleCurrentChange_Public:function(val){
-                console.log(val)
-                this.$axios.get('/image/list/local' + "?type=1"  +"&current=" + val + "&size=5" )
-                    .then(response=>{
-                        if(response.data.code == 0){
-                            this.publicLocalImage = response.data.data.records;
-                            for(var i=0; i< this.publicLocalImage.length ; i++){
-                                if(this.publicLocalImage[i].type = 1){
-                                    this.publicLocalImage[i].type = "公共镜像";
-                                }else if(this.publicLocalImage[i].type = 2){
-                                    this.publicLocalImage[i].type = "用户镜像";
-                                }
-                            }
-                        }else {
+            handleCurrentChange_Public: function (val) {
+                this.$axios.get('/image/list/local' + "?type=1" + "&current=" + val + "&size=10")
+                    .then(response => {
+                        if (response.data.code === 0) {
+                            this.publicLocalImage = this.formatImageData(response.data.data.records);
+                        } else {
                             this.$message.error({
                                 message: "获取本地公共镜像失败！",
                                 showClose: true
@@ -287,18 +311,17 @@
                     })
             },
             // 搜索本地公共镜像
-            searchPublicImage:function(){
-                this.$axios.get('/image/list/local' + "?type=1" + "&name=" + this.select_publicImage + "&current=" + this.currentPage_Public + "&size=5")
-                    .then(response=>{
-                        // console.log(response)
-                        if(response.data.code == 0){
+            searchPublicImage: function () {
+                this.$axios.get('/image/list/local' + "?type=1" + "&name=" + this.select_publicImage + "&current=" + this.currentPage_Public + "&size=10")
+                    .then(response => {
+                        if (response.data.code === 0) {
                             this.$message.success({
                                 message: "搜索本地公用信息成功！",
                                 showClose: true
-                            })
-                            this.publicLocalImage = response.data.data.records;
+                            });
+                            this.publicLocalImage = this.formatImageData(response.data.data.records);
                             this.totalCount_Public = response.data.data.total;
-                        }else {
+                        } else {
                             this.$message.error({
                                 message: "搜索本地公用信息失败！",
                                 showClose: true
@@ -311,33 +334,13 @@
             },
 
             // 获取本地用户镜像
-            getUserLocalImage:function(){
-                this.$axios.get('/image/list/local' + "?type=2" +"&current=" +this.currentPage_User + "&size=5")
-                    .then(response=>{
-                        // console.log(response)
-                        if(response.data.code == 0){
-                            this.$message.success({
-                                message: "获取本地用户镜像信息成功！",
-                                showClose: true
-                            })
-                            this.userLocalImage = response.data.data.records;
-                            for(var i=0; i< this.userLocalImage.length ; i++){
-                                if(this.userLocalImage[i].type = 1){
-                                    this.userLocalImage[i].type = "公共镜像";
-                                }else if(this.userLocalImage[i].type = 2){
-                                    this.userLocalImage[i].type = "用户镜像";
-                                }
-                            }
-
-                            for(var i=0; i<this.userLocalImage.length; i++){
-                                if(this.userLocalImage[i].hasOpen){
-                                    this.userLocalImage[i].hasOpen = "已公开";
-                                }else {
-                                    this.userLocalImage[i].hasOpen = "未公开";
-                                }
-                            }
+            getUserLocalImage: function () {
+                this.$axios.get('/image/list/local' + "?type=2" + "&current=" + this.currentPage_User + "&size=10")
+                    .then(response => {
+                        if (response.data.code === 0) {
+                            this.userLocalImage = this.formatImageData(response.data.data.records);
                             this.totalCount_User = response.data.total;
-                        }else {
+                        } else {
                             this.$message.error({
                                 message: "获取本地用户镜像信息失败！",
                                 showClose: true
@@ -349,14 +352,14 @@
                     })
             },
             // 本地用户镜像信息分页操作
-            handleCurrentChange_User:function(val){
-                this.$axios.get('/image/list/local' + "?type=2"  +"&current=" + val + "&size=5" )
-                    .then(response=>{
-                        if(response.data.code == 0){
-                            this.publicLocalImage = response.data.data.records;
-                        }else {
+            handleCurrentChange_User: function (val) {
+                this.$axios.get('/image/list/local' + "?type=2" + "&current=" + val + "&size=10")
+                    .then(response => {
+                        if (response.data.code === 0) {
+                            this.userLocalImage = this.formatImageData(response.data.data.records);
+                        } else {
                             this.$message.error({
-                                message: "获取本地公用信息失败！",
+                                message: "获取本地用户信息失败！",
                                 showClose: true
                             })
                         }
@@ -366,18 +369,13 @@
                     })
             },
             // 搜索本地用户镜像
-            searchUserImage:function(){
-                this.$axios.get('/image/list/local' + "?type=2" + "&name=" + this.select_userImage + "&current=" + this.currentPage_User + "&size=5")
-                    .then(response=>{
-                        // console.log(response)
-                        if(response.data.code == 0){
-                            this.$message.success({
-                                message: "搜索本地用户信息成功！",
-                                showClose: true
-                            })
-                            this.userLocalImage = response.data.data.records;
+            searchUserImage: function () {
+                this.$axios.get('/image/list/local' + "?type=2" + "&name=" + this.select_userImage + "&current=" + this.currentPage_User + "&size=10")
+                    .then(response => {
+                        if (response.data.code === 0) {
+                            this.userLocalImage = this.formatImageData(response.data.data.records);
                             this.totalCount_User = response.data.data.total;
-                        }else {
+                        } else {
                             this.$message.error({
                                 message: "搜索本地用户信息失败！",
                                 showClose: true
@@ -389,75 +387,71 @@
                     })
             },
             // 上传镜像
-            uploadImage:function(){
+            uploadImage: function () {
 
             },
             // 上传之前判断输入格式
-            beforeUpload:function(){
-                if (this.importImageInfo.type == "" || this.importImageInfo.tag == "") {
+            beforeUpload: function () {
+                if (this.importImageInfo.type === "" || this.importImageInfo.tag === "") {
                     this.$message.error({
-                        message:"请完善镜像文件信息!",
-                        showClose:true
+                        message: "请完善镜像文件信息!",
+                        showClose: true
                     })
                 }
             },
-            handleChange:function(file,fileList){
+            handleChange: function (file, fileList) {
                 this.fileList = fileList.slice(-3);
             },
 
             // 点击导入显示模态框
-            handleImport:function(){
+            handleImport: function () {
                 this.importImageVisible = true
             },
             // 导入镜像
-            importImage:function(){
-                var CancelToken = this.$axios.CancelToken;
-                var source = CancelToken.source();
+            importImage: function () {
+                let CancelToken = this.$axios.CancelToken;
+                CancelToken.source();
 
-                this.importImageVisible = false,
-                this.$axios.post('/image/import',
-                    {
-                        "file":this.importImageInfo.file,
-                        "name": this.importImageInfo.name,
-                        "tag": this.importImageInfo.tag,
-                    },{
-                        header:{
-                            'Content-Type': 'multipart/form-data',
-                        }
-                    })
-                    .then(response=>{
-                        if(response.data.code == 0) {
-                            this.$message.success({
-                                message: "导入镜像信息成功！",
-                                showClose: true
-                            })
-                            this.getUserLocalImage();
-                        }else {
-                            this.$message.error({
-                                message: response.data.message,
-                                showClose: true
-                            })
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log(err)
-                    })
+                this.importImageVisible = false;
+                    this.$axios.post('/image/import',
+                        {
+                            "file": this.importImageInfo.file,
+                            "name": this.importImageInfo.name,
+                            "tag": this.importImageInfo.tag,
+                        }, {
+                            header: {
+                                'Content-Type': 'multipart/form-data',
+                            }
+                        })
+                        .then(response => {
+                            if (response.data.code === 0) {
+                                this.getUserLocalImage();
+                            } else {
+                                this.$message.error({
+                                    message: response.data.message,
+                                    showClose: true
+                                })
+                            }
+                        })
+                        .catch(function (err) {
+                            console.log(err)
+                        })
             },
             // 本地镜像和远程镜像同步操作
-            syncImage:function(){
+            syncImage: function () {
                 this.$axios.get('/image/sync')
-                    .then(response=>{
-                     if(response.data.code == 0){
-                         this.$message.success({
-                             message:"镜像同步成功！",
-                             showClose:true
-                         })
-                     }else {
-                         this.$message.error({
-                             message:"镜像同步失败！",
-                             showClose:true
-                         })
-                     }
+                    .then(response => {
+                        if (response.data.code === 0) {
+                            this.$message.success({
+                                message: "镜像同步成功！",
+                                showClose: true
+                            })
+                        } else {
+                            this.$message.error({
+                                message: "镜像同步失败！",
+                                showClose: true
+                            })
+                        }
                     })
                     .catch(function (err) {
                         console.log(err);
@@ -465,16 +459,12 @@
             },
 
             // 点击导出标签
-            handleExport:function(index,row){
+            handleExport: function (index, row) {
                 this.$axios.get('/image/export/' + row.id)
-                    .then(response=>{
-                        if(response.data.code == 0){
+                    .then(response => {
+                        if (response.data.code === 0) {
                             window.open(response.data.data);
-                            this.$message.success({
-                                message:"导出镜像成功！",
-                                showClose:true
-                            });
-                        }else {
+                        } else {
                             this.$message.error({
                                 message: "导出镜像信息失败！",
                                 showClose: true
@@ -486,38 +476,36 @@
                     })
             },
             // 删除镜像操作
-            handleDelete:function(index,row){
+            handleDelete: function (index, row) {
                 this.deleteDialogVisible = true;
                 this.imageId = row.id;
             },
-            confirmDelete:function(){
+            confirmDelete: function () {
                 this.deleteDialogVisible = false;
                 this.$axios.delete('/image/delete/' + this.imageId)
-                    .then(response=>{
-                     if(response.data.code == 0){
-                         this.$message.success({
-                             message: "导出镜像信息成功！",
-                             showClose: true
-                         })
-                         this.getPublicLocalImage();
-                         this.getUserLocalImage();
-                     }else {
-                         this.$message.error({
-                             message: "导出镜像信息失败！",
-                             showClose: true
-                         })
-                     }
+                    .then(response => {
+                        if (response.data.code === 0) {
+                            this.$message.success({
+                                message: "镜像删除成功！",
+                                showClose: true
+                            })
+                            this.getPublicLocalImage();
+                            this.getUserLocalImage();
+                        } else {
+                            this.$message.error({
+                                message: "镜像删除失败！",
+                                showClose: true
+                            })
+                        }
                     })
                     .catch(function (err) {
                         console.log(err)
                     })
             },
 
-
-
             // 初始化websocket
-            initWebSocket:function(){ //初始化weosocket
-                this.websock = new WebSocket("ws://192.168.100.151:9999/ws/1231451941131");
+            initWebSocket: function () { //初始化weosocket
+                this.websock = new WebSocket("ws://192.168.100.151:9999/ws/" + this.userInfo.id);
 
                 this.websock.onopen = this.websocketonopen;
 
@@ -528,15 +516,15 @@
                 this.websock.onclose = this.websocketclose;
             },
 
-            websocketonopen:function() {
+            websocketonopen: function () {
                 console.log("WebSocket连接成功");
             },
 
-            websocketonerror:function(e) { //错误
+            websocketonerror: function (e) { //错误
                 console.log("WebSocket连接发生错误");
             },
 
-            websocketonmessage:function(e){ //数据接收
+            websocketonmessage: function (e) { //数据接收
                 // const redata = JSON.parse(e.data);
                 //注意：长连接我们是后台直接1秒推送一条数据，
                 //但是点击某个列表时，会发送给后台一个标识，后台根据此标识返回相对应的数据，
@@ -545,19 +533,19 @@
                 console.log(e)
             },
 
-            websocketsend:function(agentData){//数据发送
+            websocketsend: function (agentData) {//数据发送
                 this.websock.send(agentData);
             },
 
-            websocketclose:function(e){ //关闭
+            websocketclose: function (e) { //关闭
                 console.log("connection closed (" + e.code + ")");
             },
 
         },
 
-        created(){
+        created() {
             this.getPublicLocalImage();
-            this.getUserLocalImage()
+            this.getUserLocalImage();
             // this.getHubImage();
             this.initWebSocket();
         }
@@ -577,6 +565,7 @@
         width: 300px;
         display: inline-block;
     }
+
     /*纵向时间轴*/
     .time-vertical {
         list-style-type: none;

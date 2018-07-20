@@ -4,7 +4,7 @@
         <div class="collapse-btn" @click="collapseChage">
             <i class="el-icon-menu"></i>
         </div>
-        <div class="logo">Paas管理系统</div>
+        <div class="logo">PAAS管理系统</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
@@ -30,13 +30,7 @@
                         {{username}} <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <a href="http://blog.gdfengshuo.com/about/" target="_blank">
-                            <el-dropdown-item>关于作者</el-dropdown-item>
-                        </a>
-                        <a href="https://github.com/lin-xin/vue-manage-system" target="_blank">
-                            <el-dropdown-item>项目仓库</el-dropdown-item>
-                        </a>
-                        <el-dropdown-item divided  command="loginout">退出登录</el-dropdown-item>
+                        <el-dropdown-item   command="loginout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
@@ -44,7 +38,7 @@
     </div>
 </template>
 <script>
-    import bus from '../common/bus';
+    import bus from '../common_u/bus';
     export default {
         data() {
             return {
@@ -56,23 +50,23 @@
         },
         computed:{
             username(){
-                let username = localStorage.getItem('ms_username');
-                return username ? username : this.name;
+                let username = sessionStorage.getItem('userName');
+                return username ;
             }
         },
         methods:{
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
-                    this.$router.push('/');
-                    sessionStorage.setItem('userName',null);
-                    sessionStorage.setItem('userToken', null);
-                    sessionStorage.setItem('currentRole',null);
-                    sessionStorage.setItem('terminalCursorBlink',null);
-                    sessionStorage.setItem('terminalRows',null);
-                    sessionStorage.setItem('terminalCols',null);
-                    sessionStorage.setItem('terminalUrl',null);
+                    // localStorage.removeItem('ms_username')
+                    this.$axios.get('/user/logout')
+                        .then(response=>{
+                            if (response.data.code===0){
+                                this.$router.push('/');
+                            }
+                        }).catch(function (err) {
+                        console.log(err);
+                    })
                 }
             },
             // 侧边栏折叠

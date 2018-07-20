@@ -7,7 +7,7 @@
                         <!--管理员的角色信息-->
                         <el-card shadow="hover" class="mgb20">
                             <div class="user-info">
-                                <img src="static/img/rabbit.jpg" class="user-avator" alt="">
+                                <img src="../../../static/img/rabbit.jpg" class="user-avator" alt="">
                                 <div class="user-info-cont">
                                     <div class="user-info-name">{{name}}</div>
                                     <div>{{role}}</div>
@@ -68,7 +68,6 @@
                             </div>
                         </el-card>
                     </el-col>
-
                 </el-row>
 
                 <el-card shadow="hover" :body-style="{ height: '304px'}">
@@ -76,10 +75,7 @@
                         <span>容器数据</span>
                     </div>
                     <div id="main" style="width: 700px;height: 300px;margin-left: 30px">
-
                     </div>
-
-
                 </el-card>
 
             </el-col>
@@ -121,9 +117,7 @@
             getHostInfo:function () {
                 this.$axios.get('/monitor/host')
                     .then(response=>{
-                        console.log(response);
-                        if(response.data.code == 0){
-                            console.log(response.data.data);
+                        if(response.data.code === 0){
                             this.hostInfo = response.data.data;
 
                             let myChart = this.$echarts.init(document.getElementById('main'));
@@ -158,7 +152,6 @@
                                             {value:this.hostInfo.containerPauseNum, name:'暂停的容器'},
                                             {value:this.hostInfo.containerStopNum, name:'停止的容器'},
                                         ],
-                                        // roseType: 'radius',
                                         label: {
                                             normal: {
                                                 position: 'inner',
@@ -192,15 +185,7 @@
                                         }
                                     }
                                 ]
-                                // series: [{
-                                //     data: [
-                                //         {value:this.hostInfo.containerRunningNum, name:'运行的容器'},
-                                //         {value:this.hostInfo.containerPauseNum, name:'暂停的容器'},
-                                //         {value:this.hostInfo.containerStopNum, name:'停止的容器'},
-                                //     ],
-                                // }]
                             });
-
                         }else{
                             this.$message.error({
                                 message:"获取宿主机信息失败！",
@@ -339,5 +324,4 @@
         text-decoration: line-through;
         color: #999;
     }
-
 </style>

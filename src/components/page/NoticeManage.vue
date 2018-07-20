@@ -14,7 +14,7 @@
                         <el-form-item label="通知标题">
                             <el-input v-model="sendForm.title" placeholder="输入通知标题"></el-input>
                         </el-form-item>
-                        <el-form-item label="选择器">
+                        <el-form-item label="通知类型">
                             <el-select v-model="sendForm.type" placeholder="选择发送通知的类型">
                                 <el-option key="1" label="系统通知" value="1"></el-option>
                                 <el-option key="2" label="容器通知" value="2"></el-option>
@@ -23,10 +23,11 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="是否全部发送">
-                            <el-radio-group v-model="sendForm.sendAll">
-                                <el-radio label="是" value="true"></el-radio>
-                                <el-radio label="否" value="false"></el-radio>
-                            </el-radio-group>
+                            <el-switch
+                                v-model="sendForm.sendAll"
+                                active-color="#13ce66"
+                                inactive-color="#ff4949">
+                            </el-switch>
                         </el-form-item>
                         <el-form-item label="发送对象" v-show="!sendForm.sendAll">
                             <el-input v-model="sendForm.receivers" placeholder="输入要发送通知的用户名"></el-input>
@@ -39,23 +40,14 @@
                 <el-button class="editor-btn" type="primary" @click="cancelSend">取消</el-button>
             </el-tab-pane>
                 <el-tab-pane label="发送记录" name="second">
-                    <el-table :data="sendRecord" :show-header="false" style="width: 100%">
+                    <el-table :data="sendRecord" :show-header="false" @row-dblclick="showContent" style="width: 100%">
                         <el-table-column>
                             <template slot-scope="scope">
                                 <span class="message-title">{{scope.row.title}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="createDate" width="180"></el-table-column>
-                        <!--<el-table-column width="120">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<el-button size="small">标为已读</el-button>-->
-                                <!--<el-button size="small" @click="handleRead(scope.$index)">标为已读</el-button>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
                     </el-table>
-                    <!--<div class="handle-row">-->
-                        <!--<el-button type="primary">全部标为已读</el-button>-->
-                    <!--</div>-->
 
                     <!--分页区域-->
                     <div class="pagination">
@@ -102,13 +94,7 @@
                     content:'',
                 },
                 // 发送通知的历史记录
-                sendRecord: [{
-                    date: '2018-04-19 20:00:00',
-                    title: '【系统通知】该系统将于今晚凌晨2点到5点进行升级维护',
-                },{
-                    date: '2018-04-19 21:00:00',
-                    title: '今晚12点整发大红包，先到先得',
-                }],
+                sendRecord: [],
                 // 分页相关信息
                 currentPage:1,
                 totalCount:0,
@@ -118,14 +104,12 @@
         methods:{
             // 发送通知的请求
             sendNotice:function(){
-                // console.log(this.sendForm)
                 this.$axios.post('/notice/send',this.sendForm)
                     .then(response=>{
-                        console.log(response)
-                        if(response.data.code == 0){
+                        if(response.data.code === 0){
                             this.$message.success("发送通知成功！");
                         }else{
-                            this.$message,error("发送通知失败！")
+                            this.$message.error("发送通知失败！")
                         }
                     })
                     .catch(function (err) {
@@ -141,8 +125,7 @@
               this.$axios.get('/notice/send/list' + "?current=1" + "&size=5")
                   .then(response=>{
                       console.log(response);
-                      if(response.data.code == 0){
-                          this.$message.success("获取发送通知记录成功！")
+                      if(response.data.code === 0){
                           this.sendRecord = response.data.data.records;
                           this.totalCount = response.data.data.total;
                       }else {
@@ -157,7 +140,7 @@
             handleCurrentChange:function(val){
                 this.$axios.get('/notice/send/list' + "?current=" + val + "&size=5")
                     .then(response=>{
-                        if(response.data.code == 0){
+                        if(response.data.code === 0){
                             this.sendRecord = response.data.data.records;
                             this.totalCount = response.data.data.total;
                         }else {
@@ -175,6 +158,11 @@
             submit(){
                 console.log(this.content);
                 this.$message.success('提交成功！');
+            },
+            showContent(row,event) {
+                this.$alert(row.content, '通知内容', {
+                    dangerouslyUseHTMLString: true
+                });
             }
         },
         components: {
