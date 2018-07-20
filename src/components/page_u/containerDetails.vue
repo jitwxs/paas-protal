@@ -6,6 +6,22 @@
             </el-breadcrumb>
         </div>
         <div class="container">
+            <!--数据卷模态框-->
+            <el-dialog title="导入数据卷" :visible.sync="dialogVisible" width="30%">
+                <el-form >
+                    <el-form-item label="选择文件">
+                        <input id="imageInput" @change="importVolume($event)" type="file">
+                    </el-form-item>
+                    <el-form-item label="名字" >
+                        <el-input v-model="volumeName"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                  <el-button @click="dialogVisible3 = false">取 消</el-button>
+                  <el-button type="primary" @click="submitvolume">确 定</el-button>
+                </span>
+            </el-dialog>
+
             <el-tabs v-model="activeName" @tab-click="projectTabSwitch">
                 <el-tab-pane  label="容器信息" name="first">
                     <el-form :label-position='labelpos' label-width="80px" >
@@ -67,12 +83,67 @@
                         <el-table-column prop="CMD" label="CMD" ></el-table-column>
                     </el-table>
                 </el-tab-pane>
+                <!--//数据卷-->
+                <el-tab-pane   label="数据卷" name="third"  >
+
+                    <el-table
+                        :data="volumeInfo"
+                        style="width: 100%">
+                        <el-table-column type="expand">
+                            <template slot-scope="props">
+                                <el-form label-position="left" inline class="demo-table-expand">
+                                    <el-form-item label="Driver:">
+                                        <span>{{ props.row.volume.Driver }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="Options:">
+                                        <span>{{ props.row.volume.Options }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="labels:">
+                                        <span>{{ props.row.volume.Labels }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="Mountpoint:">
+                                        <span>{{ props.row.volume.Mountpoint }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="Scope:">
+                                        <span>{{ props.row.volume.Scope }}</span>
+                                    </el-form-item>
+                                </el-form>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                            label="名称"
+                            prop="name">
+                        </el-table-column>
+                        <el-table-column
+                            label="destination"
+                            prop="destination" width="300">
+                        </el-table-column>
+                        <el-table-column
+                            label="source"
+                            prop="source">
+                        </el-table-column>
+                        <el-table-column
+                            label="创建时间"
+                            prop="createDate">
+                        </el-table-column>
+
+                        <el-table-column label="操作" width="100px">
+                            <template slot-scope="scope">
+                                <el-button
+                                    size="mini"
+                                    type="success"
+                                    @click="uploadFiles(scope.$index, scope.row)">上传文件</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
             </el-tabs>
         </div>
     </div>
 </template>
 
 <script>
+    import {mapGetters} from 'vuex';
     export default {
         name: "ContainerDetails",
         data(){
@@ -93,6 +164,8 @@
                     value: 3600000,
                     label: '一小时'
                 }],
+                dialogVisible :false,
+                time:'',
                 value:10000,
 
 
@@ -113,12 +186,24 @@
 
                 jsonmessage:[],
                 tabbool:true,
+
+                volumeInfo:[],
+                currentPage:1,
+                total:0,
+                volumeFile:'',
+                fileName:'',
+                volumeName:'',
+                volumeId:'',
             }
         },
         methods:{
             refreshNow:function(){
+                let that=this;
                 this.jsonmessage=[];
-                this.$axios.get('/container/top/'+this.id)
+                if (!that.id) {
+                    clearInterval(that.time);
+                }
+                this.$axios.get('/container/top/'+that.id)
                     .then(response=>{
                         if (this.status ===1){
                             // $("#showjson").html(JSON.strsingify(respone.data.data, null, 4));
@@ -146,7 +231,6 @@
                     this.$axios.get('/container/top/'+this.id)
                         .then(respone=>{
                             if (this.status ===1){
-                                // $("#showjson").html(JSON.stringify(respone.data.data, null, 4));
                                 for (var i=0 ; i<respone.data.data.Processes.length; i++){
                                     var json = {};
                                     json.UID = respone.data.data.Processes[i][0];
@@ -163,16 +247,17 @@
                         }).catch(function (err) {
                         console.log(err);
                     })
+                }else {
+                    clearInterval(this.time);
                 }
             },
 
             refresh:function () {
                 var that=this;
-                setInterval(function () {
+                this.time = setInterval(function () {
                     that.jsonmessage=[];
-                    that.$axios.get('/container/top/'+this.id)
+                    that.$axios.get('/container/top/'+that.id)
                         .then(response=>{
-                            if (this.status ===1){
                                 // $("#showjson").html(JSON.strsingify(respone.data.data, null, 4));
                                 for (var i=0 ; i<response.data.data.Processes.length; i++){
                                     var json = {};
@@ -184,25 +269,89 @@
                                     json.TTY = response.data.data.Processes[i][5];
                                     json.TIME = response.data.data.Processes[i][6];
                                     json.CMD = response.data.data.Processes[i][7];
-                                    this.jsonmessage.push(json);
+                                    console.log(json);
+                                    that.jsonmessage.push(json);
                                 }
-                            }
                         }).catch(function (err) {
                         console.log(err)
                     })
                 },this.value);
-            }
+            },
 
+            getVolumeInfo(){
+                this.$axios.get("/volumes/list/obj?objId="+this.id+"&current="+this.currentPage)
+                    .then((res)=>{
+
+                        console.log(res.data.data)
+                        this.total = res.data.data.total;
+                        this.volumeInfo = res.data.data.records;
+                    })
+                    .catch((err)=>{
+                        console.log(err)
+                    })
+            },
+
+            uploadFiles(index,row){
+                this.volumeId = row.id;
+                this.dialogVisible=true;
+            },
+
+            importVolume(event){
+                    event.preventDefault();//取消默认行为
+                    this.volumeFile = event.target.files[0];
+                    this.fileName = event.target.files[0].name;
+            },
+            submitvolume(){
+                let that = this;
+                console.log(sessionStorage.userToken);
+                let formdata = new FormData();
+                formdata.append('id',this.volumeId);
+                formdata.append('file',this.volumeFile);
+                // formdata.append('name',this.volumeName);
+                $.ajax({
+                    type: "post",
+                    async: true,
+                    url: "http://192.168.100.151:9999/volumes/upload",
+                    dataType: 'json',
+                    headers:{
+                        'Authorization': sessionStorage.userToken
+                    },
+                    // 告诉jQuery不要去处理发送的数据
+                    processData : false,
+                    // 告诉jQuery不要去设置Content-Type请求头
+                    contentType: false,
+                    data: formdata,
+                    success: function (res) {
+                        that.getVolumeInfo();
+                        this.volumeFile = '';
+                        this.fileName='';
+                        this.volumeName='';
+                        console.log(res);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            },
         },
 
         mounted() {
             this.refresh();
         },
 
+        computed:{
+            ...mapGetters({
+                Token:'getToken'
+            })
+        },
 
+        beforeDestroy(){
+            clearInterval(this.time)
+        },
         created(){
             this.activeName = 'first';
             this.id = this.$route.query.id;
+            console.log(this.id);
             this.$axios.get('/container/'+this.id)
                 .then(respone=>{
                     this.name = respone.data.data.name;
@@ -244,6 +393,8 @@
                 console.log(err);
             });
 
+            this.getVolumeInfo();
+// 获取数据卷信息
         }
     }
 </script>

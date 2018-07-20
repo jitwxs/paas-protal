@@ -24,7 +24,7 @@
                     <template slot-scope="scope">
                         <ul style="float: left;list-style-type: none" >
                             <router-link :to="{path:'/servicedetails', query:{id:scope.row.id}}">
-                                <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer">更多</li>
+                                <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer">详情</li>
                             </router-link>
                             <li style="float: left;margin-left: 5px;cursor: pointer"><i class="el-icon-delete" @click="handleDelete(scope.$index, scope.row)"></i></li>
                         </ul>
@@ -37,7 +37,7 @@
                 <el-pagination
                     @current-change="handleCurrentChange"
                     :current-page.sync="currentPage"
-                    :page-size="5"
+                    :page-size="10  "
                     layout="prev, pager, next, jumper"
                     :total="totalCount">
                 </el-pagination>
@@ -61,18 +61,20 @@
             }
         },
         methods: {
+            formatServiceData(data) {
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].statusName == null) {
+                        data[i].statusName = '无'
+                    }
+                }
+                return data;
+            },
             // 获取服务信息
             getServiceInfo: function () {
-                this.$axios.get('/service/list' + "?current=1" + "&size=5")
+                this.$axios.get('/service/list' + "?current=1" + "&size=10")
                     .then(response => {
-                        // console.log(response)
                         if (response.data.code === 0) {
-                            this.serviceInfo = response.data.data.records;
-                            for (var i = 0; i < this.serviceInfo.length; i++) {
-                                if (this.serviceInfo[i].statusName == null) {
-                                    this.serviceInfo[i].statusName = '无'
-                                }
-                            }
+                            this.serviceInfo = this.formatServiceData(response.data.data.records);
                             this.totalCount = response.data.data.total;
                         } else {
                             this.$message.error({
@@ -107,19 +109,10 @@
             },
             // 分页信息
             handleCurrentChange: function (val) {
-                this.$axios.get('/service/list' + "?current=" + val + "&size=5")
+                this.$axios.get('/service/list' + "?current=" + val + "&size=10")
                     .then(response => {
                         if (response.data.code === 0) {
-                            this.$message.success({
-                                message: "获取服务信息成功！",
-                                showClose: true
-                            });
-                            this.serviceInfo = response.data.data.records;
-                            for (let i = 0; i < this.serviceInfo.length; i++) {
-                                if (this.serviceInfo.statusName == null) {
-                                    this.serviceInfo.statusName = '无'
-                                }
-                            }
+                            this.serviceInfo = this.formatServiceData(response.data.data.records);
                         } else {
                             this.$message.error({
                                 message: "获取服务信息失败！",

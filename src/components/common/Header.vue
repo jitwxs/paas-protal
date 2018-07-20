@@ -45,13 +45,12 @@
                 collapse: false,
                 fullscreen: false,
                 name: 'linxin',
-                message: 2
+                message: 0
             }
         },
         computed:{
             username(){
-                let username = sessionStorage.getItem('userName');
-                return username ;
+                return sessionStorage.getItem('userName');
             }
         },
         methods:{
@@ -62,19 +61,14 @@
                     this.$axios.get('/user/logout')
                         .then(response=>{
                             if (response.data.code===0){
-                                this.$router.push('/');
+                                sessionStorage.removeItem("currentRole");
+                                sessionStorage.removeItem("userName");
+                                sessionStorage.removeItem("userToken");
+                                this.$router.push('/index');
                             }
                         }).catch(function (err) {
                             console.log(err);
                     })
-
-                    // sessionStorage.setItem('userName',null);
-                    // sessionStorage.setItem('userToken', null);
-                    // sessionStorage.setItem('currentRole',null);
-                    // sessionStorage.setItem('terminalCursorBlink',null);
-                    // sessionStorage.setItem('terminalRows',null);
-                    // sessionStorage.setItem('terminalCols',null);
-                    // sessionStorage.setItem('terminalUrl',null);
                 }
             },
             // 侧边栏折叠
@@ -109,12 +103,24 @@
                     }
                 }
                 this.fullscreen = !this.fullscreen;
+            },
+            countUnReadNum() {
+                this.$axios.get('/notice/countUnRead')
+                    .then(response=>{
+                        if(response.data.code === 0){
+                            this.message = response.data.data;
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
             }
         },
         mounted(){
             if(document.body.clientWidth < 1500){
                 this.collapseChage();
             }
+            this.countUnReadNum();
         }
     }
 </script>

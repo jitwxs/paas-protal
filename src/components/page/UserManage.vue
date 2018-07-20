@@ -15,6 +15,16 @@
                 </el-select>
                 <el-input v-model="select_username" placeholder="输入用户名" class="handle-input mr10"></el-input>
                 <el-input v-model="select_email" placeholder="输入用户邮箱" class="handle-input mr10"></el-input>
+                <el-date-picker
+                    v-model="dateInterval"
+                    type="datetimerange"
+                    value-format="yyyy-MM-dd HH:mm"
+                    :picker-options="datePicker"
+                    range-separator="至"
+                    start-placeholder="注册开始日期"
+                    end-placeholder="注册结束日期"
+                    align="right">
+                </el-date-picker>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
             </div>
             <!--整条用户信息冻结相关的操作按钮-->
@@ -28,9 +38,7 @@
                 :data="peopleInfo"
                 tooltip-effect="dark"
                 style="width: 100%"
-                @selection-change="handleSelectionChange"
-
-               >
+                @selection-change="handleSelectionChange">
                 <el-table-column
                     type="selection"
                     label="选择"
@@ -152,36 +160,70 @@
                 // 详情模态框属性
                 xiangQingVisible:false,
                 xiangQingInfo:{},
-                pageSize:10
+                pageSize:10,
+                datePicker: {
+                    shortcuts: [{
+                        text: '最近一天',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+                dateInterval:[]
             }
         },
         methods: {
+            formatUserInfo(data) {
+                for(let i=0; i<data.length; i++){
+                    if(data[i].roleId === 2) {
+                        data[i].roleId = "管理员";
+                    }else if (data[i].roleId === 1) {
+                        data[i].roleId = "普通用户";
+                    }
+                    if(data[i].email == null){
+                        data[i].email = "无";
+                    }
+                    if(data[i].hasFreeze){
+                        data[i].hasFreeze = "已冻结";
+                    }else {
+                        data[i].hasFreeze = "未冻结";
+                    }
+                }
+                return data;
+            },
             // 获取用户信息列表
             getPeopleInfo:function () {
                 this.$axios.get('/user/list'+ '?current='+this.currentPage + "&size="+this.pageSize)
                     .then(response=>{
-                        // console.log(response)
-                        if (response.data.code == 0){
-                            // this.$message.success({
-                            //     message:"获取用户信息成功！",
-                            //     showClose:true
-                            // })
-                            this.peopleInfo = response.data.data.records;
-                            for(var i=0; i<response.data.data.records.length; i++){
-                                if(response.data.data.records[i].roleId == 2) {
-                                    this.peopleInfo[i].roleId = "管理员";
-                                }else if (response.data.data.records[i].roleId == 1) {
-                                    this.peopleInfo[i].roleId = "普通用户";
-                                }
-                                if(response.data.data.records[i].email == null){
-                                    this.peopleInfo[i].email = "无";
-                                }
-                                if(response.data.data.records[i].hasFreeze){
-                                    this.peopleInfo[i].hasFreeze = "已冻结";
-                                }else {
-                                    this.peopleInfo[i].hasFreeze = "未冻结";
-                                }
-                            }
+                        if (response.data.code === 0){
+                            this.peopleInfo = this.formatUserInfo(response.data.data.records);
                             this.totalCount = response.data.data.total;
                         }else {
                             this.$message.error({
@@ -196,109 +238,28 @@
             },
             // 搜索用户信息
             search:function(){
-                // 冻结状态为true
-                if(this.hasFreeze == "true") {
-                    this.$axios.get('/user/list' + "?hasFreeze=true" + "&current=" + this.currentPage + "&size=5" + "&username=" + this.select_username + "&email=" + this.select_email)
-                        .then(response=>{
-                            if (response.data.code == 0){
-                                // this.$message.success({
-                                //     message:"搜索用户信息成功！",
-                                //     showClose:true
-                                // })
-                                this.peopleInfo = response.data.data.records;
-                                for(var i=0; i<response.data.data.records.length; i++){
-                                    if(response.data.data.records[i].roleId == 2) {
-                                        this.peopleInfo[i].roleId = "管理员";
-                                    }else if (response.data.data.records[i].roleId == 1) {
-                                        this.peopleInfo[i].roleId = "普通用户";
-                                    }
-                                    if(response.data.data.records[i].email == null){
-                                        this.peopleInfo[i].email = "无";
-                                    }
-                                    if(response.data.data.records[i].hasFreeze){
-                                        this.peopleInfo[i].hasFreeze = "已冻结";
-                                    }else {
-                                        this.peopleInfo[i].hasFreeze = "未冻结";
-                                    }
-                                }
-                                this.totalCount = response.data.data.total;
-                            }else{
-                                this.$message.error({
-                                    message:"搜索用户信息失败！",
-                                    showClose:true
-                                })
-                            }
-                        })
-                        .catch(function (err) {
-                            console.log(err)
-                        })
-                   // 冻结状态为false
-                }else if(this.hasFreeze == "false"){
-                    this.$axios.get('/user/list' + "?hasFreeze=false" + "&current=" + this.currentPage + "&size=5" + "&username=" + this.select_username + "&email=" + this.select_email)
-                        .then(response=>{
-                            // console.log(response)
-                            if (response.data.code == 0){
-                                this.peopleInfo = response.data.data.records;
-                                for(var i=0; i<response.data.data.records.length; i++){
-                                    if(response.data.data.records[i].roleId == 2) {
-                                        this.peopleInfo[i].roleId = "管理员";
-                                    }else if (response.data.data.records[i].roleId == 1) {
-                                        this.peopleInfo[i].roleId = "普通用户";
-                                    }
-                                    if(response.data.data.records[i].email == null){
-                                        this.peopleInfo[i].email = "无";
-                                    }
-                                    if(response.data.data.records[i].hasFreeze){
-                                        this.peopleInfo[i].hasFreeze = "已冻结";
-                                    }else {
-                                        this.peopleInfo[i].hasFreeze = "未冻结";
-                                    }
-                                }
-                                this.totalCount = response.data.data.total;
-                            }else{
-                                this.$message.error({
-                                    message:"获取用户信息失败！",
-                                    showClose:true
-                                })
-                            }
-                        })
-                        .catch(function (err) {
-                            console.log(err)
-                        })
-                    // 状态为全部用户
-                }else if(this.hasFreeze === ""){
-                    this.$axios.get('/user/list' + "?hasFreeze=" + "&current=" + this.currentPage + "&size=5" + "&username=" + this.select_username + "&email=" + this.select_email)
-                        .then(response=>{
-                            // console.log(response)
-                            if (response.data.code == 0){
-                                this.peopleInfo = response.data.data.records;
-                                for(var i=0; i<response.data.data.records.length; i++){
-                                    if(response.data.data.records[i].roleId == 2) {
-                                        this.peopleInfo[i].roleId = "管理员";
-                                    }else if (response.data.data.records[i].roleId == 1) {
-                                        this.peopleInfo[i].roleId = "普通用户";
-                                    }
-                                    if(response.data.data.records[i].email == null){
-                                        this.peopleInfo[i].email = "无";
-                                    }
-                                    if(response.data.data.records[i].hasFreeze){
-                                        this.peopleInfo[i].hasFreeze = "已冻结";
-                                    }else {
-                                        this.peopleInfo[i].hasFreeze = "未冻结";
-                                    }
-                                }
-                                this.totalCount = response.data.data.total;
-                            }else{
-                                this.$message.error({
-                                    message:"获取用户信息失败！",
-                                    showClose:true
-                                })
-                            }
-                        })
-                        .catch(function (err) {
-                            console.log(err)
-                        })
+                let url = '/user/list' + "?hasFreeze=" + this.hasFreeze + "&current=" + this.currentPage + "&size=5" +
+                    "&username=" + this.select_username + "&email=" + this.select_email;
+                if(this.dateInterval !== null && this.dateInterval.length === 2) {
+                    let startDate = dateFormatter(this.dateInterval[0]), endDate = dateFormatter(this.dateInterval[1]);
+                    url += "&startDate=" + startDate + "&endDate=" + endDate;
                 }
+
+                this.$axios.get(url)
+                    .then(response=>{
+                        if (response.data.code === 0){
+                            this.peopleInfo = this.formatUserInfo(response.data.data.records);
+                            this.totalCount = response.data.data.total;
+                        }else{
+                            this.$message.error({
+                                message:"获取用户信息失败！",
+                                showClose:true
+                            })
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
             },
             // 实现冻结功能
             freeze:function () {
@@ -306,18 +267,11 @@
                     ids:this.ids.toString(),
                 })
                     .then(response=>{
-                        // console.log(response)
-                        if(response.data.code == 0){
-                            this.$message.success({
-                                message:"冻结用户信息成功！",
-                                showClose:true
-                            })
+                        if(response.data.code === 0){
+                            this.$message.success("冻结用户信息成功！");
                             this.getPeopleInfo();
                         }else {
-                            this.$message.error({
-                                message:"冻结用户信息失败！",
-                                showClose:true
-                            })
+                            this.$message.error("冻结用户信息失败！");
                         }
                     })
                     .catch(function (err) {
@@ -330,18 +284,11 @@
                     "ids":this.ids.toString(),
                 })
                     .then(response=>{
-                        // console.log(response)
-                        if(response.data.code == 0){
-                            this.$message.success({
-                                message:"解除冻结用户信息成功！",
-                                showClose:true
-                            })
+                        if(response.data.code === 0){
+                            this.$message.success("解除冻结用户信息成功！");
                             this.getPeopleInfo();
                         }else {
-                            this.$message.error({
-                                message:"解除冻结用户信息失败！",
-                                showClose:true
-                            })
+                            this.$message.error("解除冻结用户信息失败！")
                         }
                     })
                     .catch(function (err) {
@@ -353,45 +300,12 @@
 
                 this.currentPage = val;
                 this.getPeopleInfo();
-                // console.log(val);
-                // this.$axios.get('/user/list' + '?current=' + val + "&size=5")
-                //     .then(response=>{
-                //         // console.log(response)
-                //         if (response.data.code == 0){
-                //             this.peopleInfo = response.data.data.records;
-                //             for(var i=0; i<response.data.data.records.length; i++){
-                //                 if(response.data.data.records[i].roleId == 2) {
-                //                     this.peopleInfo[i].roleId = "管理员";
-                //                 }else if (response.data.data.records[i].roleId == 1) {
-                //                     this.peopleInfo[i].roleId = "普通用户";
-                //                 }
-                //                 if(response.data.data.records[i].email == null){
-                //                     this.peopleInfo[i].email = "无";
-                //                 }
-                //                 if(response.data.data.records[i].hasFreeze){
-                //                     this.peopleInfo[i].hasFreeze = "已冻结";
-                //                 }else {
-                //                     this.peopleInfo[i].hasFreeze = "未冻结";
-                //                 }
-                //             }
-                //         }else {
-                //             this.$message.error({
-                //                 message:"获取用户信息失败！",
-                //                 showClose:true
-                //             })
-                //         }
-                //         this.peopleInfo = response.data.data.records;
-                //     })
-                //     .catch(function (err) {
-                //         console.log(err)
-                //     })
             },
             // 获取选中用户信息的id信息
             handleSelectionChange:function (val) {
-
-                this.ids=[]
+                this.ids=[];
                 this.multipleSelection = val;
-                for(var i=0; i<this.multipleSelection.length; i++){
+                for(let i=0; i<this.multipleSelection.length; i++){
                     this.ids.push(this.multipleSelection[i].id);
                 }
                 console.log(this.ids)
@@ -402,11 +316,11 @@
                 this.xinXiVisible = true;
                 this.$axios.get('/user/list' + "?id=" + row.id)
                     .then(response=>{
-                        if(response.data.code == 0){
+                        if(response.data.code === 0){
                             this.xinXiInfo = response.data.data.records[0];
-                                if(this.xinXiInfo.roleId == 2) {
+                                if(this.xinXiInfo.roleId === 2) {
                                     this.xinXiInfo.roleId = "管理员";
-                                }else if (this.xinXiInfo.roleId == 1) {
+                                }else if (this.xinXiInfo.roleId === 1) {
                                     this.xinXiInfo.roleId = "普通用户";
                                 }
                                 if(this.xinXiInfo.email == null){
@@ -417,15 +331,6 @@
                                 }else {
                                     this.xinXiInfo.hasFreeze = "否";
                                 }
-                            // var obj = new Object();
-                            // obj = response.data.data.records[0];
-                            //
-                            // var arr = new Array();
-                            // for(var key in obj){
-                            //     var value = obj[key];
-                            //     arr.push( key + ":" + value);
-                            // }
-                            // this.xinXiInfo = arr;
                         }else {
                             this.$message.error({
                                 message:"获取用户信息失败！",
@@ -442,7 +347,7 @@
                 this.xiangQingVisible = true;
                 this.$axios.get('/monitor/' + row.id + '/info')
                     .then(response=>{
-                        if(response.data.code == 0){
+                        if(response.data.code === 0){
                             this.xiangQingInfo = response.data.data;
 
                         }else {

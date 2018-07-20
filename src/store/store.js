@@ -20,11 +20,11 @@ const mutations = {
     },
 
     SET_TOKEN(state, token) {
-        state.token = token
+        state.token = token;
         sessionStorage.token = token
     },
     DEL_TOKEN(state) {
-        state.token = ''
+        state.token = '';
         sessionStorage.removeItem('token');
     },
     CHANGE_USER_INFO(state, userInfo) {
@@ -83,8 +83,11 @@ const getters = {
     },
     getCurrentMirrorId(state){
         return state.currentMirrorId;
+    },
+    getToken(state){
+        return state.token;
     }
-}
+};
 export default new Vuex.Store({
     state,
     mutations,

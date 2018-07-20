@@ -18,19 +18,16 @@
                     <el-radio-button label="24小时"></el-radio-button>
                     <el-radio-button label="每周"></el-radio-button>
                 </el-radio-group>
-
-                        <div id="main2" style="width: 300px;height:200px;float: left"></div>
-                        <div id="main3" style="width: 300px;height:200px;float: left"></div>
-                        <div id="main4" style="width: 300px;height:200px;float: left"></div>
-                        <div id="main5" style="width: 300px;height:200px;float: left"></div>
-                        <div id="main6" style="width: 300px;height:200px;float: left"></div>
-                        <div id="main7" style="width: 300px;height:200px;float: left"></div>
-                        <div id="main8" style="width: 300px;height:200px;float: left"></div>
-                        <div id="main9" style="width: 300px;height:200px;float: left"></div>
-
-
+                <div id="main" style="width: 300px;height:200px;float: left"></div>
+                <div id="main2" style="width: 300px;height:200px;float: left"></div>
+                <div id="main3" style="width: 300px;height:200px;float: left"></div>
+                <div id="main4" style="width: 300px;height:200px;float: left"></div>
+                <div id="main5" style="width: 300px;height:200px;float: left"></div>
+                <div id="main6" style="width: 300px;height:200px;float: left"></div>
+                <div id="main7" style="width: 300px;height:200px;float: left"></div>
+                <div id="main8" style="width: 300px;height:200px;float: left"></div>
+                <div id="main9" style="width: 300px;height:200px;float: left"></div>
             </div>
-
 
             <!--输入关键词搜索部分-->
             <div class="handle-box">
@@ -42,9 +39,7 @@
                         :value="item.id">
                     </el-option>
                 </el-select>
-
                 <el-input v-model="select_containerName" placeholder="输入容器名" class="handle-input mr10"></el-input>
-                <!--<el-input v-model="select_projectName" placeholder="输入项目名" class="handle-input mr10"></el-input>-->
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
             <!--容器信息展示区域-->
@@ -92,7 +87,8 @@
                 <el-table-column label="监控" width="80">
                     <template slot-scope="scope">
                         <i class="el-icon-view" style="float: left;margin-left: 10px;margin-top: 8px;cursor: pointer"
-                           @click="handleView(scope.row,10000,'actual')"></i>
+                           @click="getrow(scope.row)"></i>
+                        <!--handleView(scope.row,10000,'actual')-->
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -157,7 +153,7 @@
         name: "ContainerManage",
         data() {
             return {
-                str:'actual',
+                str:'',
                 row:'',
                 timeout:10000,
                 radio:'实时',
@@ -175,26 +171,6 @@
                 data7: [],
                 data8: [],
                 data9: [],
-
-                data10:[],
-                data11:[],
-                data12:[],
-                data13:[],
-                data14:[],
-                data15:[],
-                data16:[],
-                data17:[],
-                data18:[],
-
-                data20:[],
-                data21:[],
-                data22:[],
-                data23:[],
-                data24:[],
-                data25:[],
-                data26:[],
-                data27:[],
-                data28:[],
 
                 selectName: '',
                 selectStatus: '',
@@ -621,22 +597,27 @@
             })
         },
         methods: {
-            changeExcel(val){
-                console.log(val);
-              switch (this.radio){
-                  case "实时":
-                      this.timeout=10000;
-                      this.handleView(this.row,this.timeout,"actual");
-                      break;
-                  case "24小时":
-                      this.timeout=60000;
-                      this.handleView(this.row,this.timeout,"today");
-                      break;
-                  case "每周":
-                      this.timeout=360000;
-                      this.handleView(this.row,this.timeout,"week");
-                      break;
-              }
+            changeExcel(val) {
+                switch (val){
+                    case "实时":
+                        this.flag = 0;
+                        window.clearInterval(this.time);
+                        this.timeout=10000;
+                        this.handleView(this.row,this.timeout,"actual");
+                        break;
+                    case "24小时":
+                        this.flag = 0;
+                        window.clearInterval(this.time);
+                        this.timeout=60000;
+                        this.handleView(this.row,this.timeout,"today");
+                        break;
+                    case "每周":
+                        this.flag = 0;
+                        window.clearInterval(this.time);
+                        this.timeout=360000;
+                        this.handleView(this.row,this.timeout,"week");
+                        break;
+                }
             },
 
             todetail(id){
@@ -647,7 +628,7 @@
             closelc() {
                 $('#sideMenuContainer').animate({left:'1800px'},1000);
                 // this.isShow = false;
-                // clearInterval(this.time);
+                clearInterval(this.time);
             },
             createEcharts: function () {
                 let myChart = this.$echarts.init(document.getElementById('main'));
@@ -672,12 +653,23 @@
                 chart9.setOption(this.option9);
             },
             // 查看echarts图表
+            getrow(row){
+                this.radio = '实时', this.row = row;
+                this.handleView(this.row,10000,"actual");
+            },
             handleView: function (row,val,str) {
-                console.log(val+str);
-                this.row = row;
-                $('#sideMenuContainer').animate({left:'700px'},1000);
                 this.hassendmonitor = true;
-                // this.isShow = true;
+
+                this.data=[];
+                this.data2=[];
+                this.data3=[];
+                this.data4=[];
+                this.data5=[];
+                this.data6=[];
+                this.data7=[];
+                this.data8=[];
+                this.data9=[];
+
                 let myChart = this.$echarts.init(document.getElementById('main'));
                 let chart2 = this.$echarts.init(document.getElementById('main2'));
                 let chart3 = this.$echarts.init(document.getElementById('main3'));
@@ -688,11 +680,13 @@
                 let chart8 = this.$echarts.init(document.getElementById('main8'));
                 let chart9 = this.$echarts.init(document.getElementById('main9'));
 
+                $('#sideMenuContainer').animate({left:'700px'},1000);
 
                 this.$axios.get('/monitor/container/'+str+'/' + row.id)
                     .then(response => {
                         if (response.data.code === 0) {
                             this.content = response.data.data;
+                            // console.log(this.content);
                             this.content = this.content.toString().replace("\\", "");
                             this.content = eval('[' + this.content + ']');
 
@@ -700,6 +694,7 @@
                                 for (let i = 0; i < this.content.length; i++) {
                                     let date1 = new Date(this.content[i].timestamp);
                                     let timestamp1 = date1.toLocaleDateString().replace(/\//g, "-") + " " + date1.toTimeString().substr(0, 8);
+                                    console.log(timestamp1);
                                     let rxbyte = this.content[i].rxBytes.toString();
                                     let txbyte = this.content[i].txBytes.toString();
                                     let rxPackets = this.content[i].rxPackets.toString();
@@ -907,7 +902,7 @@
                     .then(response => {
                         if (response.data.code === 0) {
                             this.$notify({
-                                title: '已同步成功',
+                                title: '同步成功',
                                 message: '',
                                 type: 'success'
                             });
@@ -915,7 +910,7 @@
                     }).catch(function (err) {
                     this.$notify.error({
                         title: '错误',
-                        message: '这是一条错误的提示消息'
+                        message: '同步失败'
                     });
                     console.log(err);
                 })
@@ -938,9 +933,6 @@
                             sessionStorage.setItem('terminalRows', response.data.data.rows);
                             sessionStorage.setItem('terminalCols', response.data.data.cols);
                             sessionStorage.setItem('terminalUrl', response.data.data.url);
-
-                            console.log("url=" + response.data.data.url);
-
                         })
                         .catch(function (err) {
                             console.log(err)
@@ -1204,8 +1196,8 @@
                 this.openmessage = e.data.message;
                 if (e.code === 0) {
                     this.$axios.get('/container/status/' + this.clickId)
-                        .then(respone => {
-                            switch (respone.data.data) {
+                        .then(response => {
+                            switch (response.data.data) {
                                 case 0:
                                     this.enbutton1 = false;
                                     this.enbutton2 = true;
@@ -1260,7 +1252,6 @@
                 this.loadbutton5 = false;
                 this.loadbutton6 = false;
                 this.loadbutton7 = false;
-
             },
 
             websocketsend: function (agentData) {//数据发送
@@ -1273,12 +1264,10 @@
         },
         created() {
             this.getPaginationInfo();
-            // this.readyChat();
             this.initWebSocket();
         },
         mounted() {
             this.createEcharts();
-            console.log(this.containerStatusd)
         }
     }
 </script>

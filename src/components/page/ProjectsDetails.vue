@@ -36,8 +36,8 @@
                             label="时间">
                         </el-table-column>
                         <el-table-column
-                            prop="containerName"
-                            label="容器名称">
+                            prop="objName"
+                            label="对象名">
                         </el-table-column>
                         <el-table-column
                             prop="description"
@@ -87,7 +87,6 @@
                 if(this.activeName==='second'){
                     this.$axios.get('/project/log/?projectId='+this.rowid)
                         .then(response => {
-                            console.log(response.data.data.records);
                             this.logdata = response.data.data.records;
                             this.logTotal = response.data.data.total;
                         }).catch(function (err) {

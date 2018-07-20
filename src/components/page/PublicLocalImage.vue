@@ -82,15 +82,7 @@
                     .then(response=>{
                         if(response.data.code === 0){
                             this.xiangQingInfo = response.data.data;
-                            $("#showjson").html(JSON.stringify(response.data.data, null, 4));
-                            // var obj = new Object();
-                            // obj = response.data.data;
-                            // var arr = new Array();
-                            // for(var key in obj){
-                            //     var value = obj[key];
-                            //     arr.push( key + ":" + value);
-                            // }
-                            // this.xiangQingInfo = arr;
+                            $("#showjson").html(syntaxHighlight(response.data.data));
                         }else {
                             this.$message.error({
                                 message: "获取镜像详情信息失败！",
@@ -106,7 +98,6 @@
             getHistoryInfo:function(){
                 this.$axios.get('/image/history/' + this.imageId)
                     .then(response=>{
-                        // console.log(response)
                         if(response.data.code == 0){
                             this.historyInfo = response.data.data;
 
@@ -157,6 +148,13 @@
 </script>
 
 <style scoped>
+    pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+    .string { color: green; }
+    .number { color: darkorange; }
+    .boolean { color: blue; }
+    .null { color: magenta; }
+    .key { color: red; }
+
     .handle-box {
         margin-bottom: 20px;
     }

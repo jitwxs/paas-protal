@@ -46,7 +46,7 @@
                         <div class="right item">
                             <!--< to="/" class="ui button">Log in</>-->
                             <router-link to="Login" class="ui inverted button">Log in</router-link>
-                            <div class="ui inverted button">Sign Up</div>
+                            <router-link to="Register" class="ui inverted button">Sign Up</router-link>
                         </div>
                     </div>
                 </div>

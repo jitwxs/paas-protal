@@ -27,6 +27,9 @@
 
         },
         created(){
+            if (!sessionStorage.getItem('userToken')) {
+                return this.$router.push('/index');
+            }
             this.getRouterMap();
         }
     }

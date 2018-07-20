@@ -9,14 +9,8 @@
             <el-tabs v-model="activeName" @tab-click="projectTabSwitch">
                 <el-tab-pane  label="容器信息" name="first">
                     <el-form :label-position='labelpos' label-width="80px" >
-                        <el-form-item label="容器Id">
-                            <p>{{id}}</p>
-                        </el-form-item>
                         <el-form-item label="容器名称">
                             <p>{{name}}</p>
-                        </el-form-item>
-                        <el-form-item label="项目Id">
-                            <p>{{projectId}}</p>
                         </el-form-item>
                         <el-form-item label="项目名称">
                             <p>{{projectName}}</p>
@@ -40,7 +34,7 @@
                             <p>{{updateDate}}</p>
                         </el-form-item>
                         <el-form-item label="运行状态">
-                            <p>{{statusName}}</p>
+                            <el-tag size="medium">{{ statusName }}</el-tag>
                         </el-form-item>
                     </el-form>
                 </el-tab-pane>
@@ -67,7 +61,7 @@
                         <el-table-column prop="CMD" label="CMD" ></el-table-column>
                     </el-table>
                 </el-tab-pane>
-                <el-tab-pane  :disabled="tabbool" label="数据卷" name="third"  >
+                <el-tab-pane  label="数据卷" name="third"  >
 
                     <el-table
                         :data="volumeInfo"
@@ -287,7 +281,6 @@
         created(){
             this.activeName = 'first';
             // this.id = this.$route.query.id;
-            console.log("created"+this.containerId)
             this.$axios.get('/container/'+this.containerId)
                 .then(respone=>{
                     this.name = respone.data.data.name;

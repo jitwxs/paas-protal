@@ -6,12 +6,39 @@
             </el-breadcrumb>
         </div>
         <div class="container">
-            <el-tabs v-model="activeName">
+            <el-tabs v-model="c">
                 <el-tab-pane label="服务信息" name="first">
-                    <pre id="showjson"></pre>
-                </el-tab-pane>
-                <el-tab-pane label="服务日志" name="second">
 
+                    <el-form :label-position='labelpos' label-width="80px" v-model="serviceBasicInfo" >
+                        <el-form-item label="服务名称">
+                            <p>{{serviceBasicInfo.name}}</p>
+                        </el-form-item>
+                        <el-form-item label="项目名称">
+                            <p>{{serviceBasicInfo.projectName}}</p>
+                        </el-form-item>
+                        <el-form-item label="横向扩展">
+                            <p>{{serviceBasicInfo.replicas}}</p>
+                        </el-form-item>
+                        <el-form-item label="命令">
+                            <p>{{serviceBasicInfo.command}}</p>
+                        </el-form-item>
+                        <el-form-item label="端口">
+                            <p>{{serviceBasicInfo.port}}</p>
+                        </el-form-item>
+                        <el-form-item label="镜像">
+                            <p>{{serviceBasicInfo.image}}</p>
+                        </el-form-item>
+                        <el-form-item label="环境变量">
+                            <p>{{serviceBasicInfo.env}}</p>
+                        </el-form-item>
+                        <el-form-item label="创建时间">
+                            <p>{{serviceBasicInfo.createDate}}</p>
+                        </el-form-item>
+                    </el-form>
+
+                </el-tab-pane>
+                <el-tab-pane label="服务详情" name="second">
+                    <pre id="showjson"></pre>
                 </el-tab-pane>
                 <el-tab-pane label="数据卷信息" name="third">
                     <el-table
@@ -48,37 +75,38 @@
                 logInfo: [],
                 // 服务数据卷信息
                 volumesInfo: [],
+                //服务基本信息
+                serviceBasicInfo:{},
+                labelpos:'left',
+                c:'first',
             }
         },
         methods: {
+            //获取服务基本信息
+            getServiceBasicInfo(){
+                this.$axios.get("/service/" + this.serviceId)
+                    .then((res)=>{
+                        if (res.data.code === 0) {
+                            this.serviceBasicInfo = res.data.data;
+                        } else {
+                            console.log(res.data.message);
+                        }
+
+                    })
+                    .catch((err)=>{
+                        console.log(err);
+                    })
+            },
             // 获取服务详情信息
             getServiceInfo: function () {
                 this.$axios.get('/service/inspect/' + this.serviceId)
                     .then(response => {
                         if (response.data.code === 0) {
                             this.serviceInfo = response.data.data;
-                            $("#showjson").html(JSON.stringify(response.data.data, null, 4));
+
+                            $("#showjson").html(syntaxHighlight(response.data.data));
                         } else {
-                            this.$message.error({
-                                message: "获取服务详情信息失败！",
-                                showClose: true
-                            })
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log(err)
-                    })
-            },
-            // 获取服务日志信息
-            getLogInfo: function () {
-                this.$axios.get('/service/log/' + this.serviceId)
-                    .then(response => {
-                        if (response.data.code === 0) {
-                        } else {
-                            this.$message.error({
-                                message: "获取服务日志失败！",
-                                showClose: true
-                            })
+                            this.$message.error( "获取服务详情信息失败！");
                         }
                     })
                     .catch(function (err) {
@@ -92,10 +120,7 @@
                         if (response.data.code == 0) {
                             this.volumesInfo = response.data.data.records;
                         } else {
-                            this.$message.error({
-                                message: "获取服务数据卷信息失败！",
-                                showClose: true
-                            })
+                            this.$message.error("获取服务数据卷信息失败！");
                         }
                     })
                     .catch(function (err) {
@@ -105,13 +130,18 @@
         },
         created() {
             this.serviceId = this.$route.query.id;
+            this.getServiceBasicInfo();
             this.getServiceInfo();
-            this.getLogInfo();
             this.getVolumesInfo();
         }
     }
 </script>
 
-<style scoped>
-
+<style >
+    pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+    .string { color: green; }
+    .number { color: darkorange; }
+    .boolean { color: blue; }
+    .null { color: magenta; }
+    .key { color: red; }
 </style>

@@ -309,7 +309,7 @@
                     message: '容器开启失败'
                 });
             }
-            the.loading=[false,false,false,false,false,false];
+            thie.loading=[false,false,false,false,false,false];
 
         },
 

@@ -63,14 +63,23 @@
                                 this.$store.dispatch('changeUserInfo',response.data.data);
                                 // this.token = response.headers.authorization
                                 // 根据角色id加载路由表
-                                if(sessionStorage.getItem('currentRole') === asyncRouterMap[0].meta.roles){
+                                console.log(sessionStorage.getItem('currentRole'));
+                                if(sessionStorage.getItem('currentRole') == asyncRouterMap[0].meta.roles){
                                     routerMap.push(asyncRouterMap[0]);
-                                    vm.$router.addRoutes(routerMap);
-                                    vm.$router.push({path:'/xitongshouye'});
-                                }else if(sessionStorage.getItem('currentRole') === asyncRouterMap[1].meta.roles){
+                                    vm.$router.addRoutes(routerMap.concat([{
+                                        path: '*',
+                                        redirect: '/404'
+                                    }]));
+                                    console.log(routerMap);
+                                    vm.$router.push('/xitongshouye');
+                                }else if(sessionStorage.getItem('currentRole') == asyncRouterMap[1].meta.roles){
                                     routerMap.push(asyncRouterMap[1]);
-                                    vm.$router.addRoutes(routerMap);
-                                    vm.$router.push({path:'/xitongshouye_u'});
+                                    console.log(routerMap);
+                                    vm.$router.addRoutes(routerMap.concat([{
+                                        path: '*',
+                                        redirect: '/404'
+                                    }]));
+                                    vm.$router.push('/xitongshouye_u');
                                 }
                             } else {
                                 this.$message.error({

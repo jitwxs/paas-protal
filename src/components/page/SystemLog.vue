@@ -13,6 +13,17 @@
                     <el-option key="1" label="有异常" value="true"></el-option>
                     <el-option key="2" label="无异常" value="false"></el-option>
                 </el-select>
+                <el-input v-model="select_userId" placeholder="用户ID" class="handle-input mr10"></el-input>
+                <el-date-picker
+                    v-model="dateInterval"
+                    type="datetimerange"
+                    value-format="yyyy-MM-dd HH:mm"
+                    :picker-options="datePicker"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    align="right">
+                </el-date-picker>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
             </div>
 
@@ -41,6 +52,9 @@
                             </el-form-item>
                             <el-form-item label="请求参数">
                                 <span>{{ props.row.param }}</span>
+                            </el-form-item>
+                            <el-form-item label="用户ID">
+                                <span>{{ props.row.userId }}</span>
                             </el-form-item>
                         </el-form>
                     </template>
@@ -77,12 +91,49 @@
                 // 搜索输入的变量
                 hasException: '',
                 select_id: '',
+                select_userId:'',
                 // 系统日志信息
                 logInfo: [],
                 // 分页
                 currentPage: 1,
                 totalCount: 0,
-                pageSize:10
+                pageSize:10,
+                datePicker: {
+                    shortcuts: [{
+                        text: '最近一天',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+                dateInterval:[]
             }
         },
         methods: {
@@ -122,29 +173,23 @@
                 }
                 return data;
             },
-            // 获取日志信息
-            getLogInfo: function () {
-                this.$axios.get('/monitor/log' + "?current=1" + "&size=10")
-                    .then(response => {
-                        if (response.data.code === 0) {
-                            this.logInfo = this.formatSysLogData(response.data.data.records);
-                            this.totalCount = response.data.total;
-                        } else {
-                            this.$message.error({
-                                message: "获取系统日志信息失败！",
-                                showClose: true
-                            })
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log(err)
-                    })
-            },
             // 搜索系统日志
             search: function () {
-                this.$axios.get('/monitor/log' + "?hasException=" + this.hasException  + "&current=" + this.currentPage + "&size=10")
+                this.currentPage = 1;
+                let url = '/monitor/log' + "?hasException=" + this.hasException  + "&current=" + this.currentPage + "&size=10";
+
+                if(this.select_userId !== null && this.select_userId !== "") {
+                    url += "&userId=" + this.select_userId;
+                }
+                if(this.dateInterval !== null && this.dateInterval.length === 2) {
+                    let startDate = dateFormatter(this.dateInterval[0]), endDate = dateFormatter(this.dateInterval[1]);
+                    url += "&startDate=" + startDate + "&endDate=" + endDate;
+                }
+
+                this.$axios.get(url)
                     .then(response => {
                         if (response.data.code === 0) {
+                            this.totalCount = response.data.data.total;
                             this.logInfo = this.formatSysLogData(response.data.data.records);
                         } else {
                             this.$message.error({

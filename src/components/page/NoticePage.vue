@@ -8,56 +8,25 @@
         <div class="container">
             <el-tabs v-model="message">
                 <el-tab-pane label="系统通知" name="first">
-                    <el-table :data="systemNotice" :show-header="false" style="width: 100%">
-                        <el-table-column type="expand">
-                            <template slot-scope="props">
-                                <el-form label-position="left" inline class="demo-table-expand">
-                                    <el-form-item label="id">
-                                        <span>{{ props.row.id }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知id">
-                                        <span>{{ props.row.noticeId }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="接收用户">
-                                        <span>{{ props.row.receive }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="接收用户名称">
-                                        <span>{{ props.row.receiveName }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="是否已读">
-                                        <span>{{ props.row.hasRead }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="发送人id">
-                                        <span>{{ props.row.sender }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="发送人名称">
-                                        <span>{{ props.row.senderName }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知类型">
-                                        <span>{{ props.row.type }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知名称">
-                                        <span>{{ props.row.typeName }}</span>
-                                    </el-form-item>
-                                </el-form>
-                            </template>
-                        </el-table-column>
+                    <el-table :data="systemNotice" :show-header="false" @row-dblclick="showNotice" style="width: 100%">
                         <el-table-column>
                             <template slot-scope="scope">
                                 <span class="message-title">{{scope.row.title}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="createDate" width="180">
+                        <el-table-column prop="senderName">
                         </el-table-column>
-                        <el-table-column width="120">
+                        <el-table-column prop="createDate">
+                        </el-table-column>
+                        <el-table-column>
                             <template slot-scope="scope">
-                                <el-button size="small" @click="handleRead(scope.$index)" v-show="hasRead">标为已读
+                                <el-button size="small" @click="handleRead(scope.$index, scope.row)" v-if="hasRead">标为已读
                                 </el-button>
                             </template>
                         </el-table-column>
                     </el-table>
                     <div class="handle-row">
-                        <el-button type="primary" @click="handleAllRead_system">全部标为已读</el-button>
+                        <el-button type="primary" @click="handleAllRead(1)">全部标为已读</el-button>
                     </div>
 
                     <!--分页区域-->
@@ -73,40 +42,8 @@
                 </el-tab-pane>
 
                 <el-tab-pane label="容器通知" name="second">
-                    <el-table :data="containerNotice" :show-header="false" style="width: 100%">
-                        <el-table-column type="expand">
-                            <template slot-scope="props">
-                                <el-form label-position="left" inline class="demo-table-expand">
-                                    <el-form-item label="id">
-                                        <span>{{ props.row.id }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知id">
-                                        <span>{{ props.row.noticeId }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="接收用户">
-                                        <span>{{ props.row.receive }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="接收用户名称">
-                                        <span>{{ props.row.receiveName }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="是否已读">
-                                        <span>{{ props.row.hasRead }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="发送人id">
-                                        <span>{{ props.row.sender }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="发送人名称">
-                                        <span>{{ props.row.senderName }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知类型">
-                                        <span>{{ props.row.type }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知名称">
-                                        <span>{{ props.row.typeName }}</span>
-                                    </el-form-item>
-                                </el-form>
-                            </template>
-                        </el-table-column>
+                    <el-table :data="containerNotice" :show-header="false" @row-dblclick="showNotice"
+                              style="width: 100%">
                         <el-table-column>
                             <template slot-scope="scope">
                                 <span class="message-title">{{scope.row.title}}</span>
@@ -115,13 +52,13 @@
                         <el-table-column prop="createDate" width="150"></el-table-column>
                         <el-table-column width="120">
                             <template slot-scope="scope">
-                                <el-button type="primary" @click="handleRead(scope.$index)" v-show="hasRead">标为已读
+                                <el-button @click="handleRead(scope.$index, scope.row)" v-if="hasRead">标为已读
                                 </el-button>
                             </template>
                         </el-table-column>
                     </el-table>
                     <div class="handle-row">
-                        <el-button type="primary" @click="handleAllRead_container">全部标为已读</el-button>
+                        <el-button type="primary" @click="handleAllRead(2)">全部标为已读</el-button>
                     </div>
 
                     <!--分页区域-->
@@ -138,40 +75,7 @@
 
 
                 <el-tab-pane label="服务通知" name="third">
-                    <el-table :data="serviceNotice" :show-header="false" style="width: 100%">
-                        <el-table-column type="expand">
-                            <template slot-scope="props">
-                                <el-form label-position="left" inline class="demo-table-expand">
-                                    <el-form-item label="id">
-                                        <span>{{ props.row.id }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知id">
-                                        <span>{{ props.row.noticeId }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="接收用户">
-                                        <span>{{ props.row.receive }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="接收用户名称">
-                                        <span>{{ props.row.receiveName }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="是否已读">
-                                        <span>{{ props.row.hasRead }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="发送人id">
-                                        <span>{{ props.row.sender }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="发送人名称">
-                                        <span>{{ props.row.senderName }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知类型">
-                                        <span>{{ props.row.type }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知名称">
-                                        <span>{{ props.row.typeName }}</span>
-                                    </el-form-item>
-                                </el-form>
-                            </template>
-                        </el-table-column>
+                    <el-table :data="serviceNotice" :show-header="false" @row-dblclick="showNotice" style="width: 100%">
                         <el-table-column>
                             <template slot-scope="scope">
                                 <span class="message-title">{{scope.row.title}}</span>
@@ -180,12 +84,12 @@
                         <el-table-column prop="createDate" width="150"></el-table-column>
                         <el-table-column width="120">
                             <template slot-scope="scope">
-                                <el-button @click="handleRead(scope.$index)" v-show="hasRead">标为已读</el-button>
+                                <el-button @click="handleRead(scope.$index, scope.row)" v-if="hasRead">标为已读</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
                     <div class="handle-row">
-                        <el-button type="primary" @click="handleAllRead_service">全部标为已读</el-button>
+                        <el-button type="primary" @click="handleAllRead(3)">全部标为已读</el-button>
                     </div>
 
                     <!--分页区域-->
@@ -201,48 +105,22 @@
                 </el-tab-pane>
 
                 <el-tab-pane label="其他通知" name="fourth">
-                    <el-table :data="otherNotice" :show-header="false" style="width: 100%">
-                        <el-table-column type="expand">
-                            <template slot-scope="props">
-                                <el-form label-position="left" inline class="demo-table-expand">
-                                    <el-form-item label="id">
-                                        <span>{{ props.row.id }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知id">
-                                        <span>{{ props.row.noticeId }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="接收用户">
-                                        <span>{{ props.row.receive }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="接收用户名称">
-                                        <span>{{ props.row.receiveName }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="是否已读">
-                                        <span>{{ props.row.hasRead }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="发送人id">
-                                        <span>{{ props.row.sender }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="发送人名称">
-                                        <span>{{ props.row.senderName }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知类型">
-                                        <span>{{ props.row.type }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="通知名称">
-                                        <span>{{ props.row.typeName }}</span>
-                                    </el-form-item>
-                                </el-form>
+                    <el-table :data="otherNotice" :show-header="false" @row-dblclick="showNotice" style="width: 100%">
+                        <el-table-column>
+                            <template slot-scope="scope">
+                                <span class="message-title">{{scope.row.title}}</span>
                             </template>
                         </el-table-column>
+                        <el-table-column prop="senderName" width="150"></el-table-column>
+                        <el-table-column prop="createDate" width="150"></el-table-column>
                         <el-table-column width="120">
                             <template slot-scope="scope">
-                                <el-button @click="handleRead(scope.$index)" v-show="hasRead">标为已读</el-button>
+                                <el-button @click="handleRead(scope.$index, scope.row)" v-if="hasRead">标为已读</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
                     <div class="handle-row">
-                        <el-button type="primary" @click="handleAllRead_other">全部标为已读</el-button>
+                        <el-button type="primary" @click="handleAllRead(4)">全部标为已读</el-button>
                     </div>
 
                     <!--分页区域-->
@@ -285,30 +163,34 @@
                 otherNotice: [],
                 currentPage_other: 1,
                 totalCount_other: 0,
-
-                hasRead: false,
-                ids_system: [],
-                ids_container: [],
-                ids_service: [],
-                ids_other: []
             }
         },
         methods: {
+            updateTableByType(type) {
+                switch (type) {
+                    case 1:
+                        this.getSystemNotice();
+                        break;
+                    case 2:
+                        this.getContainerNotice();
+                        break;
+                    case 3:
+                        this.getServiceNotice();
+                        break;
+                    case 4:
+                        this.getOtherNotice();
+                        break;
+                    default:
+                        break;
+                }
+            },
             // 获取系统通知信息
             getSystemNotice: function () {
-                this.$axios.get('/notice/send/list' + "?type=1" + "&current=1" + "&size=5")
+                this.$axios.get('/notice/list' + "?type=1" + "&current=1" + "&size=5")
                     .then(response => {
                         if (response.data.code === 0) {
                             this.systemNotice = response.data.data.records;
                             this.totalCount_system = response.data.data.total;
-                            for (let i = 0; i < this.systemNotice.length; i++) {
-                                this.ids_system.push(this.systemNotice[i].id);
-                                if (this.systemNotice[i].hasRead) {
-                                    this.hasRead = false;
-                                } else {
-                                    this.hasRead = true;
-                                }
-                            }
                         } else {
                             this.$message.error("获取系统通知失败！");
                         }
@@ -316,17 +198,10 @@
             },
             // 系统通知分页
             handleCurrentChange_system: function (val) {
-                this.$axios.get('/notice/send/list' + "?type=1" + "&current=" + val + "&size=5")
+                this.$axios.get('/notice/list' + "?type=1" + "&current=" + val + "&size=5")
                     .then(response => {
                         if (response.data.code === 0) {
                             this.systemNotice = response.data.data.records;
-                            for (let i = 0; i < this.systemNotice.length; i++) {
-                                if (this.systemNotice[i].hasRead) {
-                                    this.hasRead = false;
-                                } else {
-                                    this.hasRead = true;
-                                }
-                            }
                         } else {
                             this.$message.error("获取系统通知失败！");
                         }
@@ -334,18 +209,10 @@
             },
             // 获取容器通知信息
             getContainerNotice: function () {
-                this.$axios.get('/notice/send/list' + "?type=2" + "&current=1" + "&size=5")
+                this.$axios.get('/notice/list' + "?type=2" + "&current=1" + "&size=5")
                     .then(response => {
                         if (response.data.code === 0) {
                             this.containerNotice = response.data.data.records;
-                            for (let i = 0; i < this.containerNotice.length; i++) {
-                                this.ids_container.push(this.containerNotice[i].id);
-                                if (this.containerNotice[i].hasRead) {
-                                    this.hasRead = false;
-                                } else {
-                                    this.hasRead = true;
-                                }
-                            }
                             this.totalCount_container = response.data.data.total;
                         } else {
                             this.$message.error("获取容器通知失败！");
@@ -354,17 +221,10 @@
             },
             // 容器通知的分页
             handleCurrentChange_container: function (val) {
-                this.$axios.get('/notice/send/list' + "?type=2" + "&current=" + val + "&size=5")
+                this.$axios.get('/notice/list' + "?type=2" + "&current=" + val + "&size=5")
                     .then(response => {
                         if (response.data.code === 0) {
                             this.containerNotice = response.data.data.records;
-                            for (let i = 0; i < this.containerNotice.length; i++) {
-                                if (this.containerNotice[i].hasRead) {
-                                    this.hasRead = false;
-                                } else {
-                                    this.hasRead = true;
-                                }
-                            }
                         } else {
                             this.$message.error("获取容器通知失败！");
                         }
@@ -372,18 +232,10 @@
             },
             // 获取服务通知信息
             getServiceNotice: function () {
-                this.$axios.get('/notice/send/list' + "?type=3" + "&current=1" + "&size=5")
+                this.$axios.get('/notice/list' + "?type=3" + "&current=1" + "&size=5")
                     .then(response => {
                         if (response.data.code === 0) {
                             this.serviceNotice = response.data.data.records;
-                            for (let i = 0; i < this.serviceNotice.length; i++) {
-                                this.ids_service.push(this.serviceNotice[i].id);
-                                if (this.serviceNotice[i].hasRead) {
-                                    this.hasRead = false;
-                                } else {
-                                    this.hasRead = true;
-                                }
-                            }
                             this.totalCount_service = response.data.data.total;
                         } else {
                             this.$message.error("获取服务通知失败！");
@@ -392,17 +244,10 @@
             },
             // 服务通知分页
             handleCurrentChange_service: function (val) {
-                this.$axios.get('/notice/send/list' + "?type=3" + "&current=" + val + "&size=5")
+                this.$axios.get('/notice/list' + "?type=3" + "&current=" + val + "&size=5")
                     .then(response => {
                         if (response.data.code === 0) {
                             this.serviceNotice = response.data.data.records;
-                            for (let i = 0; i < this.serviceNotice.length; i++) {
-                                if (this.serviceNotice[i].hasRead) {
-                                    this.hasRead = false;
-                                } else {
-                                    this.hasRead = true;
-                                }
-                            }
                         } else {
                             this.$message.error("获取服务通知失败！");
                         }
@@ -410,18 +255,10 @@
             },
             // 获取其他通知信息
             getOtherNotice: function () {
-                this.$axios.get('/notice/send/list' + "?type=4" + "&current=1" + "&size=5")
+                this.$axios.get('/notice/list' + "?type=4" + "&current=1" + "&size=5")
                     .then(response => {
                         if (response.data.code === 0) {
                             this.otherNotice = response.data.data.records;
-                            for (let i = 0; i < this.otherNotice.length; i++) {
-                                this.ids_other.push(this.otherNotice[i].id);
-                                if (this.otherNotice[i].hasRead) {
-                                    this.hasRead = false;
-                                } else {
-                                    this.hasRead = true;
-                                }
-                            }
                             this.totalCount_other = response.data.data.total;
                         } else {
                             this.$message.error("获取其他通知失败！");
@@ -430,18 +267,11 @@
             },
             // 其他信息分页
             handleCurrentChange_other: function (val) {
-                this.$axios.get('/notice/send/list' + "?type=4" + "&current=" + val + "&size=5")
+                this.$axios.get('/notice/list' + "?type=4" + "&current=" + val + "&size=5")
                     .then(response => {
                         if (response.data.code === 0) {
                             this.$message.success("获取其他通知成功！");
                             this.otherNotice = response.data.data.records;
-                            for (let i = 0; i < this.otherNotice.length; i++) {
-                                if (this.otherNotice[i].hasRead) {
-                                    this.hasRead = false;
-                                } else {
-                                    this.hasRead = true;
-                                }
-                            }
                         } else {
                             this.$message.error("获取其他通知失败！");
                         }
@@ -455,7 +285,7 @@
                     .then(response => {
                         if (response.data.code === 0) {
                             this.$message.success("标记已读通知成功！");
-                            this.hasRead = false;
+                            this.updateTableByType(row.type);
                         } else {
                             this.$message.error("标记已读通知失败！")
                         }
@@ -465,66 +295,28 @@
                     })
             },
             // 全部标为已读
-            handleAllRead_system: function () {
-                this.$axios.post('/notice/read', {
-                    ids: this.ids_system
-                })
+            handleAllRead(type) {
+                let url = "/notice/read";
+                if (type !== null) {
+                    url += "?type=" + type;
+                }
+                this.$axios.post(url)
                     .then(response => {
                         if (response.data.code === 0) {
-                            this.$message.success("全部标读系统通知成功！")
+                            this.$message.success("已读通知成功！")
                         } else {
-                            this.$message.error("全部标读系统通知失败！")
+                            this.$message.error("已读通知失败！")
                         }
                     })
                     .catch(function (err) {
                         console.log(err)
                     })
             },
-            handleAllRead_container: function () {
-                this.$axios.post('/notice/read', {
-                    ids: this.ids_container
-                })
-                    .then(response => {
-                        if (response.data.code === 0) {
-                            this.$message.success("全部标读容器通知成功！")
-                        } else {
-                            this.$message.error("全部标读容器通知失败！")
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log(err)
-                    })
-            },
-            handleAllRead_service: function () {
-                this.$axios.post('/notice/read', {
-                    ids: this.ids_service
-                })
-                    .then(response => {
-                        if (response.data.code === 0) {
-                            this.$message.success("全部标读服务通知成功！")
-                        } else {
-                            this.$message.error("全部标读服务通知失败！")
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log(err)
-                    })
-            },
-            handleAllRead_other: function () {
-                this.$axios.post('/notice/read', {
-                    ids: this.ids_other
-                })
-                    .then(response => {
-                        if (response.data.code === 0) {
-                            this.$message.success("全部标读其他通知成功！")
-                        } else {
-                            this.$message.error("全部标读其他通知失败！")
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log(err)
-                    })
-            },
+            showNotice(row, event) {
+                this.$alert(row.content, '通知', {
+                    dangerouslyUseHTMLString: true
+                });
+            }
         },
         created() {
             this.getSystemNotice();

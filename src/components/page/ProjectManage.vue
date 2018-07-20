@@ -10,7 +10,16 @@
             <div class="handle-box">
                 <el-input v-model="select_projectName" placeholder="输入项目名称" class="handle-input mr10"></el-input>
                 <el-input v-model="select_userName" placeholder="输入用户名" class="handle-input mr10"></el-input>
-
+                <el-date-picker
+                    v-model="dateInterval"
+                    type="datetimerange"
+                    value-format="yyyy-MM-dd HH:mm"
+                    :picker-options="datePicker"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    align="right">
+                </el-date-picker>
                 <el-button type="primary" icon="search" @click="search" >搜索</el-button>
             </div>
             <!--项目信息展示区域-->
@@ -70,24 +79,48 @@
                 logPageContent:0,
                 logdata:[{createDate:'',containerName:'',description:'',}],
                 rowid : '',
+                datePicker: {
+                    shortcuts: [{
+                        text: '最近一天',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+                dateInterval:[]
             }
         },
-
-
         methods:{
-            opendialog(){
-                this.activeName = 'first';
-                this.logdata = [{createDate:'',containerName:'',description:'',}];
-            },
-
-
-
-
-
             getProjectInfo: function () {
-                this.$axios.get('/project/list' + '?current=' + this.currentPage + "&size=5")
+                this.$axios.get('/project/list' + '?current=' + this.currentPage + "&size=10")
                     .then(response => {
-                        // console.log(response)
                         if (response.data.code == 0) {
                             this.projectInfo = response.data.data.records;
                             this.totalCount = response.data.data.total;
@@ -104,7 +137,7 @@
             },
             // 实现分页的功能
             handleCurrentChange: function (val) {
-                this.$axios.get('/project/list' + '?current=' + val + "&size=5")
+                this.$axios.get('/project/list' + '?current=' + val + "&size=10")
                     .then(response => {
                         this.projectInfo = response.data.data.records;
                     })
@@ -114,9 +147,15 @@
             },
             // 按照搜索条件筛选项目信息
             search: function () {
-                this.$axios.get('/project/list'+ "?name=" + this.select_projectName + "&username=" +  this.select_userName +  "&current=" + this.currentPage + "&size=5")
+                let url = '/project/list'+ "?name=" + this.select_projectName +
+                    "&username=" +  this.select_userName +  "&current=" + this.currentPage + "&size=10";
+                if(this.dateInterval !== null && this.dateInterval.length === 2) {
+                    let startDate = dateFormatter(this.dateInterval[0]), endDate = dateFormatter(this.dateInterval[1]);
+                    url += "&startDate=" + startDate + "&endDate=" + endDate;
+                }
+
+                this.$axios.get(url)
                     .then(response=>{
-                        console.log(response)
                         this.projectInfo = response.data.data.records;
                         this.totalCount = response.data.data.total;
                     })

@@ -23,7 +23,7 @@
                     <span class="btn-bell-badge" v-if="message"></span>
                 </div>
                 <!-- 用户头像 -->
-                <div class="user-avator"><img src="static/img/img.jpg"></div>
+                <div class="user-avator"><img src="../../../static/img/img.jpg"></div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
@@ -44,25 +44,25 @@
             return {
                 collapse: false,
                 fullscreen: false,
-                name: 'linxin',
-                message: 2
+                message: 0
             }
         },
         computed:{
             username(){
-                let username = sessionStorage.getItem('userName');
-                return username ;
+                return sessionStorage.getItem('userName');
             }
         },
         methods:{
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
-                    // localStorage.removeItem('ms_username')
                     this.$axios.get('/user/logout')
                         .then(response=>{
                             if (response.data.code===0){
-                                this.$router.push('/');
+                                sessionStorage.removeItem("currentRole");
+                                sessionStorage.removeItem("userName");
+                                sessionStorage.removeItem("userToken");
+                                this.$router.push('/index');
                             }
                         }).catch(function (err) {
                         console.log(err);
@@ -100,12 +100,24 @@
                     }
                 }
                 this.fullscreen = !this.fullscreen;
+            },
+            countUnReadNum() {
+                this.$axios.get('/notice/countUnRead')
+                    .then(response=>{
+                        if(response.data.code === 0){
+                            this.message = response.data.data;
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
             }
         },
         mounted(){
             if(document.body.clientWidth < 1500){
                 this.collapseChage();
             }
+            this.countUnReadNum();
         }
     }
 </script>

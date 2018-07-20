@@ -4,31 +4,31 @@
             <el-col :span="8">
                 <el-row>
                     <el-col>
-                        <!--管理员的角色信息-->
+                        <!--用户的角色信息-->
                         <el-card shadow="hover" class="mgb20">
                             <div class="user-info">
-                                <img src="static/img/img.jpg" class="user-avator" alt="">
+                                <img src="../../../static/img/img.jpg" class="user-avator" alt="">
                                 <div class="user-info-cont">
                                     <div class="user-info-name">{{name}}</div>
                                     <div>{{role}}</div>
                                 </div>
                             </div>
-                            <div class="user-info-list">上次登录时间：<span>2018-01-01</span></div>
-                            <div class="user-info-list">上次登录地点：<span>东莞</span></div>
+                            <div class="user-info-list">上次登录时间：<span>{{selfInfo.lastLogin}}</span></div>
+                            <div class="user-info-list">上次登录地点：<span>{{selfInfo.ip}}</span></div>
                         </el-card>
 
                         <el-card shadow="hover">
                             <div slot="header" class="clearfix">
                                 <span>使用详情</span>
                             </div>
-                            用户使用量
-                            <el-progress :percentage="57.2" color="#42b983"></el-progress>
-                            项目创建量
-                            <el-progress :percentage="29.8" color="#f1e05a"></el-progress>
-                            镜像数量
-                            <el-progress :percentage="11.9"></el-progress>
-                            容器数量
-                            <el-progress :percentage="1.1" color="#f56c6c"></el-progress>
+                            容器运行数量
+                            <el-progress :percentage="containerRunPer" color="#42b983"></el-progress>
+                            上传镜像数量
+                            <el-progress :percentage="this.selfInfo.uploadImageNum" color="#f1e05a"></el-progress>
+                            HUB镜像数量
+                            <el-progress :percentage="this.selfInfo.hubImageNum" color="#f56c6c"></el-progress>
+                            未读消息数量
+                            <el-progress :percentage="this.noticeUnreadNum" color="#f56c6c"></el-progress>
                         </el-card>
 
                     </el-col>
@@ -39,22 +39,22 @@
                 <el-row :gutter="20" class="mgb20">
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-1">
-                                <i class="el-icon-view grid-con-icon"></i>
+                            <div class="grid-content grid-con-2">
+                                <i class="el-icon-message grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">1234</div>
-                                    <div>用户数量</div>
+                                    <div class="grid-num">{{selfInfo.projectNum}}</div>
+                                    <div>项目数量</div>
                                 </div>
                             </div>
                         </el-card>
                     </el-col>
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-2">
-                                <i class="el-icon-message grid-con-icon"></i>
+                            <div class="grid-content grid-con-1">
+                                <i class="el-icon-view grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">321</div>
-                                    <div>项目数量</div>
+                                    <div class="grid-num">{{selfInfo.containerNum}}</div>
+                                    <div>容器数量</div>
                                 </div>
                             </div>
                         </el-card>
@@ -64,8 +64,8 @@
                             <div class="grid-content grid-con-3">
                                 <i class="el-icon-goods grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">5000</div>
-                                    <div>镜像数量</div>
+                                    <div class="grid-num">{{selfInfo.serviceNum}}</div>
+                                    <div>服务数量</div>
                                 </div>
                             </div>
                         </el-card>
@@ -77,12 +77,6 @@
                         <!--<el-button style="float: right; padding: 3px 0" type="text">添加</el-button>-->
                     </div>
 
-
-                    <el-col :span="8" style="margin-top: 20px;margin-bottom: 20px">
-                        <el-card shadow="hover" style="text-align: center;font-family: 微软雅黑;font-size: 16px">
-                            用户管理
-                        </el-card>
-                    </el-col>
                     <el-col :span="8" style="margin-top: 20px;margin-bottom: 20px">
                         <el-card shadow="hover" style="text-align: center;font-family: 微软雅黑;font-size: 16px">
                             项目管理
@@ -99,16 +93,19 @@
                             镜像管理
                         </el-card>
                     </el-col>
-
                     <el-col :span="8" style="margin-top: 20px;margin-bottom: 20px">
                         <el-card shadow="hover" style="text-align: center;font-family: 微软雅黑;font-size: 16px">
-                            仓储管理
+                            服务管理
                         </el-card>
                     </el-col>
-
                     <el-col :span="8" style="margin-top: 20px;margin-bottom: 20px">
                         <el-card shadow="hover" style="text-align: center;font-family: 微软雅黑;font-size: 16px">
-                            日志管理
+                            网络管理
+                        </el-card>
+                    </el-col>
+                    <el-col :span="8" style="margin-top: 20px;margin-bottom: 20px">
+                        <el-card shadow="hover" style="text-align: center;font-family: 微软雅黑;font-size: 16px">
+                            监控管理
                         </el-card>
                     </el-col>
 
@@ -125,13 +122,58 @@
         data() {
             return {
                 name: sessionStorage.getItem('userName'),
-
+                roleId: sessionStorage.getItem('currentRole'),
+                containerRunPer: 0,
+                noticeUnreadNum: 0,
+                selfInfo: {}
             }
         },
         computed: {
             role() {
-                return this.name === 'admin' ? '普通用户' : '超级管理员';
+                return this.roleId === "1" ? '普通用户' : '系统管理员';
             }
+        },
+        methods:{
+            //获取个人信息
+            getSelfInfo:function () {
+                this.$axios.get('/monitor/self/info')
+                    .then(response=>{
+                        if(response.data.code === 0){
+                            this.selfInfo = response.data.data;
+
+                            if(this.selfInfo.containerRunningNum === 0) {
+                                this.containerRunPer = 0;
+                            } else {
+                                let per = this.selfInfo.containerRunningNum / this.selfInfo.containerNum;
+                                this.containerRunPer = per * 100;
+                            }
+                        }else{
+                            this.$message.error({
+                                message:"获取个人信息失败！",
+                                showClose:true
+                            })
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
+            },
+            countUnReadNum() {
+                this.$axios.get('/notice/countUnRead')
+                    .then(response=>{
+                        if(response.data.code === 0){
+                            console.log(response.data.data)
+                            this.noticeUnreadNum = response.data.data;
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
+            }
+        },
+        created(){
+            this.getSelfInfo();
+            this.countUnReadNum();
         }
     }
 

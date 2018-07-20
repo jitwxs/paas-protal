@@ -13,7 +13,8 @@
                                     <div>{{role}}</div>
                                 </div>
                             </div>
-                            <div class="user-info-list">上次登录时间：<span>{{hostInfo.time}}</span></div>
+                            <div class="user-info-list">上次登录时间：<span>{{selfInfo.lastLogin}}</span></div>
+                            <div class="user-info-list">上次登录地点：<span>{{selfInfo.ip}}</span></div>
                         </el-card>
 
                         <el-card shadow="hover">
@@ -92,27 +93,28 @@
                 name: sessionStorage.getItem('userName'),
                 roleId: sessionStorage.getItem('currentRole'),
                 // 宿主机的信息
-                hostInfo: {
-                    // "hostName": "bogon",
-                    // "architecture": "x86_64",
-                    // "osName": "CentOS Linux 7 (Core)",
-                    // "cupNum": 1,
-                    // "memorySize": '0.95',
-                    // "dockerVersion": "17.09.0-ce",
-                    // "imageNum": 8,
-                    // "containerNum": 3,
-                    // "containerRunningNum": 3,
-                    // "containerPauseNum": 0,
-                    // "containerStopNum": 0,
-                    // "time": "2018-07-09 14:39:43"
-                },
-                containerNum:7,
-                runningNum:7,
+                hostInfo: {},
+                containerNum:0,
+                runningNum:0,
                 pauseNum:0,
                 stopNum:0,
+                selfInfo: {}
             }
         },
         methods:{
+            getSelfInfo:function () {
+                this.$axios.get('/monitor/self/info')
+                    .then(response=>{
+                        if(response.data.code === 0){
+                            this.selfInfo = response.data.data;
+                        }else{
+                            this.$message.error("获取个人信息失败！");
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
+            },
             //获取宿主机信息
             getHostInfo:function () {
                 this.$axios.get('/monitor/host')
@@ -122,15 +124,6 @@
 
                             let myChart = this.$echarts.init(document.getElementById('main'));
                             myChart.setOption({
-                                // title: {
-                                //     text: '容器状态',
-                                //     left: 'center',
-                                //     top: 20,
-                                //     textStyle: {
-                                //         color: '#ccc'
-                                //     }
-                                // },
-
                                 tooltip : {
                                     trigger: 'item',
                                     formatter: "{a} <br/>{b} : {c} ({d}%)"
@@ -171,11 +164,7 @@
                                             }
                                         },
                                         itemStyle: {
-                                            normal: {
-                                                // color: '#c23531',
-                                                // shadowBlur: 200,
-                                                // shadowColor: 'rgba(0, 0, 0, 0.5)'
-                                            }
+                                            normal: {}
                                         },
 
                                         animationType: 'scale',
@@ -205,6 +194,7 @@
         },
         created(){
             this.getHostInfo();
+            this.getSelfInfo();
         },
         mounted(){
             this.createEcharts();

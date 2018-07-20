@@ -50,8 +50,6 @@
                             },]
 
                     },
-
-
                     {
                         icon: 'el-icon-tickets',
                         index: 'projectmanage',
@@ -116,12 +114,6 @@
                                 title: '程序信息'
                             }
                         ]
-                    },
-
-                    {
-                        icon: 'el-icon-error',
-                        index: '404',
-                        title: '404页面'
                     }
                 ]
             }
