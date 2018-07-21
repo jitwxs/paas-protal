@@ -5,14 +5,14 @@
             <el-header>
 
                 <div class="ui large secondary inverted pointing menu">
-                    <a class="item">Home</a>
-                    <a class="item">Work</a>
-                    <a class="item">Company</a>
-                    <a class="item">Careers</a>
+                    <!--<a class="item">Home</a>-->
+                    <!--<a class="item">Work</a>-->
+                    <!--<a class="item">Company</a>-->
+                    <!--<a class="item">Careers</a>-->
                     <div class="right item" style="padding: auto">
                         <!--< to="/" class="ui button">Log in</>-->
                         <router-link to="Login" class="ui inverted button">Log in</router-link>
-                        <router-link to="Register" class="ui inverted button">Sign Up</router-link>
+                        <!--<router-link to="Register" class="ui inverted button">Sign Up</router-link>-->
                     </div>
                 </div>
             </el-header>
@@ -192,9 +192,8 @@
         height: 100%;
         overflow: hidden;
         display: inline-block;
-        background: url("../../assets/background1.jpg")no-repeat;
+        background: url("../../../static/img/index/background.jpg")no-repeat;
         background-size: 100% 100%;
-        /*border-image-repeat: repeat;*/
     }
 
     .ms-login{

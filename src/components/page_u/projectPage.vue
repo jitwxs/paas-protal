@@ -1,7 +1,7 @@
 <template>
-  <div id="main">
+  <div id="project">
     <!--创建项目-->
-    <el-button type="primary" icon="el-icon-plus"  @click="createProjectDialog = true" id="createProjectbtn">创建项目</el-button>
+    <el-button type="primary" icon="el-icon-plus"  @click="createProjectDialog = true" >创建项目</el-button>
     <!--创建项目模态框-->
     <el-dialog title="创建项目" :visible.sync="createProjectDialog" center>
       <el-form :model="project">
@@ -17,11 +17,10 @@
         <el-button type="primary" @click="submitCreateProject">确 定</el-button>
       </div>
     </el-dialog>
-
     <!--项目列表-->
     <el-table
       :data="projectList"
-      style="width: 85%;margin: 10px auto;"
+      style="width: 100%;margin-top: 20px"
     >
       <el-table-column
         label="项目名称"
@@ -187,6 +186,7 @@
 
       },
       submitUpdateProject(){
+          console.log(this.updateProjectForm.name+"/"+this.updateProjectForm.id+"/"+this.updateProjectForm.description)
         this.$axios.put("/project/update",{
           id:this.updateProjectForm.id,
           name:this.updateProjectForm.name,
@@ -194,6 +194,7 @@
         })
           .then(res=>{
             if (res.data.code == 0) {
+                console.log(res.data);
               this.$message.success("更新成功");
               this.getProjectList(this.currentPage,this.pageSize);
             }
@@ -335,10 +336,14 @@
 </script>
 
 <style scoped>
-#main{
-  padding: 30px;
-  box-shadow: 0 0 5px #f1f1f1;
-}
+    #project{
+        padding: 50px;
+        margin: 20px;
+        box-shadow: 3px 3px 10px #dddddd;
+        background-color: white;
+        border-radius: 15px;
+        min-height: 400px;
+    }
   #createProjectbtn{
     margin-left: 100px;
     margin-bottom: 30px;

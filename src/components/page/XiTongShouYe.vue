@@ -21,13 +21,23 @@
                             <div slot="header" class="clearfix">
                                 <h4>宿主机详情</h4>
                             </div>
-                            <ul style="list-style-type: none;">
-                                <li style="margin-bottom: 15px">宿主机名称：{{hostInfo.hostName}}</li>
-                                <li style="margin-bottom: 15px">系统类型：{{hostInfo.architecture}}</li>
-                                <li style="margin-bottom: 15px">内核名称：{{hostInfo.osName}}</li>
-                                <li style="margin-bottom: 15px">docker版本：{{hostInfo.dockerVersion}}</li>
-                                <li style="margin-bottom: 15px">内存大小：{{hostInfo.memorySize}}G</li>
-                            </ul>
+                            <el-form :label-position='labelpos' label-width="100px" >
+                                <el-form-item label="宿主机名称">
+                                    {{hostInfo.hostName}}
+                                </el-form-item>
+                                <el-form-item label="系统类型">
+                                    {{hostInfo.architecture}}
+                                </el-form-item>
+                                <el-form-item label="内核名称">
+                                    {{hostInfo.osName}}
+                                </el-form-item>
+                                <el-form-item label="Docker版本">
+                                    {{hostInfo.dockerVersion}}
+                                </el-form-item>
+                                <el-form-item label="内存大小">
+                                    {{hostInfo.memorySize}}
+                                </el-form-item>
+                            </el-form>
                         </el-card>
                     </el-col>
                 </el-row>
@@ -38,30 +48,10 @@
                 <el-row :gutter="20" class="mgb20">
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-1">
-                                <i class="el-icon-view grid-con-icon"></i>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">{{hostInfo.cupNum}}</div>
-                                    <div>cup数量</div>
-                                </div>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-2">
-                                <i class="el-icon-message grid-con-icon"></i>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">{{hostInfo.imageNum}}</div>
-                                    <div>镜像数量</div>
-                                </div>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-card shadow="hover" :body-style="{padding: '0px'}">
                             <div class="grid-content grid-con-3">
-                                <i class="el-icon-goods grid-con-icon"></i>
+                               <div class="DivIcons">
+                                   <img src="../../../static/img/icon_docker.svg" class="DivIcon">
+                               </div>
                                 <div class="grid-cont-right">
                                     <div class="grid-num">{{hostInfo.containerNum}}</div>
                                     <div>容器数量</div>
@@ -69,16 +59,71 @@
                             </div>
                         </el-card>
                     </el-col>
+                    <el-col :span="8">
+                        <el-card shadow="hover" :body-style="{padding: '0px'}">
+                            <div class="grid-content grid-con-1">
+                                <div class="grid-content grid-con-2">
+                                    <div class="DivIcons" style="background-color: #68c2d7">
+                                        <img src="../../../static/img/swarm.svg" class="DivIcon">
+                                    </div>
+                                </div>
+                                <div class="grid-cont-right">
+                                    <div class="grid-num">{{hostInfo.serviceNum}}</div>
+                                    <div>服务数量</div>
+                                </div>
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-card shadow="hover" :body-style="{padding: '0px'}">
+                            <div class="grid-content grid-con-2">
+                                <div class="DivIcons" style="background-color: #00d1b2">
+                                    <img src="../../../static/img/icon_docker-image.svg" class="DivIcon">
+                                </div>
+                                <div class="grid-cont-right">
+                                    <div class="grid-num">{{hostInfo.imageNum}}</div>
+                                    <div>镜像数量</div>
+                                </div>
+                            </div>
+                        </el-card>
+                    </el-col>
                 </el-row>
-
+                <el-card shadow="hover">
+                    <div slot="header" class="clearfix">
+                        <h4>集群节点</h4>
+                    </div>
+                    <el-collapse accordion>
+                        <el-collapse-item v-for="(item,index) in hostInfo.nodes" :title=item.ip :name=index>
+                            <el-form :label-position='labelpos' label-width="100px" >
+                                <el-form-item label="主机名称">
+                                    {{item.hostName}}
+                                </el-form-item>
+                                <el-form-item label="系统架构">
+                                    {{item.architecture}}
+                                </el-form-item>
+                                <el-form-item label="Docker版本">
+                                    {{item.dockerVersion}}
+                                </el-form-item>
+                                <el-form-item label="状态">
+                                    {{item.state}}
+                                </el-form-item>
+                                <el-form-item label="角色" v-if="item.hasLeader">
+                                    <el-tag>Leader</el-tag>
+                                </el-form-item>
+                                <el-form-item label="角色" v-else>
+                                    <el-tag>Worker</el-tag>
+                                </el-form-item>
+                            </el-form>
+                        </el-collapse-item>
+                    </el-collapse>
+                </el-card>
                 <el-card shadow="hover" :body-style="{ height: '304px'}">
                     <div slot="header" class="clearfix">
-                        <span>容器数据</span>
+                        <h4>容器数据</h4>
                     </div>
                     <div id="main" style="width: 700px;height: 300px;margin-left: 30px">
                     </div>
                 </el-card>
-
             </el-col>
         </el-row>
     </div>
@@ -98,7 +143,8 @@
                 runningNum:0,
                 pauseNum:0,
                 stopNum:0,
-                selfInfo: {}
+                selfInfo: {},
+                labelpos:'left',
             }
         },
         methods:{
@@ -211,6 +257,21 @@
 
 
 <style scoped>
+    .DivIcons{
+        width: 100px;
+        height: 100px;
+        background-color: #d1d1d1;
+        text-align:center;
+        margin:0 auto;
+
+    }
+    .DivIcon{
+        width: 60px;
+        height: 60px;
+        display: table-cell;
+        vertical-align:middle;
+        margin-top: 15px;
+    }
     .el-row {
         margin-bottom: 20px;
     }

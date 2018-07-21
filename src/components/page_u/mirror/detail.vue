@@ -9,6 +9,7 @@
 
 <script>
   import {mapGetters} from 'vuex'
+  import '../../../../static/tree/jsoneditor'
 export default {
     name: 'detail',
     data(){

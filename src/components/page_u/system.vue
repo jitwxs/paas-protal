@@ -1,5 +1,7 @@
 <template>
-    <button></button>
+    <div id="system">
+
+    </div>
 </template>
 
 <script>
@@ -9,5 +11,12 @@
 </script>
 
 <style scoped>
-
+    #system{
+        padding: 50px;
+        margin: 20px;
+        box-shadow: 3px 3px 10px #dddddd;
+        background-color: white;
+        border-radius: 15px;
+        min-height: 400px;
+    }
 </style>

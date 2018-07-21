@@ -3,7 +3,7 @@
 
         <!-- Following Menu -->
         <div class="ui large top fixed hidden menu">
-            <div class="ui container conbbb">
+            <div class="ui container conbbb" >
                 <a class="active item">Home</a>
                 <a class="item">Work</a>
                 <a class="item">Company</a>
@@ -32,7 +32,7 @@
 
         <!-- Page Contents -->
         <div class="pusher">
-            <div class="ui inverted vertical masthead center aligned segment">
+            <div class="ui inverted vertical masthead center aligned segment" style="height: 940px;">
 
                 <div class="ui container conbbb">
                     <div class="ui large secondary inverted pointing menu">
@@ -51,7 +51,7 @@
                     </div>
                 </div>
 
-                <div class="ui text container conbbb">
+                <div class="ui text container conbbb" style="height: 600px; margin-top: 100px;">
                     <h1 class="ui inverted header">
                         无道云Pass云平台
                     </h1>
@@ -72,7 +72,7 @@
                         <div class="column">
                             <h3>"科技洞见未来"</h3>
                             <p>
-                                <img src="../../assets/picture1.jpg" class="ui avatar image"> <b>Nan</b> Chief Fun Officer Acme Toys
+                                <img src="../../../static/img/index/picture1.jpg" class="ui avatar image"> <b>Nan</b> Chief Fun Officer Acme Toys
                             </p>
                         </div>
                     </div>
@@ -82,13 +82,13 @@
             <div class="ui vertical stripe segment" align="center">
                 <div class="chanping">产品优势</div>
                 <br/>
-                <img src="../../assets/picture6.png" class="picture2">
+                <img src="../../../static/img/index/picture6.png" class="picture2">
             </div>
 
             <div class="ui vertical stripe segment" align="center">
                 <div class="chanping" >核心功能</div>
                 <br>
-                <img src="../../assets/picture7.png" class="picture2">
+                <img src="../../../static/img/index/picture7.png" class="picture2">
 
                 <!--<br>-->
                 <!--<div class="ui middle aligned stackable grid container">-->
@@ -126,7 +126,7 @@
             <div class="ui vertical stripe segment" align="center">
                 <div class="chanping">产品架构</div>
                 <br/>
-                <img src="../../assets/picture2.png" class="picture2">
+                <img src="../../../static/img/index/picture2.png" class="picture2">
             </div>
         </div>
 
@@ -158,32 +158,14 @@
                     <div class="eight wide column">
                         <p style="font-size: 30px">持续集成与持续部署</p>
                         <p >基于docker容器服务的Pass平台为用户提供基础的开发环境，使开发者只需要关注代码开发减少相关工具的安装和配置工作量。同时丰富的容器镜像，可以让运维人员在平台上快速部署开发所需要的服务，支持通过环境变量绑定服务。实现开发环境、测试环境以及生产环境的隔离以及环境的快速搭建和回收，提高了整体效率。</p>
-                        <!--<br>-->
-                        <!--<p class="ui header" style="font-size: 20px">一键部署 - -快速搭建个人开发环境 </p>-->
-                        <!--<p class="zhiti">One button deployment - quickly build a personal development environment </p>-->
                     </div>
                     <div class="six wide right floated column">
-                        <img src="../../assets/picture8.png" class="ui large bordered rounded image">
+                        <img src="../../../static/img/index/picture8.png" class="ui large bordered rounded image">
                     </div>
                 </div>
 
             </div>
         </div>
-
-        <!--<div class="ui vertical stripe segment">-->
-        <!--<div class="ui text container">-->
-        <!--<h3 class="ui header">Breaking The Grid, Grabs Your Attention</h3>-->
-        <!--<p>Instead of focusing on content creation and hard work, we have learned how to master the art of doing nothing by providing massive amounts of whitespace and generic content that can seem massive, monolithic and worth your attention.</p>-->
-        <!--<a class="ui large button">Read More</a>-->
-        <!--<h4 class="ui horizontal header divider">-->
-        <!--<a href="#">Case Studies</a>-->
-        <!--</h4>-->
-        <!--<h3 class="ui header">Did We Tell You About Our Bananas?</h3>-->
-        <!--<p>Yes I know you probably disregarded the earlier boasts as non-sequitur filler content, but its really true. It took years of gene splicing and combinatory DNA research, but our bananas can really dance.</p>-->
-        <!--<a class="ui large button">I'm Still Quite Interested</a>-->
-        <!--</div>-->
-        <!--</div>-->
-
 
         <div class="ui inverted vertical footer segment">
             <div class="ui container conbbb">
@@ -222,23 +204,13 @@
                     <div class="three wide column">
                         <h4 class="ui inverted header">售后</h4>
                         <div class="ui inverted link list">
-                            <a href="#" class="item">Tel：188892973941103</a>
+                            <a href="#" class="item">Tel：025-110110110</a>
                             <br>
-                            <a href="#" class="item">Email：wudaoyun@outlook.com</a>
-
+                            <a href="#" class="item">Email：jitwxs@foxmail.com</a>
+                            <br>
+                            <a href="#" class="item">地址：南京市金陵科技学院</a>
                         </div>
                     </div>
-
-                    <div class="three wide column">
-                        <h4 class="ui inverted header">欢迎关注</h4>
-                        <div class="ui inverted link list">
-                            <img src="../../assets/erweima.png" class="ui large bordered rounded image">
-
-
-                        </div>
-                    </div>
-
-
                 </div>
             </div>
         </div>
@@ -250,7 +222,6 @@
 </template>
 
 <script>
-
     export default {
         name: "index",
         methods:{

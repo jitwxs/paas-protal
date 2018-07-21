@@ -1,11 +1,5 @@
 <template>
-    <div>
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-date"></i>容器详情</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
-        <div class="container">
+        <div id="containerdetails">
             <!--数据卷模态框-->
             <el-dialog title="导入数据卷" :visible.sync="dialogVisible" width="30%">
                 <el-form >
@@ -139,7 +133,6 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
-    </div>
 </template>
 
 <script>
@@ -400,5 +393,12 @@
 </script>
 
 <style scoped>
-
+    #containerdetails{
+        padding: 50px;
+        margin: 20px;
+        box-shadow: 3px 3px 10px #dddddd;
+        background-color: white;
+        border-radius: 15px;
+        min-height: 400px;
+    }
 </style>

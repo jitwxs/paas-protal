@@ -1,20 +1,59 @@
 <template>
-    <div class="login-wrap">
-        <div class="ms-title">后台管理系统</div>
-        <div class="ms-login">
-            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
-                <el-form-item prop="username">
-                    <el-input v-model="ruleForm.username" placeholder="username"></el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                    <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="login"></el-input>
-                </el-form-item>
-                <div class="login-btn">
-                    <el-button type="primary" @click.native="login">登录</el-button>
+    <div class="login-wrap" style="background-color: #373a4b;">
+        <el-row>
+            <el-col :span="10" :offset="4">
+                <div style="height: 700px;margin-top: 70px; margin-right: 25%;">
+                    <div class="iconUp">
+                        <img src="../../../static/img/cloud.png" class="cloudImg"/>
+                        <span class="char">无道云平台</span>
+                        <div class="line"></div>
+                    </div>
+                    <div class="disc">
+                        <el-row>
+                            <el-col :span="4"  >
+                                <img src="../../../static/img/people.svg"/>
+
+                            </el-col>
+                            <el-col :span="12">
+                                <div style="margin-top: 20px;height: 300px;">
+                                    <span style="color: #FFFFFF;font-size: 28px;margin-top: 20px;">云产品免费体验中...</span>
+                                    <div class="desvDiv">
+                                        <img src="../../../static/img/gou.svg" class="descGou">
+                                        <span class="descChar"> 容器服务</span>
+                                    </div>
+                                    <div class="desvDiv">
+                                        <img src="../../../static/img/gou.svg" class="descGou">
+                                        <span class="descChar"> 集群服务</span>
+                                    </div>
+                                    <div class="desvDiv">
+                                        <img src="../../../static/img/gou.svg" class="descGou">
+                                        <span class="descChar"> 镜像服务</span>
+                                    </div>
+                                    <button class="enjoy"> 立即体验</button>
+                                </div>
+                            </el-col>
+                        </el-row>
+                    </div>
                 </div>
-                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 请输入用户名和密码</p>
-            </el-form>
-        </div>
+            </el-col>
+            <el-col :span="6">
+                <div style="width: 100%;margin-top: 200px">
+                    <div class="loginDiv">
+                        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="70px" >
+                            <el-form-item prop="username" label="用户名">
+                                <el-input v-model="ruleForm.username" ></el-input>
+                            </el-form-item>
+                            <el-form-item prop="password" label="密码" style="margin-top: 40px">
+                                <el-input type="password" v-model="ruleForm.password" @keyup.enter.native="login"></el-input>
+                            </el-form-item>
+                            <div class="login-btn">
+                                <el-button type="primary" @click.native="login">登录</el-button>
+                            </div>
+                        </el-form>
+                    </div>
+                </div>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
@@ -118,37 +157,111 @@
     }
 </script>
 
-<style scoped>
+<style scoped >
+    .loginDiv{
+        padding-top: 100px;
+        text-align: center;
+        /*border: none;*/
+        /*box-shadow: 0 0 3px #dddddd;*/
+        width: 100%;
+        height: 400px;
+        border-radius: 15px;
+        background-color: ghostwhite;
+        padding-right: 40px;
+        padding-left: 30px;
+
+    }
+    .iconUp{
+        width: 100%;
+        display:table;
+        _position:relative;
+        overflow:hidden;
+
+    }
+    .line{
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(to right,rgba(255,255,255,.15),rgba(255,255,255,0))
+    }
+    .cloudImg{
+        vertical-align:middle;
+        display:table-cell;
+        _position:absolute;
+        _top:50%;
+        width: 100px;
+        height: 100px;
+        text-align: center;
+    }
     .login-wrap{
         position: relative;
         width:100%;
         height:100%;
     }
-    .ms-title{
-        position: absolute;
-        top:50%;
-        width:100%;
-        margin-top: -230px;
-        text-align: center;
-        font-size:30px;
-        color: #fff;
+    .char{
+        _position:relative;
+        _top:-50%;
+        font-size: 30px;
+        color: #FFFFFF;
 
     }
-    .ms-login{
-        position: absolute;
-        left:50%;
-        top:50%;
-        width:300px;
-        height:160px;
-        margin:-150px 0 0 -190px;
-        padding:40px;
-        border-radius: 5px;
-        background: #fff;
+    .disc{
+        width: 100%;
+        height: 400px;
+        margin-top: 30px;
     }
-    .login-btn{
+    .desvDiv{
+
+        margin-top: 20px;
+        /*margin-bottom: 30px;*/
+        width: 100%;
+        display:table;
+        _position:relative;
+        overflow:hidden;
+    }
+    .descGou{
+
+        vertical-align:middle;
+        display:table-cell;
+        _position:absolute;
+        _top:50%;
         text-align: center;
     }
+    .descChar{
+        _position:relative;
+        _top:-50%;
+        font-size: 20px;
+        color: #FFFFFF;
+
+    }
+    .enjoy{
+
+        margin-top: 50px;
+        background-color: #373a4b;
+        border: 1px solid whitesmoke;
+        width: 300px;
+        height: 50px;
+        /*font-size: 22px;*/
+        color: whitesmoke;
+        cursor: pointer;
+    }
+    .enjoy:hover{
+
+        background-color: whitesmoke;
+        color: black;
+    }
+    .el-input__inner{
+
+        height: 50px;
+        line-height: 50px;
+        width: 100%;
+    }
+    .login-btn{
+        width: 300px;
+        text-align: center;
+        margin:  10px  auto;
+    }
     .login-btn button{
+        margin-top: 50px;
         width:100%;
         height:36px;
     }

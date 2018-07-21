@@ -1,10 +1,10 @@
 <template>
-    <div class="container">
+    <div id="serviceDetail">
     <el-tabs v-model="activeName">
         <el-tab-pane label="服务详情" name="first">
             <div>
-                <pre id="Service">
-                </pre>
+                <div id="editor" class="json-editor"></div>
+                <pre id="json"></pre>
             </div>
         </el-tab-pane>
     </el-tabs>
@@ -13,6 +13,7 @@
 
 <script>
     import {mapGetters} from 'vuex';
+    import '../../../static/tree/jsoneditor'
     export default {
         name: "serviceDetails",
         data(){
@@ -24,8 +25,11 @@
             getServiceInfo(){
                 this.$axios.get('/service/inspect/'+ this.serviceId)
                     .then(response=>{
-                        // console.log(response.data.data);
-                        $("#Service").html(JSON.stringify(response.data.data, null, 4));
+                        // $("#Service").html(JSON.stringify(response.data.data, null, 4));
+                        var json = response.data.data;
+                        $('#editor').jsonEditor(json, { change: function() {
+                                $('#json').html(JSON.stringify(json));
+                            } });
                     }).catch(function (err) {
                     console.log(err)
                 })
@@ -46,5 +50,12 @@
 </script>
 
 <style scoped>
-
+    #serviceDetail{
+        padding: 50px;
+        margin: 20px;
+        box-shadow: 3px 3px 10px #dddddd;
+        background-color: white;
+        border-radius: 15px;
+        min-height: 400px;
+    }
 </style>

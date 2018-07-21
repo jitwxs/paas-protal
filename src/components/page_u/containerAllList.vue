@@ -1,5 +1,27 @@
 <template>
-  <div id="main">
+  <div id="container">
+      <!--echarts图表展示区域-->
+      <div id="sideMenuContainer" class="conta" v-show="true"
+           style="z-index: 2;position: absolute;background-color: white;width: 1000px;height: 850px;top:0px;left: 1800px;box-shadow:0 0 10px #dddddd;border-radius: 15px;padding-left: 50px;">
+          <h4 style="font-family: 微软雅黑;margin-bottom: 2%">容器实时监控</h4>
+          <p style="font-family: 微软雅黑;font-size: 14px;color: #409EFF;margin-bottom: 2%;margin-left: 1%;cursor: pointer"
+             @click="closelc">返回</p>
+
+          <el-radio-group v-model="radio" @change="changeExcel($event)" size="medium">
+              <el-radio-button label="实时" ></el-radio-button>
+              <el-radio-button label="24小时"></el-radio-button>
+              <el-radio-button label="每周"></el-radio-button>
+          </el-radio-group>
+          <div id="main" style="width: 300px;height:200px;float: left"></div>
+          <div id="main2" style="width: 300px;height:200px;float: left"></div>
+          <div id="main3" style="width: 300px;height:200px;float: left"></div>
+          <div id="main4" style="width: 300px;height:200px;float: left"></div>
+          <div id="main5" style="width: 300px;height:200px;float: left"></div>
+          <div id="main6" style="width: 300px;height:200px;float: left"></div>
+          <div id="main7" style="width: 300px;height:200px;float: left"></div>
+          <div id="main8" style="width: 300px;height:200px;float: left"></div>
+          <div id="main9" style="width: 300px;height:200px;float: left"></div>
+      </div>
       <!--按钮组-->
       <el-button-group>
           <el-button type="success" :loading="loading[0]" :disabled="freeze[0]" icon="el-icon-success" @click="getStart()">start</el-button>
@@ -15,7 +37,7 @@
           <el-table-column label="容器名称" prop="name" show-overflow-tooltip></el-table-column>
           <el-table-column label="项目名" prop="projectName" show-overflow-tooltip>
               <template slot-scope="scope">
-                  <el-select v-model="containerList[scope.$index].projectName"  placeholder="请选择" @change="changeProject(scope.row,scope.$index)">
+                  <el-select v-model="containerList[scope.$index].projectName" style="width: 80%;" placeholder="请选择" @change="changeProject(scope.row,scope.$index)">
                       <el-option
                           v-for="item in projectInfo"
                           :key="item.id"
@@ -32,7 +54,8 @@
           <el-table-column label="终端" >
               <template slot-scope="scope">
                   <ul style="float: left;list-style-type: none" >
-                      <li style="float: left;color: #409EFF;cursor: pointer" @click="consoleopen(scope.row)"><i class="el-icon-view"></i> 打开终端</li>
+                      <li style="float: left;color: #409EFF;cursor: pointer" @click="consoleopen(scope.row)">打开终端</li>
+                      <i class="el-icon-view" style="margin-left: 5px" @click="getrow(scope.row)"></i>
                   </ul>
               </template>
           </el-table-column>
@@ -48,6 +71,17 @@
               </template>
           </el-table-column>
       </el-table>
+
+      <el-pagination
+          style="float: right;margin-top: 20px;margin-right: 30px"
+          @current-change="handleCurrentChange"
+          :current-page.sync="currentPage"
+          @size-change="handleSizeChange"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="totalCount">
+      </el-pagination>
   </div>
 </template>
 
@@ -60,6 +94,386 @@
           projectInfo:[],
           projectNum:0,
           value:[],
+
+          row:'',
+          str:'',
+          time: '',
+          flag: 0,
+          data: [],
+          data2: [],
+          data3: [],
+          data4: [],
+          data5: [],
+          data6: [],
+          data7: [],
+          data8: [],
+          data9: [],
+          option: {
+              title: {
+                  text: 'rxbyte'
+              },
+              dataZoom: [
+                  {
+                      type: 'slider',
+                      show: false,
+                      yAxisIndex: [0],
+                      left: '96%',
+                      bottom: '5%',
+                      start: 0,
+                      end: 100
+                  }
+              ],
+              tooltip: {
+                  trigger: 'axis',
+              },
+              xAxis: {
+                  type: 'time',
+                  splitLine: {
+                      show: false
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  boundaryGap: [0, '100%'],
+                  splitLine: {
+                      show: true
+                  }
+              },
+              series: [
+                  {
+                      name: '模拟数据',
+                      type: 'line',
+                      showSymbol: false,
+                      // showAllSymbol:true,
+                      connectNulls: true,
+                      hoverAnimation: false,
+                      data: this.data
+                  }
+              ]
+          },
+          option2: {
+              title: {
+                  text: 'txbyte'
+              },
+              dataZoom: [
+                  {
+                      type: 'slider',
+                      show: false,
+                      yAxisIndex: [0],
+                      left: '96%',
+                      bottom: '5%',
+                      start: 0,
+                      end: 100
+                  }
+              ],
+              tooltip: {
+                  trigger: 'axis',
+              },
+              xAxis: {
+                  type: 'time',
+                  splitLine: {
+                      show: false
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  boundaryGap: [0, '100%'],
+                  splitLine: {
+                      show: true
+                  }
+              },
+              series: [
+                  {
+                      name: '模拟数据',
+                      type: 'line',
+                      showSymbol: false,
+                      // showAllSymbol:true,
+                      connectNulls: true,
+                      hoverAnimation: false,
+                      data: this.data2
+                  }]
+          },
+          option3: {
+              title: {
+                  text: 'rxPackets'
+              },
+              dataZoom: [
+                  {
+                      type: 'slider',
+                      show: false,
+                      yAxisIndex: [0],
+                      left: '96%',
+                      bottom: '5%',
+                      start: 0,
+                      end: 100
+                  }],
+              tooltip: {
+                  trigger: 'axis',
+              },
+              xAxis: {
+                  type: 'time',
+                  splitLine: {
+                      show: false
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  boundaryGap: [0, '100%'],
+                  splitLine: {
+                      show: true
+                  }
+              },
+              series: [{
+                  name: '模拟数据',
+                  type: 'line',
+                  showSymbol: false,
+                  // showAllSymbol:true,
+                  connectNulls: true,
+                  hoverAnimation: false,
+                  data: this.data3
+              }]
+          },
+          option4: {
+              title: {
+                  text: 'txPackets'
+              },
+              dataZoom: [
+                  {
+                      type: 'slider',
+                      show: false,
+                      yAxisIndex: [0],
+                      left: '96%',
+                      bottom: '5%',
+                      start: 0,
+                      end: 100
+                  }],
+              tooltip: {
+                  trigger: 'axis',
+              },
+              xAxis: {
+                  type: 'time',
+                  splitLine: {
+                      show: false
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  boundaryGap: [0, '100%'],
+                  splitLine: {
+                      show: true
+                  }
+              },
+              series: [{
+                  name: '模拟数据',
+                  type: 'line',
+                  showSymbol: false,
+                  // showAllSymbol:true,
+                  connectNulls: true,
+                  hoverAnimation: false,
+                  data: this.data4
+              }]
+          },
+          option5: {
+              title: {
+                  text: 'cpuUtilization'
+              },
+              dataZoom: [
+                  {
+                      type: 'slider',
+                      show: false,
+                      yAxisIndex: [0],
+                      left: '96%',
+                      bottom: '5%',
+                      start: 0,
+                      end: 100
+                  }],
+              tooltip: {
+                  trigger: 'axis',
+              },
+              xAxis: {
+                  type: 'time',
+                  splitLine: {
+                      show: false
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  boundaryGap: [0, '100%'],
+                  splitLine: {
+                      show: true
+                  }
+              },
+              series: [{
+                  name: '模拟数据',
+                  type: 'line',
+                  showSymbol: false,
+                  // showAllSymbol:true,
+                  connectNulls: true,
+                  hoverAnimation: false,
+                  data: this.data5
+              }]
+          },
+          option6: {
+              title: {
+                  text: 'memoryUsage'
+              },
+              dataZoom: [
+                  {
+                      type: 'slider',
+                      show: false,
+                      yAxisIndex: [0],
+                      left: '96%',
+                      bottom: '5%',
+                      start: 0,
+                      end: 100
+                  }],
+              tooltip: {
+                  trigger: 'axis',
+              },
+              xAxis: {
+                  type: 'time',
+                  splitLine: {
+                      show: false
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  boundaryGap: [0, '100%'],
+                  splitLine: {
+                      show: true
+                  }
+              },
+              series: [{
+                  name: '模拟数据',
+                  type: 'line',
+                  showSymbol: false,
+                  // showAllSymbol:true,
+                  connectNulls: true,
+                  hoverAnimation: false,
+                  data: this.data6
+              }]
+          },
+          option7: {
+              title: {
+                  text: 'memoryUtilization'
+              },
+              dataZoom: [
+                  {
+                      type: 'slider',
+                      show: false,
+                      yAxisIndex: [0],
+                      left: '96%',
+                      bottom: '5%',
+                      start: 0,
+                      end: 100
+                  }],
+              tooltip: {
+                  trigger: 'axis',
+              },
+              xAxis: {
+                  type: 'time',
+                  splitLine: {
+                      show: false
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  boundaryGap: [0, '100%'],
+                  splitLine: {
+                      show: true
+                  }
+              },
+              series: [{
+                  name: '模拟数据',
+                  type: 'line',
+                  showSymbol: false,
+                  // showAllSymbol:true,
+                  connectNulls: true,
+                  hoverAnimation: false,
+                  data: this.data7
+              }]
+          },
+          option8: {
+              title: {
+                  text: 'blockRead'
+              },
+              dataZoom: [
+                  {
+                      type: 'slider',
+                      show: false,
+                      yAxisIndex: [0],
+                      left: '96%',
+                      bottom: '5%',
+                      start: 0,
+                      end: 100
+                  }],
+              tooltip: {
+                  trigger: 'axis',
+              },
+              xAxis: {
+                  type: 'time',
+                  splitLine: {
+                      show: false
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  boundaryGap: [0, '100%'],
+                  splitLine: {
+                      show: true
+                  }
+              },
+              series: [{
+                  name: '模拟数据',
+                  type: 'line',
+                  showSymbol: false,
+                  // showAllSymbol:true,
+                  connectNulls: true,
+                  hoverAnimation: false,
+                  data: this.data8
+              }]
+          },
+          option9: {
+              title: {
+                  text: 'blockWrite'
+              },
+              dataZoom: [
+                  {
+                      type: 'slider',
+                      show: false,
+                      yAxisIndex: [0],
+                      left: '96%',
+                      bottom: '5%',
+                      start: 0,
+                      end: 100
+                  }],
+              tooltip: {
+                  trigger: 'axis',
+              },
+              xAxis: {
+                  type: 'time',
+                  splitLine: {
+                      show: false
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  boundaryGap: [0, '100%'],
+                  splitLine: {
+                      show: true
+                  }
+              },
+              series: [{
+                  name: '模拟数据',
+                  type: 'line',
+                  showSymbol: false,
+                  // showAllSymbol:true,
+                  connectNulls: true,
+                  hoverAnimation: false,
+                  data: this.data9
+              }]
+          },
+          radio:'实时',
 
           activeName:'first',
           loading:[false,false,false,false,false,false],
@@ -200,7 +614,7 @@
                         title:'超时',
                         message:'请重新操作',
                     });
-                    this.getContainerList(1,this.pageSize);
+                    this.getContainerList();
                     this.loading=[false,false,false,false,false,false];
                     this.wsflag=0;
                 }
@@ -226,16 +640,30 @@
 
         },
 
+        // 分页函数
+        handleCurrentChange:function (val) {
+            if (val == null) {
+                return;
+            }
+            this.currentPage = val;
+            this.getContainerList();
+        },
+        //分页大小
+        handleSizeChange(val){
+            this.currentPage = 1;
+            this.pageSize = val;
+            this.getContainerList();
+        },
         //获取容器列表
-        getContainerList(currentPage, pageSize){
-            let url = "/container/list/?current="+currentPage + "&size="+pageSize;
+        getContainerList(){
+            let url = "/container/list/?current="+this.currentPage + "&size="+this.pageSize;
             this.$axios.get(url)
                 .then((res)=>{
                     if (res.data.code == 0) {
                         console.log(res.data.data);
                         // console.log(res.data)
                         this.containerList = res.data.data.records;
-                        this.total = res.data.data.total;
+                        this.totalCount = res.data.data.total;
 
                         for(var i=0;i<this.containerList.length; i++){
                             var port = this.containerList[i].port;
@@ -264,15 +692,313 @@
                 })
         },
 
+        changeExcel(val) {
+            switch (val){
+                case "实时":
+                    this.flag = 0;
+                    window.clearInterval(this.time);
+                    this.timeout=10000;
+                    this.handleView(this.row,this.timeout,"actual");
+                    break;
+                case "24小时":
+                    this.flag = 0;
+                    window.clearInterval(this.time);
+                    this.timeout=60000;
+                    this.handleView(this.row,this.timeout,"today");
+                    break;
+                case "每周":
+                    this.flag = 0;
+                    window.clearInterval(this.time);
+                    this.timeout=360000;
+                    this.handleView(this.row,this.timeout,"week");
+                    break;
+            }
+        },
+
+        closelc() {
+            $('#sideMenuContainer').animate({left:'1800px'},1000);
+            // this.isShow = false;
+            clearInterval(this.time);
+        },
+        createEcharts: function () {
+            let myChart = this.$echarts.init(document.getElementById('main'));
+            let chart2 = this.$echarts.init(document.getElementById('main2'));
+            let chart3 = this.$echarts.init(document.getElementById('main3'));
+            let chart4 = this.$echarts.init(document.getElementById('main4'));
+            let chart5 = this.$echarts.init(document.getElementById('main5'));
+            let chart6 = this.$echarts.init(document.getElementById('main6'));
+            let chart7 = this.$echarts.init(document.getElementById('main7'));
+            let chart8 = this.$echarts.init(document.getElementById('main8'));
+            let chart9 = this.$echarts.init(document.getElementById('main9'));
+
+
+            myChart.setOption(this.option);
+            chart2.setOption(this.option2);
+            chart3.setOption(this.option3);
+            chart4.setOption(this.option4);
+            chart5.setOption(this.option5);
+            chart6.setOption(this.option6);
+            chart7.setOption(this.option7);
+            chart8.setOption(this.option8);
+            chart9.setOption(this.option9);
+        },
+
+        // 查看echarts图表
+        getrow(row){
+            this.radio = '实时';
+            this.flag=0;
+            this.row = row;
+            this.handleView(this.row,10000,"actual");
+        },
+        handleView: function (row,val,str) {
+            this.hassendmonitor = true;
+
+            this.data=[];
+            this.data2=[];
+            this.data3=[];
+            this.data4=[];
+            this.data5=[];
+            this.data6=[];
+            this.data7=[];
+            this.data8=[];
+            this.data9=[];
+
+            let myChart = this.$echarts.init(document.getElementById('main'));
+            let chart2 = this.$echarts.init(document.getElementById('main2'));
+            let chart3 = this.$echarts.init(document.getElementById('main3'));
+            let chart4 = this.$echarts.init(document.getElementById('main4'));
+            let chart5 = this.$echarts.init(document.getElementById('main5'));
+            let chart6 = this.$echarts.init(document.getElementById('main6'));
+            let chart7 = this.$echarts.init(document.getElementById('main7'));
+            let chart8 = this.$echarts.init(document.getElementById('main8'));
+            let chart9 = this.$echarts.init(document.getElementById('main9'));
+
+            $('#sideMenuContainer').animate({left:'700px'},1000);
+
+            this.$axios.get('/monitor/container/'+str+'/' + row.id)
+                .then(response => {
+                    if (response.data.code === 0) {
+                        this.content = response.data.data;
+                        // console.log(this.content);
+                        this.content = this.content.toString().replace("\\", "");
+                        this.content = eval('[' + this.content + ']');
+
+                        if (this.flag === 0) {
+                            for (let i = 0; i < this.content.length; i++) {
+                                let date1 = new Date(this.content[i].timestamp);
+                                let timestamp1 = date1.toLocaleDateString().replace(/\//g, "-") + " " + date1.toTimeString().substr(0, 8);
+                                // console.log(timestamp1);
+                                let rxbyte = this.content[i].rxBytes.toString();
+                                let txbyte = this.content[i].txBytes.toString();
+                                let rxPackets = this.content[i].rxPackets.toString();
+                                let txPackets = this.content[i].txPackets.toString();
+                                let cpuUtilization = this.content[i].cpuUtilization.toString();
+                                let memoryUsage = this.content[i].memoryUsage.toString();
+                                let memoryUtilization = this.content[i].memoryUtilization.toString();
+                                let blockRead = this.content[i].blockRead.toString();
+                                let blockWrite = this.content[i].blockWrite.toString();
+                                this.data.push(timestamp1, [timestamp1, rxbyte]);
+                                this.data2.push(timestamp1, [timestamp1, txbyte]);
+                                this.data3.push(timestamp1, [timestamp1, rxPackets]);
+                                this.data4.push(timestamp1, [timestamp1, txPackets]);
+                                this.data5.push(timestamp1, [timestamp1, cpuUtilization]);
+                                this.data6.push(timestamp1, [timestamp1, memoryUsage]);
+                                this.data7.push(timestamp1, [timestamp1, memoryUtilization]);
+                                this.data8.push(timestamp1, [timestamp1, blockRead]);
+                                this.data9.push(timestamp1, [timestamp1, blockWrite]);
+                            }
+                        } else {
+                            let date2 = new Date(this.content[this.content.length - 1].timestamp);
+                            let timestamp2 = date2.toLocaleDateString().replace(/\//g, "-") + " " + date2.toTimeString().substr(0, 8);
+                            let rxbyte2 = this.content[this.content.length - 1].rxBytes.toString();
+                            let txbyte2 = this.content[this.content.length - 1].txBytes.toString();
+                            let rxPackets2 = this.content[this.content.length - 1].rxPackets.toString();
+                            let txPackets2 = this.content[this.content.length - 1].txPackets.toString();
+                            let cpuUtilization2 = this.content[this.content.length - 1].cpuUtilization.toString();
+                            let memoryUsage2 = this.content[this.content.length - 1].memoryUsage.toString();
+                            let memoryUtilization2 = this.content[this.content.length - 1].memoryUtilization.toString();
+                            let blockRead2 = this.content[this.content.length - 1].blockRead.toString();
+                            let blockWrite2 = this.content[this.content.length - 1].blockWrite.toString();
+                            this.data.push(timestamp2, [timestamp2, rxbyte2]);
+                            this.data2.push(timestamp2, [timestamp2, txbyte2]);
+                            this.data3.push(timestamp2, [timestamp2, rxPackets2]);
+                            this.data4.push(timestamp2, [timestamp2, txPackets2]);
+                            this.data5.push(timestamp2, [timestamp2, cpuUtilization2]);
+                            this.data6.push(timestamp2, [timestamp2, memoryUsage2]);
+                            this.data7.push(timestamp2, [timestamp2, memoryUtilization2]);
+                            this.data8.push(timestamp2, [timestamp2, blockRead2]);
+                            this.data9.push(timestamp2, [timestamp2, blockWrite2]);
+                        }
+                        this.flag++;
+
+                        myChart.setOption({
+                            series: [{
+                                data: this.data
+                            }]
+                        });
+                        chart2.setOption({
+                            series: [{
+                                data: this.data2
+                            }]
+                        });
+                        chart3.setOption({
+                            series: [{
+                                data: this.data3
+                            }]
+                        });
+                        chart4.setOption({
+                            series: [{
+                                data: this.data4
+                            }]
+                        });
+                        chart5.setOption({
+                            series: [{
+                                data: this.data5
+                            }]
+                        });
+                        chart6.setOption({
+                            series: [{
+                                data: this.data6
+                            }]
+                        });
+                        chart7.setOption({
+                            series: [{
+                                data: this.data7
+                            }]
+                        });
+                        chart8.setOption({
+                            series: [{
+                                data: this.data8
+                            }]
+                        });
+                        chart9.setOption({
+                            series: [{
+                                data: this.data9
+                            }]
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    console.log(err)
+                });
+
+            var that = this;
+            this.time = setInterval(() => {
+                that.$axios.get('/monitor/container/'+str+'/' + row.id)
+                    .then(response => {
+                        if (response.data.code === 0) {
+                            that.content = response.data.data;
+                            that.content = that.content.toString().replace("\\", "");
+                            that.content = eval('[' + that.content + ']');
+
+                            if (that.flag === 0) {
+                                for (let i = 0; i < that.content.length; i++) {
+                                    let date1 = new Date(that.content[i].timestamp);
+                                    let timestamp1 = date1.toLocaleDateString().replace(/\//g, "-") + " " + date1.toTimeString().substr(0, 8);
+                                    let rxbyte = that.content[i].rxBytes.toString();
+                                    let txbyte = that.content[i].txBytes.toString();
+                                    let rxPackets = that.content[i].rxPackets.toString();
+                                    let txPackets = that.content[i].txPackets.toString();
+                                    let cpuUtilization = that.content[i].cpuUtilization.toString();
+                                    let memoryUsage = that.content[i].memoryUsage.toString();
+                                    let memoryUtilization = that.content[i].memoryUtilization.toString();
+                                    let blockRead = that.content[i].blockRead.toString();
+                                    let blockWrite = that.content[i].blockWrite.toString();
+                                    that.data.push(timestamp1, [timestamp1, rxbyte]);
+                                    that.data2.push(timestamp1, [timestamp1, txbyte]);
+                                    that.data3.push(timestamp1, [timestamp1, rxPackets]);
+                                    that.data4.push(timestamp1, [timestamp1, txPackets]);
+                                    that.data5.push(timestamp1, [timestamp1, cpuUtilization]);
+                                    that.data6.push(timestamp1, [timestamp1, memoryUsage]);
+                                    that.data7.push(timestamp1, [timestamp1, memoryUtilization]);
+                                    that.data8.push(timestamp1, [timestamp1, blockRead]);
+                                    that.data9.push(timestamp1, [timestamp1, blockWrite]);
+                                }
+                            } else {
+                                let date2 = new Date(that.content[that.content.length - 1].timestamp);
+                                let timestamp2 = date2.toLocaleDateString().replace(/\//g, "-") + " " + date2.toTimeString().substr(0, 8);
+                                let rxbyte2 = that.content[that.content.length - 1].rxBytes.toString();
+                                let txbyte2 = that.content[that.content.length - 1].txBytes.toString();
+                                let rxPackets2 = that.content[that.content.length - 1].rxPackets.toString();
+                                let txPackets2 = that.content[that.content.length - 1].txPackets.toString();
+                                let cpuUtilization2 = that.content[that.content.length - 1].cpuUtilization.toString();
+                                let memoryUsage2 = that.content[that.content.length - 1].memoryUsage.toString();
+                                let memoryUtilization2 = that.content[that.content.length - 1].memoryUtilization.toString();
+                                let blockRead2 = that.content[that.content.length - 1].blockRead.toString();
+                                let blockWrite2 = that.content[that.content.length - 1].blockWrite.toString();
+                                that.data.push(timestamp2, [timestamp2, rxbyte2]);
+                                that.data2.push(timestamp2, [timestamp2, txbyte2]);
+                                that.data3.push(timestamp2, [timestamp2, rxPackets2]);
+                                that.data4.push(timestamp2, [timestamp2, txPackets2]);
+                                that.data5.push(timestamp2, [timestamp2, cpuUtilization2]);
+                                that.data6.push(timestamp2, [timestamp2, memoryUsage2]);
+                                that.data7.push(timestamp2, [timestamp2, memoryUtilization2]);
+                                that.data8.push(timestamp2, [timestamp2, blockRead2]);
+                                that.data9.push(timestamp2, [timestamp2, blockWrite2]);
+                            }
+                            that.flag++;
+                            myChart.setOption({
+                                series: [{
+                                    data: that.data
+                                }]
+                            });
+                            chart2.setOption({
+                                series: [{
+                                    data: that.data2
+                                }]
+                            });
+                            chart3.setOption({
+                                series: [{
+                                    data: that.data3
+                                }]
+                            });
+                            chart4.setOption({
+                                series: [{
+                                    data: that.data4
+                                }]
+                            });
+                            chart5.setOption({
+                                series: [{
+                                    data: that.data5
+                                }]
+                            });
+                            chart6.setOption({
+                                series: [{
+                                    data: that.data6
+                                }]
+                            });
+                            chart7.setOption({
+                                series: [{
+                                    data: that.data7
+                                }]
+                            });
+                            chart8.setOption({
+                                series: [{
+                                    data: that.data8
+                                }]
+                            });
+                            chart9.setOption({
+                                series: [{
+                                    data: that.data9
+                                }]
+                            });
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
+            }, val);
+        },
+
         changeProject(row,val){
             console.log(row.id+this.value[val]);
             this.$axios.post('/container/changeProject',{
                 "containerId":row.id,
-                "projectId":this.value[val],
+                "projectId":this.containerList[val].projectName,
             })
                 .then(response=>{
                     this.$message(response.data.message);
-                    this.getContainerList(1,this.pageSize);
+                    this.getContainerList();
                 }).catch(function (err) {
                 console.log(err);
             })
@@ -362,7 +1088,7 @@
                                     this.freeze=[true,true,false,false,false,false];
                                     break;
                             }
-                            this.getContainerList(1,this.pageSize, this.projectId);
+                            this.getContainerList();
 
                         }).catch(function (err) {
                         console.log(err);
@@ -401,15 +1127,18 @@
           })
       },
     created(){
-      this.getContainerList(1,this.pageSize);
+      this.getContainerList();
       this.initWebSocket();
       this.getProjectInfo();
-    }
+    },
+      mounted() {
+          this.createEcharts();
+      }
   }
 </script>
 
 <style scoped>
-  #main{
+  #container{
     padding: 50px;
     margin: 20px;
     box-shadow: 3px 3px 10px #dddddd;

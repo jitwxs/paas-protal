@@ -53,7 +53,17 @@
                     {
                         icon: 'el-icon-document',
                         index: '/mirror',
-                        title: '镜像'
+                        title: '镜像',
+                        subs:[
+                            {
+                                index:'/mirror',
+                                title:'本地镜像'
+                            },
+                            {
+                                index:'/publicMirror',
+                                title:'公共镜像'
+                            }
+                        ]
                     },
                     {
                         icon: 'el-icon-goods',

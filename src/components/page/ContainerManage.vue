@@ -143,6 +143,11 @@
                 </el-pagination>
             </div>
         </div>
+
+        <!--远程终端弹框-->
+        <el-dialog title="远程终端" :visible.sync="dialogFormVisible" width="55%">
+            <iframe :src="frameUrl" width="100%" height="400px" frameborder='0'></iframe>
+        </el-dialog>
     </div>
 </template>
 
@@ -153,6 +158,8 @@
         name: "ContainerManage",
         data() {
             return {
+                dialogFormVisible: false,
+                frameUrl:'../../../static/term.html',
                 str:'',
                 row:'',
                 timeout:10000,
@@ -654,7 +661,9 @@
             },
             // 查看echarts图表
             getrow(row){
-                this.radio = '实时', this.row = row;
+                this.radio = '实时';
+                this.flag=0;
+                this.row = row;
                 this.handleView(this.row,10000,"actual");
             },
             handleView: function (row,val,str) {
@@ -919,16 +928,17 @@
             // 打开终端
             consoleopen: function (row) {
                 if (row.status === 1) {
-                    window.open('../../../static/term.html');
+
                     this.$axios.post('/container/terminal/', {
                         "containerId": row.id,
-                        "cursorBlink": false,
-                        "rows": 50,
-                        "cols": 100,
+                        "curs": 50,
+                        "colsorBlink": false,
+                        "rows": 100,
                         "width": document.documentElement.clientWidth,
                         "height": document.documentElement.clientHeight,
                     })
                         .then(response => {
+                            this.dialogFormVisible = true;
                             sessionStorage.setItem('terminalCursorBlink', response.data.data.cursorBlink);
                             sessionStorage.setItem('terminalRows', response.data.data.rows);
                             sessionStorage.setItem('terminalCols', response.data.data.cols);

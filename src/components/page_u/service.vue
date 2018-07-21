@@ -1,11 +1,5 @@
 <template>
-    <div class="containermanage">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-date"></i>服务</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
-        <div class="container">
+        <div id="service">
             <!--<el-button @click="addService">添加服务</el-button>-->
             <el-table
                 ref="singleTable"
@@ -14,17 +8,24 @@
                 style="width: 100%"
                 highlight-current-row>
                 <el-table-column
-                    label="项目名"
-                    width="200"
-                    prop="projectName"
-                    show-overflow-tooltip>
-                </el-table-column>
-                <el-table-column
                     label="服务名称"
                     width="200"
                     prop="name"
-                    show-overflow-tooltip></el-table-column>
-
+                    show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column label="项目名" prop="projectName" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <el-select v-model="serviceList[scope.$index].projectName" style="width: 60%;" placeholder="请选择" @change="changeProject(scope.row,scope.$index)">
+                            <el-option
+                                v-for="item in projectInfo"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                            </el-option>
+                            <!--<el-option :selected='true' :label="test" :key="test" :value="test"></el-option>-->
+                        </el-select>
+                    </template>
+                </el-table-column>
                 <el-table-column
                     prop="image"
                     label="镜像"
@@ -36,6 +37,16 @@
                     label="端口"
                     show-overflow-tooltip>
                 </el-table-column>
+
+                <el-table-column
+                    prop="replicas"
+                    label="横向扩展"
+                    show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <el-input-number v-model="serviceList[scope.$index].replicas" @change="replicasChange(scope.row,scope.$index)" :min="1" :max="10" label="描述文字"></el-input-number>
+                    </template>
+                </el-table-column>
+
                 <el-table-column
                     label="详情"
                     show-overflow-tooltip>
@@ -56,7 +67,6 @@
 
             </el-table>
         </div>
-    </div>
 </template>
 
 <script>
@@ -66,6 +76,7 @@
         data(){
           return{
               serviceList:[],
+              projectInfo:[],
           }
         },
         computed:{
@@ -90,7 +101,43 @@
                     console.log(err);
                 })
             },
+            // 获取项目列表
+            getProjectInfo(){
+                this.$axios.get('/project/self/list')
+                    .then(response=>{
+                        this.projectInfo = response.data.data.records;
+                    }).catch(function (err) {
+                    console.log(err);
+                })
+            },
+            // 修改所属项目
+            changeProject(row,val){
+                console.log(this.serviceList[val].projectId+'////'+this.serviceList[val].projectName);
+                this.$axios.post('/service/changeProject',{
+                    "serviceId":row.id,
+                    "projectId":this.serviceList[val].projectName,
+                })
+                    .then(response=>{
+                        this.$message(response.data.message);
+                        this.getServiceInfo();
+                    }).catch(function (err) {
+                    console.log(err);
+                })
+            },
 
+            replicasChange(row,index){
+                console.log("her");
+                this.$axios.post('/service/scale',{
+                    'id':row.id,
+                    'num':this.serviceList[index].replicas,
+                })
+                    .then(response=>{
+                        this.$message(response.data.message);
+                        this.getServiceInfo();
+                    }).catch(function (err) {
+                    console.log(err);
+                })
+            },
 
             toDetails(id){
                 this.$store.dispatch("saveServiceId",id);
@@ -209,10 +256,18 @@
         created(){
             this.initWebSocket();
             this.getServiceInfo();
+            this.getProjectInfo();
         },
     }
 </script>
 
 <style scoped>
-
+    #service{
+        padding: 50px;
+        margin: 20px;
+        box-shadow: 3px 3px 10px #dddddd;
+        background-color: white;
+        border-radius: 15px;
+        min-height: 400px;
+    }
 </style>

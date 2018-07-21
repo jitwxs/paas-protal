@@ -3,8 +3,9 @@
 
       <!--上传镜像和拉取镜像-->
       <div class="upAndDown">
-        <el-button style="display: inline" @click="dialogVisible3 = true">导入镜像</el-button>
-        <el-button type="primary" style="display: inline;margin-left: 20px;" @click="dialogVisible = true">拉取镜像</el-button>
+        <el-button style="display: inline" type="primary" @click="dialogVisible3 = true">导入镜像</el-button>
+          <!--<el-button style="display: inline" type="danger" @click="handleDelete">删除镜像</el-button>-->
+        <!--<el-button type="primary" style="display: inline;margin-left: 20px;" @click="dialogVisible = true">拉取镜像</el-button>-->
       </div>
 
       <!--导入镜像模态框-->
@@ -63,37 +64,41 @@
       <!--个人镜像列表-->
       <el-table
         :data="mirrors"
-        style="width: 100%;margin-top: 20px;"
-        @selection-change="handleSelectionChange">
+        style="width: 100%;margin-top: 20px;">
         <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
-        <el-table-column
-          label="镜像名称">
+          label="名称">
         <template slot-scope="scope">
          <span @click="handleView(scope.$index, scope.row)" style="cursor:pointer;">{{scope.row.name}}</span>
         </template>
-          >
         </el-table-column>
+
+          <el-table-column
+              label="标签"
+              prop="tag">
+          </el-table-column>
+
         <el-table-column
           label="镜像大小"
           prop="size">
         </el-table-column>
+
         <el-table-column
-          label="镜像类型"
+          label="私有"
           prop="type">
+            <template slot-scope="scope">
+                <el-button
+                    v-if=scope.row.hasOpen
+                    size="mini"
+                    @click="handleUnOpen(scope.$index, scope.row)">已公开</el-button>
+                <el-button
+                    v-else
+                    size="mini"
+                    @click="handleOpen(scope.$index, scope.row)" >私有</el-button>
+            </template>
         </el-table-column>
+
         <el-table-column label="操作" width="350">
           <template slot-scope="scope">
-            <el-button
-              v-if=scope.row.hasOpen
-              size="mini"
-              @click="handleUnOpen(scope.$index, scope.row)">已公开</el-button>
-            <el-button
-              v-else
-              size="mini"
-              @click="handleOpen(scope.$index, scope.row)" >私有</el-button>
             <el-button
               size="mini"
               @click="handleEdit(scope.$index, scope.row)">上传</el-button>
@@ -101,24 +106,28 @@
               size="mini"
               type="primary"
               @click="handleExport(scope.$index, scope.row)">导出</el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              <el-button
+                  size="mini"
+                  type="danger"
+                  @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <!--分页-->
-      <div class="block" style="text-align: center">
+      <div class="block" style="text-align: center;float: right;margin-right: 40px;margin-top: 30px;margin-bottom: 15px">
         <el-pagination
           @current-change="handleCurrentChange"
           :current-page.sync="currentPage"
-          :page-size="10"
-          layout="prev, pager, next, jumper"
-          :total="total">
+          @size-change="handleSizeChange"
+          :page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total,sizes,prev, pager, next, jumper"
+          :total="totalCount">
         </el-pagination>
       </div>
+        <br/>
+        <br/>
     </div>
 </template>
 
@@ -138,31 +147,13 @@ export default {
 //      密码
       password:'',
       //个人镜像列表
-      mirrors:[
-//        {
-//          "id": "592838bf086d4f6cb6f412e0f859f337",
-//          "imageId": "3065a4fb90cdd94f30ff575df3cd1f4d6f47261dd06128a5b6d6699d7fc1322d",
-//          "fullName": "local/f4f4bb152cf54fec94eb0d2b22d25f71/my-busybox:latest",
-//          "name": "my-busybox",
-//          "tag": "latest",
-//          "size": 1363351,
-//          "type": 2,
-//          "userId": "f4f4bb152cf54fec94eb0d2b22d25f71",
-//          "hasOpen": false,
-//          "virtualSize": 1363351,
-//          "labels": "null",
-//          "cmd": "null",
-//          "repo": "local",
-//          "parentId": "",
-//          "createDate": "2018-07-12 14:21:50",
-//          "updateDate": null
-//        }
-      ],
+      mirrors:[],
 //      要拉取的镜像的名称
       mirrorName:"",
 //      分页需要
       currentPage:1,
-      total:0,
+        totalCount:0,
+        pageSize:10,
       //当前选择镜像的id
       imageId:'',
 //      导入镜像表单
@@ -184,7 +175,7 @@ export default {
   methods:{
 //    拉取个人镜像列表
     getMirrorList:function () {
-      this.$axios.get("/image/self?current=1&size=10&orderByField=size&asc=false")
+      this.$axios.get("/image/self?current="+this.currentPage+"&size="+this.pageSize+"&orderByField=size&asc=false")
         .then(response => {
           console.log(response);
           if (response.data.code == 0){
@@ -192,8 +183,11 @@ export default {
               message:response.data.message,
               showClose:true
             });
-            this.total = response.data.data.total;
+            this.totalCount = response.data.data.total;
             this.mirrors = response.data.data.records;
+            for (var i = 0; i<this.mirrors.length; i++){
+                this.mirrors[i].size = bitConvert(this.mirrors[i].size);
+            }
           }
         })
         .catch(function (err) {
@@ -240,25 +234,33 @@ export default {
     },
 
 //    删除列表中的镜像
-    handleDelete:function (index, row) {
-      this.$axios.delete("/image/delete/" + row.id)
-        .then(response => {
-          if (response.data.code == 0){
-            this.$message.success({
-              message:response.data.message,
-              showClose:true
-            });
-            this.getMirrorList();
-          } else {
-            this.$message.error({
-              message:response.data.message,
-              showClose:true
-            })
-          }
-          console.log("删除一个镜像" + reponse)
+    handleDelete:function (index,row) {
+        this.$confirm('此操作将永久删除该镜像 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
         })
-        .catch(function (err) {
-          console.log(err)
+            .then(() => {
+                this.$axios.delete("/image/delete/" + row.id)
+                    .then(response => {
+                        if (response.data.code == 0) {
+                            this.$message.success({
+                                message: response.data.message,
+                                showClose: true
+                            });
+                            this.getMirrorList();
+                        } else {
+                            this.$message.error({
+                                message: response.data.message,
+                                showClose: true
+                            })
+                        }
+                        console.log(reponse)
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
+            }).catch(()=>{
         })
     },
 
@@ -272,6 +274,7 @@ export default {
                 message: response.data.message,
                 showClose: true
               });
+              window.open(response.data.data);
             }else {
               this.$message.error({
                 message:response.data.message,
@@ -310,16 +313,20 @@ export default {
         })
     },
 
-//    分页
-    handleCurrentChange:function (val) {
-      this.$axios.get("/image/self?current=" + val +"&size=10&orderByField=size&asc=false")
-        .then(response => {
-//          console.log(response)
-        })
-        .catch(function (err) {
-          console.log(err)
-        })
-    },
+// 分页函数
+      handleCurrentChange:function (val) {
+          if (val == null) {
+              return;
+          }
+          this.currentPage = val;
+          this.getMirrorList();
+      },
+      //分页大小
+      handleSizeChange(val){
+          this.currentPage = 1;
+          this.pageSize = val;
+          this.getMirrorList();
+      },
 
 //    本地选择镜像文件实时函数
     importImage:function (event) {
@@ -330,18 +337,19 @@ export default {
 
 //    导入镜像
     importMirror:function () {
+        let that = this;
       let formdata = new FormData();
       formdata.append('file',this.image);
       formdata.append('name',this.mirrorForm.name);
       formdata.append('tag',this.mirrorForm.tag);
-//      formData.append("file",file);
+      console.log(formdata);
       $.ajax({
         type: "post",
         async: true,
         url: "http://192.168.100.151:9999/image/import",
         dataType: 'json',
         headers:{
-          'Authorization': sessionStorage.token
+          'Authorization': sessionStorage.userToken
         },
         // 告诉jQuery不要去处理发送的数据
         processData : false,
@@ -349,11 +357,15 @@ export default {
         contentType: false,
         data: formdata,
         success: function (res) {
-          this.getMirrorList();
-          this.mirrorForm = {};
+            console.log(res.data);
+            that.mirrorForm = {};
+            that.dialogVisible3=false;
+            that.$message(res.data.message);
+            that.getMirrorList();
         },
         error: function (error) {
-          console.log(error);
+            this.$message(res.data.message);
+            console.log(error);
         }
       });
     },
@@ -402,7 +414,7 @@ export default {
     },
     //初始化websocket
     initWebSocket(){
-      console.log(this.userInfo.userId)
+      console.log(this.userInfo.userId);
       this.websock = new WebSocket("ws://192.168.100.151:9999/ws/"+ this.userInfo.userId);
       this.websock.onopen = this.websocketonopen;
 
@@ -430,7 +442,7 @@ export default {
     websocketonmessage:function(e){
       var data = eval('('+e.data+')');
       if (data.info == null) {
-        console.log(data)
+        console.log(data);
         if (data.code == 0){
           this.$notify({
             type: 'success',
@@ -440,7 +452,7 @@ export default {
           this.container.imageId = data.data.imageId;
           this.container.port = [];
           this.initPortLength = data.data.exportPort.length;
-
+            this.getMirrorList();
         } else {
           this.$notify({
             type: 'error',
@@ -489,6 +501,14 @@ export default {
 </script>
 
 <style scoped>
+    #mirror{
+        padding: 50px;
+        margin: 20px;
+        box-shadow: 3px 3px 10px #dddddd;
+        background-color: white;
+        border-radius: 15px;
+        min-height: 400px;
+    }
   /*列表*/
   .demo-table-expand {
     font-size: 0;

@@ -307,7 +307,13 @@ export const asyncRouterMap = [
                 path: '/mirror',
                 name: 'mirror',
                 component: resolve => require(['../components/page_u/mirror/mirror.vue'], resolve),
-                meta: {title: '镜像'}
+                meta: {title: '本地镜像'}
+            },
+            {
+                path: '/publicmirror',
+                name: 'mirror',
+                component: resolve => require(['../components/page_u/mirror/publicMirror.vue'], resolve),
+                meta: {title: '公共镜像'}
             },
             {
                 path: '/mirrorDetail',

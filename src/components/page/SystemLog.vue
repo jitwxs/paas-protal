@@ -61,7 +61,7 @@
                 </el-table-column>
                 <el-table-column prop="id" label="日志id">
                 </el-table-column>
-                <el-table-column prop="typeName" label="日志类型">
+                <el-table-column prop="description" label="日志类型">
                 </el-table-column>
                 <el-table-column prop="hasException" label="有无异常">
                 </el-table-column>

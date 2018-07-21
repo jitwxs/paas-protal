@@ -48,8 +48,7 @@
 
                 <el-tab-pane label="暴露端口" name="third" class="pane">
                     <div class="containerBylc">
-
-                        <el-tag v-for="(item, index) in portInfo" style="margin-left: 10px;">{{item}}</el-tag>
+                        <el-tag v-for="(item, index) in portInfo" :key="index" style="margin-left: 10px;">{{item}}</el-tag>
                     </div>
                 </el-tab-pane>
 

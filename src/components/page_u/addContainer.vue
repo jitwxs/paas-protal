@@ -555,7 +555,6 @@
          .then((res)=>{
            if (res.data.code == 0){
              this.$message.success("正在创建容器");
-               this.$router.push('/projectPage');
            } else {
              this.$message.error("配置错误")
            }
@@ -645,7 +644,7 @@
            this.container.imageId = data.data.imageId;
            this.container.port = [];
            this.initPortLength = data.data.exportPort.length;
-
+             this.$router.push('/projectPage');
          } else {
            this.$notify({
              type: 'error',

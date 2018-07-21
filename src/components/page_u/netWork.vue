@@ -1,11 +1,5 @@
 <template>
-    <div class="networkmanage">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-phone-outline"></i>网络</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
-        <div class="container">
+        <div id="network">
             <el-tabs v-model="activeName">
                 <el-tab-pane label="公共网络" name="first">
                     <el-table
@@ -20,14 +14,10 @@
                         </el-table-column>
                         <el-table-column prop="hasPublic" label="网络性质" >
                         </el-table-column>
-                        <el-table-column label="操作" >
-                            <!--<template slot-scope="scope">-->
-                                <!--<p style="float: left;margin-left: 5px;cursor: pointer"><i class="el-icon-delete" @click="pubDelete(scope.$index, scope.row)"></i></p>-->
-                            <!--</template>-->
-                        </el-table-column>
                     </el-table>
                     <!--分页区域-->
                     <el-pagination
+                        style="float: right;margin-top: 20px;margin-right: 30px"
                         @current-change="pubhandleCurrentChange"
                         :current-page.sync="pubcurrentPage"
                         @size-change="pubhandleSizeChange"
@@ -72,7 +62,6 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
-    </div>
 </template>
 
 <script>
@@ -265,6 +254,15 @@
 </script>
 
 <style scoped>
+    #network{
+        padding: 50px;
+        margin: 20px;
+        box-shadow: 3px 3px 10px #dddddd;
+        background-color: white;
+        border-radius: 15px;
+        min-height: 400px;
+    }
+
     .handle-box {
         margin-bottom: 20px;
     }
