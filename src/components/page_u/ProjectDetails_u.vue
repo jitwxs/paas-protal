@@ -1,14 +1,7 @@
 <template>
-    <div class="projectdetails">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-message"></i>项目详情</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
-
-        <div class="container">
+        <div id="projectDetails">
             <el-tabs v-model="message">
-                <el-tab-pane :label="`容器列表`" name="first" >
+                <el-tab-pane :label="`容器列表`" name="first" style="min-height: 530px">
                     <el-table :data="containerInfo"  style="width: 100%">
                         <el-table-column prop="createDate" label="创建日期">
                         </el-table-column>
@@ -34,7 +27,7 @@
 
                 </el-tab-pane>
 
-                <el-tab-pane :label="`项目信息`" name="second">
+                <el-tab-pane :label="`项目信息`" name="second" style="min-height: 530px">
                     <!--项目信息展示区域-->
                     <el-table :data="projectInfo"  style="width: 100%" >
                         <el-table-column prop="createDate" label="创建日期">
@@ -80,7 +73,7 @@
                     </el-dialog>
                 </div>
 
-                <el-tab-pane :label="`项目日志`" name="third" >
+                <el-tab-pane :label="`项目日志`" name="third" style="min-height: 530px">
                     <ul class="time-vertical" v-for="(item,index) in projectLog">
                         <li><b></b><span>{{index + 1}}</span><a href="#">{{item.createDate}}</a></li>
                     </ul>
@@ -103,7 +96,6 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
-    </div>
 </template>
 
 <script>
@@ -266,6 +258,15 @@
 </script>
 
 <style scoped>
+    #projectDetails{
+        position: relative;
+        padding: 50px;
+        margin: 20px;
+        box-shadow: 3px 3px 10px #dddddd;
+        background-color: white;
+        border-radius: 15px;
+        min-height: 670px;
+    }
     /*纵向时间轴*/
     .time-vertical {
         list-style-type: none;

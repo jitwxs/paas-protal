@@ -1,5 +1,19 @@
 <template>
     <div class="servicedetails">
+
+        <!--数据卷模态框-->
+        <el-dialog title="导入数据卷" :visible.sync="dialogVisible" width="30%">
+            <el-form >
+                <el-form-item label="选择文件">
+                    <input id="imageInput" @change="importVolume($event)" type="file">
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                  <el-button @click="dialogVisible = false">取 消</el-button>
+                  <el-button type="primary" @click="submitvolume">确 定</el-button>
+                </span>
+        </el-dialog>
+
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-date"></i>服务详情</el-breadcrumb-item>
@@ -38,20 +52,27 @@
 
                 </el-tab-pane>
                 <el-tab-pane label="服务详情" name="second">
-                    <pre id="showjson"></pre>
+                    <div id="editor" class="json-editor"></div>
+                    <pre id="json"></pre>
                 </el-tab-pane>
                 <el-tab-pane label="数据卷信息" name="third">
                     <el-table
                         :data="volumesInfo"
                         tooltip-effect="dark"
                         style="width: 100%">
-                        <el-table-column prop="createDate" label="创建日期">
+
+                        <el-table-column prop="name" label="数据卷名称" width="400px">
                         </el-table-column>
-                        <el-table-column prop="name" label="数据卷名称">
+                        <el-table-column prop="destination" label="挂载点">
                         </el-table-column>
-                        <el-table-column prop="destination" label="数据卷命令">
+                        <el-table-column prop="source" label="外部目录" width="500px">
                         </el-table-column>
-                        <el-table-column prop="source" label="数据卷资源">
+                        <el-table-column prop="createDate" label="创建日期" width="200px">
+                        </el-table-column>
+                        <el-table-column label="操作" width="130px">
+                            <template slot-scope="scope">
+                                <el-button size="mini" @click="uploadVolume(scope.$index, scope.row)" type="primary">上传</el-button>
+                            </template>
                         </el-table-column>
                     </el-table>
                 </el-tab-pane>
@@ -62,10 +83,16 @@
 </template>
 
 <script>
+    import '../../../static/tree/jsoneditor'
     export default {
         name: "ServiceDetails",
         data() {
             return {
+                dialogVisible:false,
+                volumeName:'',
+                total:0,
+                volumeFile:'',
+                volumeId:'',
                 // 该条服务信息的id
                 serviceId: '',
                 activeName: 'first',
@@ -82,6 +109,50 @@
             }
         },
         methods: {
+            //上传数据卷
+            uploadVolume(index,row){
+                this.volumeId = row.id;
+                this.dialogVisible=true;
+            },
+            //提交上传的文件
+            submitvolume(){
+                let that = this;
+                let formdata = new FormData();
+                console.log(this.volumeId);
+                // return;
+                formdata.append('id',this.volumeId);
+                formdata.append('file',this.volumeFile);
+                $.ajax({
+                    type: "post",
+                    async: true,
+                    url: "api/volumes/upload",
+                    dataType: 'json',
+                    headers:{
+                        'Authorization': sessionStorage.userToken
+                    },
+                    // 告诉jQuery不要去处理发送的数据
+                    processData : false,
+                    // 告诉jQuery不要去设置Content-Type请求头
+                    contentType: false,
+                    data: formdata,
+                    success: function (res) {
+                        that.getVolumesInfo();
+                        this.volumeFile = '';
+                        this.fileName='';
+                        this.volumeName='';
+                        this.dialogVisible = false
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            },
+
+            importVolume(event){
+                event.preventDefault();//取消默认行为
+                this.volumeFile = event.target.files[0];
+                this.fileName = event.target.files[0].name;
+            },
             //获取服务基本信息
             getServiceBasicInfo(){
                 this.$axios.get("/service/" + this.serviceId)
@@ -91,7 +162,6 @@
                         } else {
                             console.log(res.data.message);
                         }
-
                     })
                     .catch((err)=>{
                         console.log(err);
@@ -104,7 +174,12 @@
                         if (response.data.code === 0) {
                             this.serviceInfo = response.data.data;
 
-                            $("#showjson").html(syntaxHighlight(response.data.data));
+                            let json = response.data.data;
+                            $('#editor').jsonEditor(json, {
+                                change: function () {
+                                    $('#json').html(JSON.stringify(json));
+                                }
+                            });
                         } else {
                             this.$message.error( "获取服务详情信息失败！");
                         }
@@ -138,10 +213,4 @@
 </script>
 
 <style >
-    pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
-    .string { color: green; }
-    .number { color: darkorange; }
-    .boolean { color: blue; }
-    .null { color: magenta; }
-    .key { color: red; }
 </style>

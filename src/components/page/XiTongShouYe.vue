@@ -7,9 +7,9 @@
                         <!--管理员的角色信息-->
                         <el-card shadow="hover" class="mgb20">
                             <div class="user-info">
-                                <img src="../../../static/img/rabbit.jpg" class="user-avator" alt="">
+                                <img src="../../../static/img/docker.png" class="user-avator" alt="">
                                 <div class="user-info-cont">
-                                    <div class="user-info-name">{{name}}</div>
+                                    <div class="user-info-name" style="margin-bottom: 10px;">{{name}}</div>
                                     <div>{{role}}</div>
                                 </div>
                             </div>
@@ -21,7 +21,7 @@
                             <div slot="header" class="clearfix">
                                 <h4>宿主机详情</h4>
                             </div>
-                            <el-form :label-position='labelpos' label-width="100px" >
+                            <el-form :label-position='labelpos' label-width="100px">
                                 <el-form-item label="宿主机名称">
                                     {{hostInfo.hostName}}
                                 </el-form-item>
@@ -35,7 +35,7 @@
                                     {{hostInfo.dockerVersion}}
                                 </el-form-item>
                                 <el-form-item label="内存大小">
-                                    {{hostInfo.memorySize}}
+                                    {{hostInfo.memorySize}} G
                                 </el-form-item>
                             </el-form>
                         </el-card>
@@ -48,43 +48,49 @@
                 <el-row :gutter="20" class="mgb20">
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-3">
-                               <div class="DivIcons">
-                                   <img src="../../../static/img/icon_docker.svg" class="DivIcon">
-                               </div>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">{{hostInfo.containerNum}}</div>
-                                    <div>容器数量</div>
-                                </div>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-1">
-                                <div class="grid-content grid-con-2">
-                                    <div class="DivIcons" style="background-color: #68c2d7">
-                                        <img src="../../../static/img/swarm.svg" class="DivIcon">
+                            <router-link to="/containermanage">
+                                <div class="grid-content grid-con-3">
+                                    <div class="DivIcons">
+                                        <img src="../../../static/img/icon_docker.svg" class="DivIcon">
+                                    </div>
+                                    <div class="grid-cont-right">
+                                        <div class="grid-num">{{hostInfo.containerNum}}</div>
+                                        <div>容器数量</div>
                                     </div>
                                 </div>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">{{hostInfo.serviceNum}}</div>
-                                    <div>服务数量</div>
-                                </div>
-                            </div>
+                            </router-link>
                         </el-card>
                     </el-col>
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-2">
-                                <div class="DivIcons" style="background-color: #00d1b2">
-                                    <img src="../../../static/img/icon_docker-image.svg" class="DivIcon">
+                            <router-link to="/servicemanage">
+                                <div class="grid-content grid-con-1">
+                                    <div class="grid-content grid-con-2">
+                                        <div class="DivIcons" style="background-color: #68c2d7">
+                                            <img src="../../../static/img/swarm.svg" class="DivIcon">
+                                        </div>
+                                    </div>
+                                    <div class="grid-cont-right">
+                                        <div class="grid-num">{{hostInfo.serviceNum}}</div>
+                                        <div>服务数量</div>
+                                    </div>
                                 </div>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">{{hostInfo.imageNum}}</div>
-                                    <div>镜像数量</div>
+                            </router-link>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-card shadow="hover" :body-style="{padding: '0px'}">
+                            <router-link to="/imagemanage">
+                                <div class="grid-content grid-con-2">
+                                    <div class="DivIcons" style="background-color: #00d1b2">
+                                        <img src="../../../static/img/icon_docker-image.svg" class="DivIcon">
+                                    </div>
+                                    <div class="grid-cont-right">
+                                        <div class="grid-num">{{hostInfo.imageNum}}</div>
+                                        <div>镜像数量</div>
+                                    </div>
                                 </div>
-                            </div>
+                            </router-link>
                         </el-card>
                     </el-col>
                 </el-row>
@@ -93,8 +99,13 @@
                         <h4>集群节点</h4>
                     </div>
                     <el-collapse accordion>
-                        <el-collapse-item v-for="(item,index) in hostInfo.nodes" :title=item.ip :name=index>
-                            <el-form :label-position='labelpos' label-width="100px" >
+                        <el-collapse-item v-for="(item,index) in hostInfo.nodes"  :name=index>
+                            <template slot="title">
+                                <el-tag v-if="item.hasLeader" type="danger">Leader</el-tag>
+                                <el-tag  v-else>Worker</el-tag>
+                                &nbsp;&nbsp;&nbsp;&nbsp;{{item.ip}}
+                            </template>
+                            <el-form :label-position='labelpos' label-width="100px">
                                 <el-form-item label="主机名称">
                                     {{item.hostName}}
                                 </el-form-item>
@@ -105,13 +116,8 @@
                                     {{item.dockerVersion}}
                                 </el-form-item>
                                 <el-form-item label="状态">
-                                    {{item.state}}
-                                </el-form-item>
-                                <el-form-item label="角色" v-if="item.hasLeader">
-                                    <el-tag>Leader</el-tag>
-                                </el-form-item>
-                                <el-form-item label="角色" v-else>
-                                    <el-tag>Worker</el-tag>
+                                    <el-tag v-if="item.state === 'ready'" type="success">Ready</el-tag>
+                                    <el-tag v-else type="danger">{{item.state}}</el-tag>
                                 </el-form-item>
                             </el-form>
                         </el-collapse-item>
@@ -139,21 +145,21 @@
                 roleId: sessionStorage.getItem('currentRole'),
                 // 宿主机的信息
                 hostInfo: {},
-                containerNum:0,
-                runningNum:0,
-                pauseNum:0,
-                stopNum:0,
+                containerNum: 0,
+                runningNum: 0,
+                pauseNum: 0,
+                stopNum: 0,
                 selfInfo: {},
-                labelpos:'left',
+                labelpos: 'left',
             }
         },
-        methods:{
-            getSelfInfo:function () {
+        methods: {
+            getSelfInfo: function () {
                 this.$axios.get('/monitor/self/info')
-                    .then(response=>{
-                        if(response.data.code === 0){
+                    .then(response => {
+                        if (response.data.code === 0) {
                             this.selfInfo = response.data.data;
-                        }else{
+                        } else {
                             this.$message.error("获取个人信息失败！");
                         }
                     })
@@ -162,15 +168,15 @@
                     })
             },
             //获取宿主机信息
-            getHostInfo:function () {
+            getHostInfo: function () {
                 this.$axios.get('/monitor/host')
-                    .then(response=>{
-                        if(response.data.code === 0){
+                    .then(response => {
+                        if (response.data.code === 0) {
                             this.hostInfo = response.data.data;
 
                             let myChart = this.$echarts.init(document.getElementById('main'));
                             myChart.setOption({
-                                tooltip : {
+                                tooltip: {
                                     trigger: 'item',
                                     formatter: "{a} <br/>{b} : {c} ({d}%)"
                                 },
@@ -178,18 +184,18 @@
                                 legend: {
                                     orient: 'vertical',
                                     x: 'right',
-                                    data:['运行的容器','暂停的容器','停止的容器']
+                                    data: ['运行的容器', '暂停的容器', '停止的容器']
                                 },
-                                series : [
+                                series: [
                                     {
-                                        name:'访问来源',
-                                        type:'pie',
-                                        radius : '55%',
+                                        name: '访问来源',
+                                        type: 'pie',
+                                        radius: '55%',
                                         center: ['50%', '50%'],
-                                        data:[
-                                            {value:this.hostInfo.containerRunningNum, name:'运行的容器', selected:true},
-                                            {value:this.hostInfo.containerPauseNum, name:'暂停的容器'},
-                                            {value:this.hostInfo.containerStopNum, name:'停止的容器'},
+                                        data: [
+                                            {value: this.hostInfo.containerRunningNum, name: '运行的容器', selected: true},
+                                            {value: this.hostInfo.containerPauseNum, name: '暂停的容器'},
+                                            {value: this.hostInfo.containerStopNum, name: '停止的容器'},
                                         ],
                                         label: {
                                             normal: {
@@ -221,10 +227,10 @@
                                     }
                                 ]
                             });
-                        }else{
+                        } else {
                             this.$message.error({
-                                message:"获取宿主机信息失败！",
-                                showClose:true
+                                message: "获取宿主机信息失败！",
+                                showClose: true
                             })
                         }
                     })
@@ -233,16 +239,16 @@
                     })
             },
             // 绘制关于容器数据的echarts
-            createEcharts:function () {
+            createEcharts: function () {
                 let myChart = this.$echarts.init(document.getElementById('main'));
                 myChart.setOption(this.option);
             },
         },
-        created(){
+        created() {
             this.getHostInfo();
             this.getSelfInfo();
         },
-        mounted(){
+        mounted() {
             this.createEcharts();
         },
         computed: {
@@ -257,21 +263,23 @@
 
 
 <style scoped>
-    .DivIcons{
+    .DivIcons {
         width: 100px;
         height: 100px;
         background-color: #d1d1d1;
-        text-align:center;
-        margin:0 auto;
+        text-align: center;
+        margin: 0 auto;
 
     }
-    .DivIcon{
+
+    .DivIcon {
         width: 60px;
         height: 60px;
         display: table-cell;
-        vertical-align:middle;
+        vertical-align: middle;
         margin-top: 15px;
     }
+
     .el-row {
         margin-bottom: 20px;
     }

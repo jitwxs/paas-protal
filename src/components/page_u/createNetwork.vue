@@ -35,7 +35,7 @@
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="createNetwork">立即创建</el-button>
-                <el-button>取消</el-button>
+                <el-button @click="back">取消</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -66,6 +66,10 @@
                 if (index !== -1) {
                     this.network.labels.splice(index, 1)
                 }
+            },
+
+            back(){
+                this.$router.push('/netWork');
             },
 
             createNetwork() {

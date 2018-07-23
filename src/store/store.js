@@ -11,7 +11,9 @@ const state = {
     containerId :'',
     hostaddr:'192.168.100.151:9999',
     serviceId:'',
-    currentMirrorId:''
+    currentMirrorId:'',
+    unreadMessageNum:0,
+    networkId:''
 };
 
 const mutations = {
@@ -42,6 +44,12 @@ const mutations = {
     SET_CURRENTMIRROR_ID(state,mirrorId){
         state.currentMirrorId = mirrorId;
     },
+    SET_UNREAD_MESSAGE_NUM(state,num){
+        state.unreadMessageNum = num;
+    },
+    SET_NETWORKID(state,networkId){
+        state.networkId = networkId;
+    }
 }
 const actions = {
     changeUserInfo({commit}, userInfo) {
@@ -59,6 +67,9 @@ const actions = {
     },
     saveServiceId({commit},id){
         commit("SET_SERVICE_ID",id)
+    },
+    setUnreadMessageNum({commit},num){
+        commit('SET_UNREAD_MESSAGE_NUM',num);
     }
 }
 const getters = {
@@ -86,6 +97,12 @@ const getters = {
     },
     getToken(state){
         return state.token;
+    },
+    getUnreadMessageNum(state){
+        return state.unreadMessageNum;
+    },
+    getNetworkId(state){
+        return state.networkId;
     }
 };
 export default new Vuex.Store({

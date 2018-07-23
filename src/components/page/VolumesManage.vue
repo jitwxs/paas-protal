@@ -23,17 +23,15 @@
                 :data="volumesInfo"
                 tooltip-effect="light"
                 style="width: 100%">
-                <el-table-column prop="Name" label="数据卷名称" width="500px" show-overflow-tooltip>
+                <el-table-column prop="Name" label="数据卷名称" width="500px" show-overflow-tooltip >
                 </el-table-column>
-                <el-table-column prop="Scope" label="覆盖范围" >
-                </el-table-column>
-                <el-table-column prop="Driver" label="驱动" >
-                </el-table-column>
-                <el-table-column label="操作" >
+                <el-table-column prop="Scope" label="覆盖范围"></el-table-column>
+                <el-table-column prop="Driver" label="驱动"></el-table-column>
+                <el-table-column prop="Mountpoint" label="挂载点" width="500px"></el-table-column>
+                <el-table-column label="操作">
                     <template slot-scope="scope">
                         <ul style="float: left;list-style-type: none" >
                             <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer" @click="getXiangQingInfo(scope.$index, scope.row)">详情</li>
-                            <li style="float: left;color: #409EFF;cursor: pointer;" @click="handleUpload(scope.$index, scope.row)">上传</li>
                         </ul>
                     </template>
                 </el-table-column>
@@ -62,36 +60,6 @@
                 </el-dialog>
 
             </div>
-            <!--上传的模态框-->
-            <div class="upload">
-                <el-dialog title="上传文件" :visible.sync="uploadFormVisible">
-                    <el-form :model="uploadForm">
-                        <el-form-item  :label-width="formLabelWidth">
-                            <el-upload
-                                class="upload-demo"
-                                drag
-                                :action=url
-                                :name=name
-                                :headers="headers"
-                                :data="uploadForm"
-                                :before-upload="beforeUpload"
-                                :on-preview="handlePreview"
-                                :on-remove="handleRemove"
-                                :on-success="handleSuccess"
-                                :before-remove="beforeRemove"
-                                :limit="1"
-                                >
-                                <i class="el-icon-upload"></i>
-                                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                                <!--<div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
-                            </el-upload>
-                        </el-form-item>
-                    </el-form>
-                    <div slot="footer" class="dialog-footer">
-                        <el-button type="primary" @click="uploadVolumes">确 定</el-button>
-                    </div>
-                </el-dialog>
-            </div>
         </div>
     </div>
 </template>
@@ -117,21 +85,23 @@
                     id:'',
                     file:''
                 },
-                url:'http://192.168.100.151:8080/volumes/upload',
                 name:'request',
                 headers:{
                     Authorization: 'Bearer ' + sessionStorage.getItem('userToken')
                 },
-
-                // 每一行的数据卷id
-                volumesId:'',
                 labelpos:'left',
-                // 分页信息
-                // currentPage:1,
-                // totalCount:0,
+
             }
         },
         methods:{
+
+            //选择文件
+            importVolume(event){
+
+                event.preventDefault();//取消默认行为
+                this.volumeFile = event.target.files[0];
+                this.fileName = event.target.files[0].name;
+            },
             // 获取容器数据卷信息
             getContainerVolumesInfo:function(){
                 this.$axios.get('/volumes/list/1')
@@ -200,6 +170,8 @@
                                 message: "清理容器数据卷成功！",
                                 showClose:true
                             })
+                            this.getContainerVolumesInfo();
+
                         }else {
                             this.$message.error({
                                 message: "清理容器数据卷失败！",
@@ -220,6 +192,7 @@
                                 message: "清理服务数据卷成功！",
                                 showClose:true
                             })
+                            this.getServiceVolumesInfo();
                         }else {
                             this.$message.error({
                                 message: "清理服务数据卷失败！",
@@ -229,61 +202,6 @@
                     })
                     .catch(function (err) {
                         console.log(err)
-                    })
-            },
-
-            handleUpload:function(index, row){
-
-                console.log(row)
-                this.uploadFormVisible = true;
-                this.volumesId = row.id;
-                this.uploadForm.id = row.id;
-            },
-            beforeUpload:function(){
-                if (this.uploadForm.id == "" || this.uploadForm.file == "") {
-                    this.$message.error({
-                        message:"请完善需上传的信息!",
-                        showClose:true
-                    })
-                } else{
-                    this.url = this.url  + this.uploadForm;
-                    console.log(this.url)
-                }
-            },
-            handlePreview:function(){
-
-            },
-            handleRemove:function(){
-
-            },
-            handleSuccess:function(){
-
-            },
-            beforeRemove:function(){
-
-            },
-
-            // 上传数据卷
-            uploadVolumes:function () {
-                console.log(this.uploadForm)
-                this.uploadFormVisible = false;
-                this.$axios.post('/volumes/upload',{
-                    id:this.uploadForm.id,
-                    file: this.uploadForm.file
-                })
-                    .then(response=>{
-                        // console.log(response)
-                        if(response.data.code == 0){
-                            this.$message.success({
-                                message:"上传数据卷信息成功！",
-                                showClose:true
-                            })
-                        }else {
-                            this.$message.error({
-                                message:"上传数据卷信息失败！",
-                                showClose:true
-                            })
-                        }
                     })
             },
             // 获取数据卷详情

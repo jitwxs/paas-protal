@@ -2,25 +2,29 @@
   <div id="container">
       <!--echarts图表展示区域-->
       <div id="sideMenuContainer" class="conta" v-show="true"
-           style="z-index: 2;position: absolute;background-color: white;width: 1000px;height: 850px;top:0px;left: 1800px;box-shadow:0 0 10px #dddddd;border-radius: 15px;padding-left: 50px;">
+           style="z-index: 2;position: absolute;background-color: white;width: 1000px;height: 850px;top:-60px;left: 1800px;box-shadow:0 0 10px #dddddd;border-radius: 15px;padding-left: 50px;">
           <h4 style="font-family: 微软雅黑;margin-bottom: 2%">容器实时监控</h4>
           <p style="font-family: 微软雅黑;font-size: 14px;color: #409EFF;margin-bottom: 2%;margin-left: 1%;cursor: pointer"
              @click="closelc">返回</p>
 
-          <el-radio-group v-model="radio" @change="changeExcel($event)" size="medium">
+          <el-radio-group v-model="radio" @change="changeExcel($event)" size="medium" style="position:absolute;float: right" >
               <el-radio-button label="实时" ></el-radio-button>
               <el-radio-button label="24小时"></el-radio-button>
               <el-radio-button label="每周"></el-radio-button>
           </el-radio-group>
-          <div id="main" style="width: 300px;height:200px;float: left"></div>
-          <div id="main2" style="width: 300px;height:200px;float: left"></div>
-          <div id="main3" style="width: 300px;height:200px;float: left"></div>
-          <div id="main4" style="width: 300px;height:200px;float: left"></div>
-          <div id="main5" style="width: 300px;height:200px;float: left"></div>
-          <div id="main6" style="width: 300px;height:200px;float: left"></div>
-          <div id="main7" style="width: 300px;height:200px;float: left"></div>
-          <div id="main8" style="width: 300px;height:200px;float: left"></div>
-          <div id="main9" style="width: 300px;height:200px;float: left"></div>
+
+          <div style="margin-top: 70px;">
+              <div id="main" style="width: 300px;height:200px;float: left"></div>
+              <div id="main2" style="width: 300px;height:200px;float: left"></div>
+              <div id="main3" style="width: 300px;height:200px;float: left"></div>
+              <div id="main4" style="width: 300px;height:200px;float: left"></div>
+              <div id="main5" style="width: 300px;height:200px;float: left"></div>
+              <div id="main6" style="width: 300px;height:200px;float: left"></div>
+              <div id="main7" style="width: 300px;height:200px;float: left"></div>
+              <div id="main8" style="width: 300px;height:200px;float: left"></div>
+              <div id="main9" style="width: 300px;height:200px;float: left"></div>
+          </div>
+
       </div>
       <!--按钮组-->
       <el-button-group>
@@ -34,7 +38,16 @@
       <!--列表-->
       <el-table ref="singleTable" :data="containerList" tooltip-effect="dark" style="width: 100%" highlight-current-row @current-change="getCurrentContainerRow">
 
-          <el-table-column label="容器名称" prop="name" show-overflow-tooltip></el-table-column>
+          <el-table-column label="容器名称" show-overflow-tooltip>
+              <template slot-scope="scope">
+                  <!--跳tab-->
+                  <ul style="float: left;list-style-type: none" >
+                      <router-link :to="{path:'/containerDetails', query:{id:scope.row.id}}">
+                          <li style="float: left;cursor:pointer">{{scope.row.name}}</li>
+                      </router-link>
+                  </ul>
+              </template>
+          </el-table-column>
           <el-table-column label="项目名" prop="projectName" show-overflow-tooltip>
               <template slot-scope="scope">
                   <el-select v-model="containerList[scope.$index].projectName" style="width: 80%;" placeholder="请选择" @change="changeProject(scope.row,scope.$index)">
@@ -48,14 +61,31 @@
                   </el-select>
               </template>
           </el-table-column>
-          <el-table-column prop="statusName" label="状态" show-overflow-tooltip></el-table-column>
+          <el-table-column
+              label="容器状态"
+              width="200">
+              <template slot-scope="scope">
+                  <div slot="reference" class="name-wrapper" style="float: left">
+                      <el-tag v-if="scope.row.statusName === '容器关闭'" type="danger">{{ scope.row.statusName }}</el-tag>
+                      <el-tag v-else-if="scope.row.statusName === '容器暂停'" type="warning">{{ scope.row.statusName }}</el-tag>
+                      <el-tag v-else-if="scope.row.statusName === '容器运行'" type="success">{{ scope.row.statusName }}</el-tag>
+                      <el-tag v-else type="info">{{ scope.row.statusName }}</el-tag>
+                  </div>
+              </template>
+          </el-table-column>
+          <el-table-column  label="监控" show-overflow-tooltip>
+              <template slot-scope="scope">
+                  <ul style="float: left;list-style-type: none" >
+                      <i class="el-icon-view" style="margin-left: 5px;cursor: pointer" @click="getrow(scope.row)"></i>
+                  </ul>
+              </template>
+          </el-table-column>
           <el-table-column prop="image" label="镜像" show-overflow-tooltip></el-table-column>
           <el-table-column prop="port" label="端口" show-overflow-tooltip></el-table-column>
           <el-table-column label="终端" >
               <template slot-scope="scope">
                   <ul style="float: left;list-style-type: none" >
                       <li style="float: left;color: #409EFF;cursor: pointer" @click="consoleopen(scope.row)">打开终端</li>
-                      <i class="el-icon-view" style="margin-left: 5px" @click="getrow(scope.row)"></i>
                   </ul>
               </template>
           </el-table-column>
@@ -63,9 +93,6 @@
               <template slot-scope="scope">
                   <!--跳tab-->
                   <ul style="float: left;list-style-type: none" >
-                      <router-link :to="{path:'/containerDetails', query:{id:scope.row.id}}">
-                          <li style="float: left;color: #409EFF;cursor:pointer">详情</li>
-                      </router-link>
                       <li style="float: left;color: #409EFF;cursor: pointer;margin-left: 10px" @click="deleteContainer(scope.row.id)">删除</li>
                   </ul>
               </template>
@@ -73,7 +100,7 @@
       </el-table>
 
       <el-pagination
-          style="float: right;margin-top: 20px;margin-right: 30px"
+          style="float: right;bottom: 30px;right: 50px;position: absolute;"
           @current-change="handleCurrentChange"
           :current-page.sync="currentPage"
           @size-change="handleSizeChange"
@@ -82,6 +109,12 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="totalCount">
       </el-pagination>
+
+      <br/><br/>
+      <!--远程终端弹框-->
+      <el-dialog title="远程终端" :visible.sync="dialogFormVisible" width="55%">
+          <iframe :src="frameUrl" width="100%" height="400px" frameborder='0'></iframe>
+      </el-dialog>
   </div>
 </template>
 
@@ -94,6 +127,8 @@
           projectInfo:[],
           projectNum:0,
           value:[],
+          dialogFormVisible: false,
+          frameUrl:'../../../static/term.html',
 
           row:'',
           str:'',
@@ -110,7 +145,7 @@
           data9: [],
           option: {
               title: {
-                  text: 'rxbyte'
+                  text: '网络入带宽 Mbps'
               },
               dataZoom: [
                   {
@@ -125,6 +160,7 @@
               ],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}Mbps'
               },
               xAxis: {
                   type: 'time',
@@ -141,19 +177,26 @@
               },
               series: [
                   {
-                      name: '模拟数据',
                       type: 'line',
                       showSymbol: false,
                       // showAllSymbol:true,
                       connectNulls: true,
                       hoverAnimation: false,
+                      itemStyle : {
+                          normal : {
+                              lineStyle:{
+                                  color:'#015dda',
+                                  width:'1'
+                              }
+                          }
+                      },
                       data: this.data
                   }
               ]
           },
           option2: {
               title: {
-                  text: 'txbyte'
+                  text: '网络出带宽 Mbps'
               },
               dataZoom: [
                   {
@@ -168,6 +211,7 @@
               ],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}Mbps'
               },
               xAxis: {
                   type: 'time',
@@ -184,7 +228,14 @@
               },
               series: [
                   {
-                      name: '模拟数据',
+                      itemStyle : {
+                          normal : {
+                              lineStyle:{
+                                  color:'#015dda',
+                                  width:'1'
+                              }
+                          }
+                      },
                       type: 'line',
                       showSymbol: false,
                       // showAllSymbol:true,
@@ -195,7 +246,7 @@
           },
           option3: {
               title: {
-                  text: 'rxPackets'
+                  text: '网络入包量 个/s'
               },
               dataZoom: [
                   {
@@ -209,6 +260,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c0} <br/>{c1}个/秒'
               },
               xAxis: {
                   type: 'time',
@@ -224,7 +276,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -235,7 +294,7 @@
           },
           option4: {
               title: {
-                  text: 'txPackets'
+                  text: '网络出包量 个/秒'
               },
               dataZoom: [
                   {
@@ -249,6 +308,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}个/秒'
               },
               xAxis: {
                   type: 'time',
@@ -264,7 +324,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -275,7 +342,7 @@
           },
           option5: {
               title: {
-                  text: 'cpuUtilization'
+                  text: 'CPU利用率'
               },
               dataZoom: [
                   {
@@ -289,6 +356,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}%'
               },
               xAxis: {
                   type: 'time',
@@ -304,7 +372,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -315,7 +390,7 @@
           },
           option6: {
               title: {
-                  text: 'memoryUsage'
+                  text: '内存使用量 Mb'
               },
               dataZoom: [
                   {
@@ -329,6 +404,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}Mb'
               },
               xAxis: {
                   type: 'time',
@@ -344,7 +420,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -355,7 +438,7 @@
           },
           option7: {
               title: {
-                  text: 'memoryUtilization'
+                  text: '内存使用率'
               },
               dataZoom: [
                   {
@@ -369,6 +452,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}%'
               },
               xAxis: {
                   type: 'time',
@@ -384,10 +468,16 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
-                  // showAllSymbol:true,
                   connectNulls: true,
                   hoverAnimation: false,
                   data: this.data7
@@ -395,7 +485,7 @@
           },
           option8: {
               title: {
-                  text: 'blockRead'
+                  text: '本地读流量 MB'
               },
               dataZoom: [
                   {
@@ -409,6 +499,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}MB'
               },
               xAxis: {
                   type: 'time',
@@ -424,7 +515,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -435,7 +533,7 @@
           },
           option9: {
               title: {
-                  text: 'blockWrite'
+                  text: '本地写流量 MB'
               },
               dataZoom: [
                   {
@@ -449,6 +547,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}MB'
               },
               xAxis: {
                   type: 'time',
@@ -464,7 +563,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -607,6 +713,28 @@
                     console.log(err)
                 })
         },
+        deleteContainer: function (clickId) {
+            this.$confirm('此操作将永久删除该容器, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(()=>{
+                this.$axios.delete('/container/delete/' + clickId)
+                .then(response => {
+                    if (response.data.code === 0) {
+                        this.$message({
+                            message: response.data.message,
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message.error(response.data.message);
+                    }
+                })
+                .catch(function (err) {
+                    console.log(err)
+                })
+            });
+        },
         timeout(){
             setTimeout(function () {
                 if (this.wsflag===0){
@@ -624,6 +752,9 @@
         //获取容器当前id
         getCurrentContainerRow(row){
             // console.log(row.id);
+            if (row === null) {
+                return ;
+            }
             this.targetRow = row.id;
             this.clickStatus = row.status;
             switch (this.clickStatus){
@@ -716,7 +847,7 @@
         },
 
         closelc() {
-            $('#sideMenuContainer').animate({left:'1800px'},1000);
+            $('#sideMenuContainer').animate({left:'1700px'},1000);
             // this.isShow = false;
             clearInterval(this.time);
         },
@@ -748,7 +879,12 @@
             this.radio = '实时';
             this.flag=0;
             this.row = row;
-            this.handleView(this.row,10000,"actual");
+            if (this.row.status===0){
+                this.$message("请先开启容器");
+            } else {
+                this.handleView(this.row,10000,"actual");
+            }
+
         },
         handleView: function (row,val,str) {
             this.hassendmonitor = true;
@@ -773,7 +909,7 @@
             let chart8 = this.$echarts.init(document.getElementById('main8'));
             let chart9 = this.$echarts.init(document.getElementById('main9'));
 
-            $('#sideMenuContainer').animate({left:'700px'},1000);
+            $('#sideMenuContainer').animate({left:'593px'},1000);
 
             this.$axios.get('/monitor/container/'+str+'/' + row.id)
                 .then(response => {
@@ -1007,7 +1143,7 @@
         // 打开终端
         consoleopen(row){
             if (row.status==1){
-                window.open('../../../static/term.html');
+
                 this.$axios.post('/container/terminal/' ,{
                     "containerId": row.id,
                     "cursorBlink": false,
@@ -1017,6 +1153,7 @@
                     "height": document.documentElement.clientHeight,
                 })
                     .then(response=>{
+                        this.dialogFormVisible = true;
                         sessionStorage.setItem('terminalCursorBlink',response.data.data.cursorBlink);
                         sessionStorage.setItem('terminalRows',response.data.data.rows);
                         sessionStorage.setItem('terminalCols',response.data.data.cols);
@@ -1144,7 +1281,8 @@
     box-shadow: 3px 3px 10px #dddddd;
     background-color: white;
     border-radius: 15px;
-    min-height: 400px;
+    min-height: 670px;
+      position: relative;
   }
   .pane{
     margin:20px;

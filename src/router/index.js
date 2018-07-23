@@ -136,11 +136,6 @@ export const asyncRouterMap = [
                 meta: {title: '403页面'}
             },
             {
-                path: '/404',
-                component: resolve => require(['../components/page/404.vue'], resolve),
-                meta: {title: '404页面'}
-            },
-            {
                 path: '/NoticePage',
                 component: resolve => require(['../components/page/NoticePage.vue'], resolve),
                 meta: {title: '个人通知'}
@@ -190,18 +185,6 @@ export const asyncRouterMap = [
                 component: resolve => require(['../components/page_u/ContainerManage_u.vue'], resolve),
                 meta: {title: '容器管理'}
             },
-
-
-            {
-                path: '/403',
-                component: resolve => require(['../components/page_u/403.vue'], resolve),
-                meta: {title: '403页面'}
-            },
-            {
-                path: '/404',
-                component: resolve => require(['../components/page_u/404.vue'], resolve),
-                meta: {title: '404页面'}
-            },
             {
                 // vue-schart组件
                 path: '/charts',
@@ -213,7 +196,6 @@ export const asyncRouterMap = [
                 component: resolve => require(['../components/page_u/BaseForm.vue'], resolve),
                 meta: {title: '基础表单'}
             },
-
             {
                 // 拖拽列表组件
                 path: '/drag',
@@ -289,14 +271,14 @@ export const asyncRouterMap = [
                 meta: {title: '容器详情'}
             },
             {
-                path: '/image',
-                component: resolve => require(['../components/page_u/image.vue'], resolve),
-                meta: {title: '镜像'}
-            },
-            {
                 path: '/netWork',
                 component: resolve => require(['../components/page_u/netWork.vue'], resolve),
                 meta: {title: '网络'}
+            },
+            {
+                path: '/networkDetails',
+                component: resolve => require(['../components/page_u/networkDetails.vue'], resolve),
+                meta: {title: '网络详情'}
             },
             {
                 path: '/createNetwork',
@@ -331,6 +313,11 @@ export const asyncRouterMap = [
                         meta: {title: '镜像历史'}
                     },
                 ]
+            },
+            {
+                path: '/NoticePage',
+                component: resolve => require(['../components/page_u/NoticePage.vue'], resolve),
+                meta: {title: '个人通知'}
             },
             {
                 path: '*',

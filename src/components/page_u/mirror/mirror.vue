@@ -67,9 +67,9 @@
         style="width: 100%;margin-top: 20px;">
         <el-table-column
           label="名称">
-        <template slot-scope="scope">
-         <span @click="handleView(scope.$index, scope.row)" style="cursor:pointer;">{{scope.row.name}}</span>
-        </template>
+            <template slot-scope="scope">
+                <span @click="handleView(scope.$index, scope.row)" style="cursor:pointer;">{{scope.row.name}}</span>
+            </template>
         </el-table-column>
 
           <el-table-column
@@ -114,18 +114,18 @@
         </el-table-column>
       </el-table>
 
-      <!--分页-->
-      <div class="block" style="text-align: center;float: right;margin-right: 40px;margin-top: 30px;margin-bottom: 15px">
-        <el-pagination
-          @current-change="handleCurrentChange"
-          :current-page.sync="currentPage"
-          @size-change="handleSizeChange"
-          :page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total,sizes,prev, pager, next, jumper"
-          :total="totalCount">
-        </el-pagination>
-      </div>
+        <!--分页-->
+        <div class="block" style="float: right;bottom: 30px;right: 50px;position: absolute;">
+            <el-pagination
+                @current-change="handleCurrentChange"
+                :current-page.sync="currentPage"
+                @size-change="handleSizeChange"
+                :page-size="pageSize"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total,sizes,prev, pager, next, jumper"
+                :total="totalCount">
+            </el-pagination>
+        </div>
         <br/>
         <br/>
     </div>
@@ -179,10 +179,6 @@ export default {
         .then(response => {
           console.log(response);
           if (response.data.code == 0){
-            this.$message.success({
-              message:response.data.message,
-              showClose:true
-            });
             this.totalCount = response.data.data.total;
             this.mirrors = response.data.data.records;
             for (var i = 0; i<this.mirrors.length; i++){
@@ -346,7 +342,7 @@ export default {
       $.ajax({
         type: "post",
         async: true,
-        url: "http://192.168.100.151:9999/image/import",
+        url: "api/image/import",
         dataType: 'json',
         headers:{
           'Authorization': sessionStorage.userToken
@@ -414,8 +410,7 @@ export default {
     },
     //初始化websocket
     initWebSocket(){
-      console.log(this.userInfo.userId);
-      this.websock = new WebSocket("ws://192.168.100.151:9999/ws/"+ this.userInfo.userId);
+      this.websock = new WebSocket("ws://"+this.hostaddr+"/ws/" + this.userInfo.userId);
       this.websock.onopen = this.websocketonopen;
 
       this.websock.onerror = this.websocketonerror;
@@ -433,7 +428,7 @@ export default {
 
     //打开错误
     websocketonerror:function(e) { //错误
-      this.websock = new WebSocket("ws://192.168.100.151:9999/ws/"+ this.userInfo.userId);
+      this.websock = new WebSocket("ws://"+this.hostaddr+"/ws/" + this.userInfo.userId);
       this.time1 = setInterval(this.start,5000);
 
     },
@@ -470,14 +465,11 @@ export default {
     //关闭
     websocketclose:function(e){
       console.log("connection closed (" + e.code + ")");
-      this.websock = new WebSocket("ws://192.168.100.151:9999/ws/"+this.userInfo.userId);
+      this.websock = new WebSocket("ws://"+this.hostaddr+"/ws/" + this.userInfo.userId);
     },
 
     start: function(){
       this.websock.send("HeartBeat");
-      // if( this.websock.readyState != 1) {
-      //   this.websocketclose()
-      // }
     },
 
   },
@@ -489,12 +481,13 @@ export default {
     },5000);
   },
   beforeDestroy () {
-    clearInterval(this.time)
+    clearInterval(this.time);
     clearInterval(this.time1)
   },
   computed:{
     ...mapGetters({
-      userInfo:'getUserInfo'
+      userInfo:'getUserInfo',
+      hostaddr: 'gethostaddr'
     })
   }
 }
@@ -502,12 +495,13 @@ export default {
 
 <style scoped>
     #mirror{
+        position: relative;
         padding: 50px;
         margin: 20px;
         box-shadow: 3px 3px 10px #dddddd;
         background-color: white;
         border-radius: 15px;
-        min-height: 400px;
+        min-height: 670px;
     }
   /*列表*/
   .demo-table-expand {

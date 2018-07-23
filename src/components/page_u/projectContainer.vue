@@ -6,20 +6,23 @@
           <p style="font-family: 微软雅黑;font-size: 14px;color: #409EFF;margin-bottom: 2%;margin-left: 1%;cursor: pointer"
              @click="closelc">返回</p>
 
-          <el-radio-group v-model="radio" @change="changeExcel($event)" size="medium">
+          <el-radio-group v-model="radio" @change="changeExcel($event)" size="medium" style="position:absolute;float: right" >
               <el-radio-button label="实时" ></el-radio-button>
               <el-radio-button label="24小时"></el-radio-button>
               <el-radio-button label="每周"></el-radio-button>
           </el-radio-group>
-          <div id="main" style="width: 300px;height:200px;float: left"></div>
-          <div id="main2" style="width: 300px;height:200px;float: left"></div>
-          <div id="main3" style="width: 300px;height:200px;float: left"></div>
-          <div id="main4" style="width: 300px;height:200px;float: left"></div>
-          <div id="main5" style="width: 300px;height:200px;float: left"></div>
-          <div id="main6" style="width: 300px;height:200px;float: left"></div>
-          <div id="main7" style="width: 300px;height:200px;float: left"></div>
-          <div id="main8" style="width: 300px;height:200px;float: left"></div>
-          <div id="main9" style="width: 300px;height:200px;float: left"></div>
+
+          <div style="margin-top: 50px;position: fixed">
+              <div id="main" style="width: 300px;height:200px;float: left"></div>
+              <div id="main2" style="width: 300px;height:200px;float: left"></div>
+              <div id="main3" style="width: 300px;height:200px;float: left"></div>
+              <div id="main4" style="width: 300px;height:200px;float: left"></div>
+              <div id="main5" style="width: 300px;height:200px;float: left"></div>
+              <div id="main6" style="width: 300px;height:200px;float: left"></div>
+              <div id="main7" style="width: 300px;height:200px;float: left"></div>
+              <div id="main8" style="width: 300px;height:200px;float: left"></div>
+              <div id="main9" style="width: 300px;height:200px;float: left"></div>
+          </div>
       </div>
     <el-tabs v-model="activeName">
       <el-tab-pane label="容器列表" name="first" class="pane">
@@ -35,16 +38,32 @@
 
         <el-button @click="addContainer">添加容器</el-button>
           <el-table ref="singleTable" :data="containerList" tooltip-effect="dark" style="width: 100%" highlight-current-row @current-change="getCurrentContainerRow">
-              <el-table-column label="项目名" prop="projectName" show-overflow-tooltip></el-table-column>
               <el-table-column label="容器名称" prop="name" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="statusName" label="状态" show-overflow-tooltip></el-table-column>
+              <el-table-column
+                  label="容器状态"
+                  width="200">
+                  <template slot-scope="scope">
+                      <div slot="reference" class="name-wrapper" style="float: left">
+                          <el-tag v-if="scope.row.statusName === '容器关闭'" type="danger">{{ scope.row.statusName }}</el-tag>
+                          <el-tag v-else-if="scope.row.statusName === '容器暂停'" type="warning">{{ scope.row.statusName }}</el-tag>
+                          <el-tag v-else-if="scope.row.statusName === '容器运行'" type="success">{{ scope.row.statusName }}</el-tag>
+                          <el-tag v-else type="info">{{ scope.row.statusName }}</el-tag>
+                      </div>
+                  </template>
+              </el-table-column>
+              <el-table-column  label="监控" show-overflow-tooltip>
+                  <template slot-scope="scope">
+                      <ul style="float: left;list-style-type: none" >
+                          <i class="el-icon-view" style="margin-left: 5px;cursor: pointer" @click="getrow(scope.row)"></i>
+                      </ul>
+                  </template>
+              </el-table-column>
               <el-table-column prop="image" label="镜像" show-overflow-tooltip></el-table-column>
               <el-table-column prop="port" label="端口" show-overflow-tooltip></el-table-column>
               <el-table-column label="终端" >
                 <template slot-scope="scope">
                     <ul style="float: left;list-style-type: none" >
                         <li style="float: left;color: #409EFF;cursor: pointer" @click="consoleopen(scope.row)">打开终端</li>
-                        <i class="el-icon-view" @click="getrow(scope.row)"></i>
                     </ul>
                 </template>
               </el-table-column>
@@ -67,18 +86,12 @@
 
         <el-button @click="addService">添加服务</el-button>
         <el-table
-          ref="singleTable"
+          ref="serviceTable"
           :data="serviceList"
           tooltip-effect="light"
           style="width: 100%"
           highlight-current-row
           @current-change="getCurrentServiceRow">
-          <el-table-column
-            label="项目名"
-            width="200"
-            prop="projectName"
-            show-overflow-tooltip>
-          </el-table-column>
           <el-table-column
             label="服务名称"
             width="200"
@@ -127,7 +140,7 @@
         <el-tab-pane label="项目日志" name="forth" class="pane">
             <el-table :data="logdata" style="width: 100%">
                 <el-table-column prop="createDate" label="时间"></el-table-column>
-                <el-table-column prop="containerName" label="容器名称"></el-table-column>
+                <el-table-column prop="objName" label="容器名称"></el-table-column>
                 <el-table-column prop="description" label="事件"></el-table-column>
             </el-table>
 
@@ -189,7 +202,7 @@
           data9: [],
           option: {
               title: {
-                  text: 'rxbyte'
+                  text: '网络入带宽'
               },
               dataZoom: [
                   {
@@ -204,6 +217,7 @@
               ],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}Mbps'
               },
               xAxis: {
                   type: 'time',
@@ -220,19 +234,26 @@
               },
               series: [
                   {
-                      name: '模拟数据',
                       type: 'line',
                       showSymbol: false,
                       // showAllSymbol:true,
                       connectNulls: true,
                       hoverAnimation: false,
+                      itemStyle : {
+                          normal : {
+                              lineStyle:{
+                                  color:'#015dda',
+                                  width:'1'
+                              }
+                          }
+                      },
                       data: this.data
                   }
               ]
           },
           option2: {
               title: {
-                  text: 'txbyte'
+                  text: '网络出带宽'
               },
               dataZoom: [
                   {
@@ -247,6 +268,7 @@
               ],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}Mbps'
               },
               xAxis: {
                   type: 'time',
@@ -263,7 +285,14 @@
               },
               series: [
                   {
-                      name: '模拟数据',
+                      itemStyle : {
+                          normal : {
+                              lineStyle:{
+                                  color:'#015dda',
+                                  width:'1'
+                              }
+                          }
+                      },
                       type: 'line',
                       showSymbol: false,
                       // showAllSymbol:true,
@@ -274,7 +303,7 @@
           },
           option3: {
               title: {
-                  text: 'rxPackets'
+                  text: '网络入包量'
               },
               dataZoom: [
                   {
@@ -288,6 +317,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c0} <br/>{c1}个/秒'
               },
               xAxis: {
                   type: 'time',
@@ -303,7 +333,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -314,7 +351,7 @@
           },
           option4: {
               title: {
-                  text: 'txPackets'
+                  text: '网络出包量'
               },
               dataZoom: [
                   {
@@ -328,6 +365,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}个/秒'
               },
               xAxis: {
                   type: 'time',
@@ -343,7 +381,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -354,7 +399,7 @@
           },
           option5: {
               title: {
-                  text: 'cpuUtilization'
+                  text: 'CPU利用率'
               },
               dataZoom: [
                   {
@@ -368,6 +413,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}%'
               },
               xAxis: {
                   type: 'time',
@@ -383,7 +429,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -394,7 +447,7 @@
           },
           option6: {
               title: {
-                  text: 'memoryUsage'
+                  text: '内存使用量'
               },
               dataZoom: [
                   {
@@ -408,6 +461,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}Mb'
               },
               xAxis: {
                   type: 'time',
@@ -423,7 +477,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -434,7 +495,7 @@
           },
           option7: {
               title: {
-                  text: 'memoryUtilization'
+                  text: '内存使用率'
               },
               dataZoom: [
                   {
@@ -448,6 +509,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}%'
               },
               xAxis: {
                   type: 'time',
@@ -463,10 +525,16 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
-                  // showAllSymbol:true,
                   connectNulls: true,
                   hoverAnimation: false,
                   data: this.data7
@@ -474,7 +542,7 @@
           },
           option8: {
               title: {
-                  text: 'blockRead'
+                  text: '本地读流量'
               },
               dataZoom: [
                   {
@@ -488,6 +556,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}MB'
               },
               xAxis: {
                   type: 'time',
@@ -503,7 +572,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -514,7 +590,7 @@
           },
           option9: {
               title: {
-                  text: 'blockWrite'
+                  text: '本地写流量'
               },
               dataZoom: [
                   {
@@ -528,6 +604,7 @@
                   }],
               tooltip: {
                   trigger: 'axis',
+                  formatter:'{c1}MB'
               },
               xAxis: {
                   type: 'time',
@@ -543,7 +620,14 @@
                   }
               },
               series: [{
-                  name: '模拟数据',
+                  itemStyle : {
+                      normal : {
+                          lineStyle:{
+                              color:'#015dda',
+                              width:'1'
+                          }
+                      }
+                  },
                   type: 'line',
                   showSymbol: false,
                   // showAllSymbol:true,
@@ -715,39 +799,66 @@
           })
       },
 
+        changeExcel(val) {
+            switch (val){
+                case "实时":
+                    this.flag = 0;
+                    window.clearInterval(this.time);
+                    this.timeout=10000;
+                    this.handleView(this.row,this.timeout,"actual");
+                    break;
+                case "24小时":
+                    this.flag = 0;
+                    window.clearInterval(this.time);
+                    this.timeout=60000;
+                    this.handleView(this.row,this.timeout,"today");
+                    break;
+                case "每周":
+                    this.flag = 0;
+                    window.clearInterval(this.time);
+                    this.timeout=360000;
+                    this.handleView(this.row,this.timeout,"week");
+                    break;
+            }
+        },
         closelc() {
             $('#sideMenuContainer').animate({left:'1800px'},1000);
             // this.isShow = false;
             clearInterval(this.time);
         },
         createEcharts: function () {
-            let myChart = this.$echarts.init(document.getElementById('main'));
-            let chart2 = this.$echarts.init(document.getElementById('main2'));
-            let chart3 = this.$echarts.init(document.getElementById('main3'));
-            let chart4 = this.$echarts.init(document.getElementById('main4'));
-            let chart5 = this.$echarts.init(document.getElementById('main5'));
-            let chart6 = this.$echarts.init(document.getElementById('main6'));
-            let chart7 = this.$echarts.init(document.getElementById('main7'));
-            let chart8 = this.$echarts.init(document.getElementById('main8'));
-            let chart9 = this.$echarts.init(document.getElementById('main9'));
-
-
-            myChart.setOption(this.option);
-            chart2.setOption(this.option2);
-            chart3.setOption(this.option3);
-            chart4.setOption(this.option4);
-            chart5.setOption(this.option5);
-            chart6.setOption(this.option6);
-            chart7.setOption(this.option7);
-            chart8.setOption(this.option8);
-            chart9.setOption(this.option9);
+            // let myChart = this.$echarts.init(document.getElementById('main'));
+            // let chart2 = this.$echarts.init(document.getElementById('main2'));
+            // let chart3 = this.$echarts.init(document.getElementById('main3'));
+            // let chart4 = this.$echarts.init(document.getElementById('main4'));
+            // let chart5 = this.$echarts.init(document.getElementById('main5'));
+            // let chart6 = this.$echarts.init(document.getElementById('main6'));
+            // let chart7 = this.$echarts.init(document.getElementById('main7'));
+            // let chart8 = this.$echarts.init(document.getElementById('main8'));
+            // let chart9 = this.$echarts.init(document.getElementById('main9'));
+            //
+            //
+            // myChart.setOption(this.option);
+            // chart2.setOption(this.option2);
+            // chart3.setOption(this.option3);
+            // chart4.setOption(this.option4);
+            // chart5.setOption(this.option5);
+            // chart6.setOption(this.option6);
+            // chart7.setOption(this.option7);
+            // chart8.setOption(this.option8);
+            // chart9.setOption(this.option9);
         },
         // 查看echarts图表
         getrow(row){
             this.radio = '实时';
             this.flag=0;
             this.row = row;
-            this.handleView(this.row,10000,"actual");
+            if (row.status===0){
+                this.$message("请先开启容器");
+            } else {
+                this.handleView(this.row,10000,"actual");
+            }
+
         },
         handleView: function (row,val,str) {
             this.hassendmonitor = true;
@@ -771,6 +882,18 @@
             let chart7 = this.$echarts.init(document.getElementById('main7'));
             let chart8 = this.$echarts.init(document.getElementById('main8'));
             let chart9 = this.$echarts.init(document.getElementById('main9'));
+
+            myChart.setOption(this.option);
+            chart2.setOption(this.option2);
+            chart3.setOption(this.option3);
+            chart4.setOption(this.option4);
+            chart5.setOption(this.option5);
+            chart6.setOption(this.option6);
+            chart7.setOption(this.option7);
+            chart8.setOption(this.option8);
+            chart9.setOption(this.option9);
+
+
 
             $('#sideMenuContainer').animate({left:'700px'},1000);
 
@@ -1014,7 +1137,11 @@
                                     type: 'success',
                                     message: '删除成功!'
                                 });
-                                // this.getProjectList(this.currentPage,this.pageSize);
+                            }else {
+                                this.$message({
+                                    type: 'error',
+                                    message: res.data.message
+                                });
                             }
                         })
                         .catch( err =>{
@@ -1023,7 +1150,7 @@
                 })
                 .catch(() => {
                 });
-            this.getContainerList(1,this.pageSize, this.projectId);
+            // this.getContainerList(1,this.pageSize, this.projectId);
         },
 
         //删除服务
@@ -1050,7 +1177,6 @@
           })
           .catch(() => {
           });
-        this.getServiceInfo();
       },
 
         //获取容器列表信息
@@ -1058,6 +1184,9 @@
             this.$axios.get('/service/'+this.projectId+'/list')
                 .then(response=>{
                     this.serviceList = response.data.data.records;
+                    for (var i=0;i<this.serviceList.length;i++){
+                        this.serviceList[i].port = this.serviceList[i].port.toString().replace("\\","").replace("{","").replace("}","").replace("\"","").replace("\"","");
+                    }
                     // console.log(this.serviceList);
                 }).catch(function (err) {
                 console.log(err);
@@ -1065,8 +1194,10 @@
         },
 
         //获取容器当前id
-      getCurrentContainerRow(row){
-          // console.log(row);
+      getCurrentContainerRow:function(row){
+          if (row===null){
+              return;
+          }
         this.targetRow = row.id;
         this.clickStatus = row.status;
           switch (this.clickStatus){
@@ -1080,9 +1211,12 @@
                   this.freeze=[true,true,false,false,false,false];
                   break;
           }
-
       },
+
         getCurrentServiceRow(row){
+            if (row===null){
+                return;
+            }
             this.serviceId = row.id;
         },
 
@@ -1264,6 +1398,8 @@
                     message: e.data.message,
                 });
             }
+            this.getServiceInfo();
+            this.getContainerList(1,this.pageSize, this.projectId);
 
         },
 
@@ -1294,12 +1430,13 @@
 
 <style scoped>
   #projectContainer{
+      position: relative;
     padding: 50px;
     margin: 20px;
     box-shadow: 3px 3px 10px #dddddd;
     background-color: white;
     border-radius: 15px;
-    min-height: 400px;
+    min-height: 670px;
   }
   .pane{
     margin:20px;

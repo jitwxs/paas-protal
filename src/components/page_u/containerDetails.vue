@@ -6,12 +6,9 @@
                     <el-form-item label="选择文件">
                         <input id="imageInput" @change="importVolume($event)" type="file">
                     </el-form-item>
-                    <el-form-item label="名字" >
-                        <el-input v-model="volumeName"></el-input>
-                    </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                  <el-button @click="dialogVisible3 = false">取 消</el-button>
+                  <el-button @click="dialogVisible = false">取 消</el-button>
                   <el-button type="primary" @click="submitvolume">确 定</el-button>
                 </span>
             </el-dialog>
@@ -131,6 +128,44 @@
                         </el-table-column>
                     </el-table>
                 </el-tab-pane>
+
+                <el-tab-pane  label="网络" name="forth"  >
+                    <div class="handle-box">
+                        <el-button type="primary" icon="el-icon-circle-plus-outline"  @click="handleCreate">创建网络连接</el-button>
+                        <el-button type="primary" icon="el-icon-circle-plus-outline"  @click="createLink">连接网络</el-button>
+                    </div>
+
+                    <el-dialog title="选择要连接的网络" :visible.sync="linkVisiable">
+                        <el-table :data="linkableNetwork"@row-dblclick="linkNet($event)">
+                            <el-table-column property="name" label="名称" width="150"></el-table-column>
+                            <el-table-column property="scope" label="类型" width="200"></el-table-column>
+                            <el-table-column property="hasPublic" label="是否公开"></el-table-column>
+                        </el-table>
+                    </el-dialog>
+
+
+                    <el-table
+                        :data="privateNetWorkInfo"
+                        tooltip-effect="dark"
+                        style="width: 100%">
+                        <el-table-column prop="name" label="网络名称" >
+                        </el-table-column>
+                        <el-table-column prop="scope" label="覆盖范围" >
+                        </el-table-column>
+                        <el-table-column prop="hasIpv6" label="是否开启ipv6" >
+                        </el-table-column>
+                        <el-table-column prop="hasPublic" label="网络性质" >
+                        </el-table-column>
+                        <el-table-column label="操作" >
+                            <template slot-scope="scope">
+                                <ul>
+                                    <li style="float: left;color: #409EFF;cursor: pointer" @click="priDelete(scope.row.id)">取消连接</li>
+                                </ul>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                </el-tab-pane>
             </el-tabs>
         </div>
 </template>
@@ -182,11 +217,16 @@
 
                 volumeInfo:[],
                 currentPage:1,
-                total:0,
+                totalCount:0,
+                pageSize:10,
                 volumeFile:'',
                 fileName:'',
                 volumeName:'',
                 volumeId:'',
+
+                privateNetWorkInfo:[],
+                linkableNetwork:[],
+                linkVisiable:false,
             }
         },
         methods:{
@@ -304,7 +344,7 @@
                 $.ajax({
                     type: "post",
                     async: true,
-                    url: "http://192.168.100.151:9999/volumes/upload",
+                    url: "/api/volumes/upload",
                     dataType: 'json',
                     headers:{
                         'Authorization': sessionStorage.userToken
@@ -316,20 +356,125 @@
                     data: formdata,
                     success: function (res) {
                         that.getVolumeInfo();
-                        this.volumeFile = '';
-                        this.fileName='';
-                        this.volumeName='';
-                        console.log(res);
+                        that.volumeFile = '';
+                        that.fileName='';
+                        console.log(res.data);
+                        that.$message('数据卷上传成功');
+                        that.dialogVisible=false;
+
                     },
                     error: function (error) {
                         console.log(error);
                     }
                 });
             },
+
+            getContainerNetworkInfo(){
+                this.$axios.get('/network/container/'+this.id)
+                    .then(response=>{
+                        console.log(response.data);
+                        if(response.data.code == 0){
+                            this.$message.success({
+                                message: response.data.message,
+                                showClose: true
+                            });
+                            this.privateNetWorkInfo = response.data.data.records;
+                            console.log(response.data);
+                            for(var i=0; i< this.privateNetWorkInfo.length; i++){
+                                if(this.privateNetWorkInfo[i].hasPublic){
+                                    this.privateNetWorkInfo[i].hasPublic = '公共网络'
+                                }else {
+                                    this.privateNetWorkInfo[i].hasPublic = '个人网络'
+                                }
+                                if(this.privateNetWorkInfo[i].hasIpv6){
+                                    this.privateNetWorkInfo[i].hasIpv6 = '是'
+                                }else {
+                                    this.privateNetWorkInfo[i].hasIpv6 = '否'
+                                }
+                            }
+                        }else {
+                            this.$message.error({
+                                message: response.data.message,
+                                showClose: true
+                            })
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
+            },
+
+            getPriNetworkInfo(){
+                this.$axios.get('/network/list')
+                    .then(response=>{
+                        this.linkableNetwork = response.data.data.records;
+                        for(var i=0; i< this.linkableNetwork.length; i++){
+                            if(this.linkableNetwork[i].hasPublic){
+                                this.linkableNetwork[i].hasPublic = '公共网络'
+                            }else {
+                                this.linkableNetwork[i].hasPublic = '个人网络'
+                            }
+                        }
+                    }).catch(function (err) {
+                    console.log(err);
+                })
+            },
+
+            linkNet(row){
+                this.$axios.post('/network/connect',{
+                    "containerId":this.id,
+                    "networkId":row.id,
+                })
+                    .then(response=>{
+                        this.$message(response.data.message);
+                        this.linkVisiable=false;
+                        this.$axios.get('/network/sync/container/'+this.id)
+                            .then(response=>{
+                                console.log(response.data);
+                            });
+                        this.getContainerNetworkInfo();
+
+                    }).catch(function (err) {
+                    console.log(err);
+                })
+            },
+
+            handleCreate(){
+                this.$router.push('/createNetwork');
+            },
+
+            createLink(){
+                this.linkVisiable=true;
+            },
+
+            priDelete(id){
+                this.$confirm('确认删除网络连接吗 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                })
+                    .then(() => {
+                        this.$axios.post('/network/disConnect',{
+                            "containerId":this.id,
+                            "networkId":id,
+                        })
+                            .then(response=>{
+                                this.$message(response.data.message);
+                            }).catch(function (err) {
+                            console.log(err);
+                        })
+                        }
+                    ).catch(()=>{
+
+                })
+            }
+
         },
 
         mounted() {
             this.refresh();
+            this.getContainerNetworkInfo();
+            this.getPriNetworkInfo();
         },
 
         computed:{
@@ -394,11 +539,12 @@
 
 <style scoped>
     #containerdetails{
+        position: relative;
         padding: 50px;
         margin: 20px;
         box-shadow: 3px 3px 10px #dddddd;
         background-color: white;
         border-radius: 15px;
-        min-height: 400px;
+        min-height: 670px;
     }
 </style>

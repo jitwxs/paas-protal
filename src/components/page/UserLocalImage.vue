@@ -8,7 +8,8 @@
         <div class="container">
             <el-tabs v-model="activeName2">
                 <el-tab-pane label="镜像详情" name="first" class="pane">
-                    <pre id="showjson"></pre>
+                    <div id="editor" class="json-editor"></div>
+                    <pre id="json"></pre>
                 </el-tab-pane>
 
                 <el-tab-pane label="镜像历史" name="second" class="pane">
@@ -58,6 +59,7 @@
 </template>
 
 <script>
+    import '../../../static/tree/jsoneditor'
     export default {
         name: "UserLocalImage",
         data() {
@@ -79,18 +81,13 @@
             getXiangQingInfo: function () {
                 this.$axios.get('/image/inspect/' + this.imageId)
                     .then(response => {
-                        if (response.data.code == 0) {
-                            $("#showjson").html(JSON.stringify(response.data.data, null, 4));
-                            // var obj = new Object();
-                            // obj = response.data.data;
-                            // var arr = new Array();
-                            // for(var key in obj){
-                            //     var value = obj[key];
-                            //     arr.push( key + ":" + value);
-                            // }
-                            // this.xiangQingInfo = arr;
-                            // this.xiangQingInfo = JSON.stringify(obj,undefined,2);
-                            // console.log(this.xiangQingInfo);
+                        if (response.data.code === 0) {
+                            let json = response.data.data;
+                            $('#editor').jsonEditor(json, {
+                                change: function () {
+                                    $('#json').html(JSON.stringify(json));
+                                }
+                            });
                         } else {
                             this.$message.error({
                                 message: "获取镜像详情信息失败！",

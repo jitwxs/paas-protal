@@ -6,19 +6,15 @@
             </el-breadcrumb>
         </div>
         <div class="container">
-            <el-tabs v-model="activeName2" >
+            <el-tabs v-model="activeName2">
                 <el-tab-pane label="镜像详情" name="first">
-                    <pre id="showjson"></pre>
+                    <div id="editor" class="json-editor"></div>
+                    <pre id="json"></pre>
                 </el-tab-pane>
 
                 <el-tab-pane label="镜像历史" name="second">
-                    <el-table
-                        :data="historyInfo"
-                    >
-                        <el-table-column
-                            label="id"
-                            show-overflow-tooltip
-                        >
+                    <el-table :data="historyInfo" >
+                        <el-table-column label="id" show-overflow-tooltip >
                             <template slot-scope="scope">
                                 <p>{{ scope.row.Id }}</p>
                             </template>
@@ -34,7 +30,7 @@
                             label="大小"
                             width="180">
                         </el-table-column>
-                        <el-table-column label="创建时间" >
+                        <el-table-column label="创建时间">
                             <template slot-scope="scope">
                                 <span> {{ scope.row.Created }}</span>
                             </template>
@@ -58,32 +54,40 @@
 </template>
 
 <script>
+    import '../../../static/tree/jsoneditor'
+
     export default {
         name: "PublicLocalImage",
-        data(){
-            return{
+        data() {
+            return {
                 // tab页相关属性
-                activeName2:'first',
+                activeName2: 'first',
                 // 每条镜像信息的id
-                imageId:'',
+                imageId: '',
                 // 详情信息
-                xiangQingInfo:{},
+                xiangQingInfo: {},
                 // 历史信息
-                historyInfo:[],
+                historyInfo: [],
                 // 端口信息
-                portInfo:[],
-                labelpos:'left'
+                portInfo: [],
+                labelpos: 'left'
             }
         },
-        methods:{
+        methods: {
             // 获取详情信息
-            getXiangQingInfo:function(){
+            getXiangQingInfo: function () {
                 this.$axios.get('/image/inspect/' + this.imageId)
-                    .then(response=>{
-                        if(response.data.code === 0){
+                    .then(response => {
+                        if (response.data.code === 0) {
                             this.xiangQingInfo = response.data.data;
-                            $("#showjson").html(syntaxHighlight(response.data.data));
-                        }else {
+
+                            let json = response.data.data;
+                            $('#editor').jsonEditor(json, {
+                                change: function () {
+                                    $('#json').html(JSON.stringify(json));
+                                }
+                            });
+                        } else {
                             this.$message.error({
                                 message: "获取镜像详情信息失败！",
                                 showClose: true
@@ -95,20 +99,20 @@
                     })
             },
             // 获取历史信息
-            getHistoryInfo:function(){
+            getHistoryInfo: function () {
                 this.$axios.get('/image/history/' + this.imageId)
-                    .then(response=>{
-                        if(response.data.code == 0){
+                    .then(response => {
+                        if (response.data.code === 0) {
                             this.historyInfo = response.data.data;
 
-                            this.historyInfo.forEach((item,index)=>{
+                            this.historyInfo.forEach((item, index) => {
 
 
-                                this.historyInfo[index].Size=bitConvert(item.Size);
+                                this.historyInfo[index].Size = bitConvert(item.Size);
                                 this.historyInfo[index].Created = getLocalTime(item.Created);
-                                console.log( this.historyInfo[index].Created)
+                                console.log(this.historyInfo[index].Created)
                             })
-                        }else{
+                        } else {
                             this.$message.error({
                                 message: "获取镜像历史信息失败！",
                                 showClose: true
@@ -120,25 +124,25 @@
                     })
             },
             // 获取镜像接口信息
-            getPortInfo:function(){
-              this.$axios.get('/image/' + this.imageId + '/exportPort')
-                  .then(response=>{
-                      // console.log(response)
-                      if(response.data.code == 0){
-                          this.portInfo = response.data.data;
-                      }else {
-                          this.$message.error({
-                              message: "获取镜像接口信息失败！",
-                              showClose: true
-                          })
-                      }
-                  })
-                  .catch(function (err) {
-                      console.log(err)
-                  })
+            getPortInfo: function () {
+                this.$axios.get('/image/' + this.imageId + '/exportPort')
+                    .then(response => {
+                        // console.log(response)
+                        if (response.data.code == 0) {
+                            this.portInfo = response.data.data;
+                        } else {
+                            this.$message.error({
+                                message: "获取镜像接口信息失败！",
+                                showClose: true
+                            })
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
             },
         },
-        created(){
+        created() {
             this.imageId = this.$route.query.id;
             this.getXiangQingInfo();
             this.getHistoryInfo();
@@ -148,13 +152,6 @@
 </script>
 
 <style scoped>
-    pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
-    .string { color: green; }
-    .number { color: darkorange; }
-    .boolean { color: blue; }
-    .null { color: magenta; }
-    .key { color: red; }
-
     .handle-box {
         margin-bottom: 20px;
     }
@@ -167,6 +164,7 @@
         width: 300px;
         display: inline-block;
     }
+
     /*纵向时间轴*/
     .time-vertical {
         list-style-type: none;

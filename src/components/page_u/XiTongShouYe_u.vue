@@ -7,9 +7,9 @@
                         <!--用户的角色信息-->
                         <el-card shadow="hover" class="mgb20">
                             <div class="user-info">
-                                <img src="../../../static/img/img.jpg" class="user-avator" alt="">
+                                <img src="../../../static/img/docker2.png" class="user-avator" alt="">
                                 <div class="user-info-cont">
-                                    <div class="user-info-name">{{name}}</div>
+                                    <div class="user-info-name" style="margin-bottom: 10px;">{{name}}</div>
                                     <div>{{role}}</div>
                                 </div>
                             </div>
@@ -39,38 +39,54 @@
                 <el-row :gutter="20" class="mgb20">
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-2">
-                                <i class="el-icon-message grid-con-icon"></i>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">{{selfInfo.projectNum}}</div>
-                                    <div>项目数量</div>
+                            <router-link to="/containerAllList">
+                            <div class="grid-content grid-con-3">
+                                <div class="DivIcons">
+                                    <img src="../../../static/img/icon_docker.svg" class="DivIcon">
                                 </div>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-1">
-                                <i class="el-icon-view grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">{{selfInfo.containerNum}}</div>
+                                    <div class="grid-num">{{hostInfo.containerNum}}</div>
                                     <div>容器数量</div>
                                 </div>
                             </div>
+                            </router-link>
                         </el-card>
                     </el-col>
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-3">
-                                <i class="el-icon-goods grid-con-icon"></i>
+                            <router-link to="/service">
+                            <div class="grid-content grid-con-1">
+                                <div class="grid-content grid-con-2">
+                                    <div class="DivIcons" style="background-color: #68c2d7">
+                                        <img src="../../../static/img/swarm.svg" class="DivIcon">
+                                    </div>
+                                </div>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">{{selfInfo.serviceNum}}</div>
+                                    <div class="grid-num">{{hostInfo.serviceNum}}</div>
                                     <div>服务数量</div>
                                 </div>
                             </div>
+                            </router-link>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-card shadow="hover" :body-style="{padding: '0px'}">
+                            <router-link to="/projectPage">
+                            <div class="grid-content grid-con-2">
+                                <div class="DivIcons" style="background-color: #00d1b2">
+                                    <img src="../../../static/img/icon_docker-image.svg" class="DivIcon">
+                                </div>
+                                <div class="grid-cont-right">
+                                    <div class="grid-num">{{hostInfo.projectNum}}</div>
+                                    <div>项目数量</div>
+                                </div>
+                            </div>
+                            </router-link>
                         </el-card>
                     </el-col>
                 </el-row>
+
+
                 <el-card shadow="hover" :body-style="{ height: '304px'}">
                     <div slot="header" class="clearfix">
                         <span>常用功能</span>
@@ -125,7 +141,8 @@
                 roleId: sessionStorage.getItem('currentRole'),
                 containerRunPer: 0,
                 noticeUnreadNum: 0,
-                selfInfo: {}
+                selfInfo: {},
+                hostInfo:'',
             }
         },
         computed: {
@@ -145,7 +162,7 @@
                                 this.containerRunPer = 0;
                             } else {
                                 let per = this.selfInfo.containerRunningNum / this.selfInfo.containerNum;
-                                this.containerRunPer = per * 100;
+                                this.containerRunPer = per.toFixed(2) * 100;
                             }
                         }else{
                             this.$message.error({
@@ -158,12 +175,24 @@
                         console.log(err)
                     })
             },
+            getHostInfo:function () {
+                this.$axios.get('/monitor/self/info')
+                    .then(response=> {
+                        if (response.data.code === 0) {
+                            this.hostInfo = response.data.data;
+                            console.log(this.hostInfo)
+                        }
+                    }).catch(function (err) {
+                    console.log(err);
+                })
+            },
+
             countUnReadNum() {
                 this.$axios.get('/notice/countUnRead')
                     .then(response=>{
                         if(response.data.code === 0){
                             console.log(response.data.data)
-                            this.noticeUnreadNum = response.data.data;
+                            this.noticeUnreadNum = response.data.data.toString().toFixed(2);
                         }
                     })
                     .catch(function (err) {
@@ -174,6 +203,7 @@
         created(){
             this.getSelfInfo();
             this.countUnReadNum();
+            this.getHostInfo();
         }
     }
 
@@ -181,6 +211,21 @@
 
 
 <style scoped>
+    .DivIcons{
+        width: 100px;
+        height: 100px;
+        background-color: #d1d1d1;
+        text-align:center;
+        margin:0 auto;
+
+    }
+    .DivIcon{
+        width: 60px;
+        height: 60px;
+        display: table-cell;
+        vertical-align:middle;
+        margin-top: 15px;
+    }
     .el-row {
         margin-bottom: 20px;
     }
@@ -225,7 +270,7 @@
     }
 
     .grid-con-2 .grid-num {
-        color: rgb(45, 140, 240);
+        color: rgb(100, 213, 114);
     }
 
     .grid-con-3 .grid-con-icon {

@@ -13,20 +13,23 @@
                 <p style="font-family: 微软雅黑;font-size: 14px;color: #409EFF;margin-bottom: 2%;margin-left: 1%;cursor: pointer"
                    @click="closelc">返回</p>
 
-                <el-radio-group v-model="radio" @change="changeExcel($event)" size="medium">
+                <el-radio-group v-model="radio" @change="changeExcel($event)" size="medium" style="position:absolute;float: right" >
                     <el-radio-button label="实时" ></el-radio-button>
                     <el-radio-button label="24小时"></el-radio-button>
                     <el-radio-button label="每周"></el-radio-button>
                 </el-radio-group>
-                <div id="main" style="width: 300px;height:200px;float: left"></div>
-                <div id="main2" style="width: 300px;height:200px;float: left"></div>
-                <div id="main3" style="width: 300px;height:200px;float: left"></div>
-                <div id="main4" style="width: 300px;height:200px;float: left"></div>
-                <div id="main5" style="width: 300px;height:200px;float: left"></div>
-                <div id="main6" style="width: 300px;height:200px;float: left"></div>
-                <div id="main7" style="width: 300px;height:200px;float: left"></div>
-                <div id="main8" style="width: 300px;height:200px;float: left"></div>
-                <div id="main9" style="width: 300px;height:200px;float: left"></div>
+
+                <div style="margin-top: 50px;position: fixed">
+                    <div id="main" style="width: 300px;height:200px;float: left"></div>
+                    <div id="main2" style="width: 300px;height:200px;float: left"></div>
+                    <div id="main3" style="width: 300px;height:200px;float: left"></div>
+                    <div id="main4" style="width: 300px;height:200px;float: left"></div>
+                    <div id="main5" style="width: 300px;height:200px;float: left"></div>
+                    <div id="main6" style="width: 300px;height:200px;float: left"></div>
+                    <div id="main7" style="width: 300px;height:200px;float: left"></div>
+                    <div id="main8" style="width: 300px;height:200px;float: left"></div>
+                    <div id="main9" style="width: 300px;height:200px;float: left"></div>
+                </div>
             </div>
 
             <!--输入关键词搜索部分-->
@@ -88,7 +91,6 @@
                     <template slot-scope="scope">
                         <i class="el-icon-view" style="float: left;margin-left: 10px;margin-top: 8px;cursor: pointer"
                            @click="getrow(scope.row)"></i>
-                        <!--handleView(scope.row,10000,'actual')-->
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -96,7 +98,10 @@
                     width="200">
                     <template slot-scope="scope">
                         <div slot="reference" class="name-wrapper" style="float: left">
-                            <el-tag size="medium">{{ scope.row.statusName }}</el-tag>
+                            <el-tag v-if="scope.row.statusName === '容器关闭'" type="danger">{{ scope.row.statusName }}</el-tag>
+                            <el-tag v-else-if="scope.row.statusName === '容器暂停'" type="warning">{{ scope.row.statusName }}</el-tag>
+                            <el-tag v-else-if="scope.row.statusName === '容器运行'" type="success">{{ scope.row.statusName }}</el-tag>
+                            <el-tag v-else type="info">{{ scope.row.statusName }}</el-tag>
                         </div>
                     </template>
                 </el-table-column>
@@ -109,6 +114,12 @@
                 <el-table-column
                     prop="image"
                     label="镜像名称"
+                    width="200"
+                    show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                    prop="ip"
+                    label="IP地址"
                     width="200"
                     show-overflow-tooltip>
                 </el-table-column>
@@ -190,7 +201,7 @@
                 content: [],
                 option: {
                     title: {
-                        text: 'rxbyte'
+                        text: '网络入带宽 Mbps'
                     },
                     dataZoom: [
                         {
@@ -205,6 +216,7 @@
                     ],
                     tooltip: {
                         trigger: 'axis',
+                        formatter:'{c1}Mbps'
                     },
                     xAxis: {
                         type: 'time',
@@ -221,19 +233,26 @@
                     },
                     series: [
                         {
-                            name: '模拟数据',
                             type: 'line',
                             showSymbol: false,
                             // showAllSymbol:true,
                             connectNulls: true,
                             hoverAnimation: false,
+                            itemStyle : {
+                                normal : {
+                                    lineStyle:{
+                                        color:'#015dda',
+                                        width:'1'
+                                    }
+                                }
+                            },
                             data: this.data
                         }
                     ]
                 },
                 option2: {
                     title: {
-                        text: 'txbyte'
+                        text: '网络出带宽 Mbps'
                     },
                     dataZoom: [
                         {
@@ -248,6 +267,7 @@
                     ],
                     tooltip: {
                         trigger: 'axis',
+                        formatter:'{c1}Mbps'
                     },
                     xAxis: {
                         type: 'time',
@@ -264,7 +284,14 @@
                     },
                     series: [
                         {
-                            name: '模拟数据',
+                            itemStyle : {
+                                normal : {
+                                    lineStyle:{
+                                        color:'#015dda',
+                                        width:'1'
+                                    }
+                                }
+                            },
                             type: 'line',
                             showSymbol: false,
                             // showAllSymbol:true,
@@ -275,7 +302,7 @@
                 },
                 option3: {
                     title: {
-                        text: 'rxPackets'
+                        text: '网络入包量 个/s'
                     },
                     dataZoom: [
                         {
@@ -289,6 +316,7 @@
                         }],
                     tooltip: {
                         trigger: 'axis',
+                        formatter:'{c0} <br/>{c1}个/秒'
                     },
                     xAxis: {
                         type: 'time',
@@ -304,7 +332,14 @@
                         }
                     },
                     series: [{
-                        name: '模拟数据',
+                        itemStyle : {
+                            normal : {
+                                lineStyle:{
+                                    color:'#015dda',
+                                    width:'1'
+                                }
+                            }
+                        },
                         type: 'line',
                         showSymbol: false,
                         // showAllSymbol:true,
@@ -315,7 +350,7 @@
                 },
                 option4: {
                     title: {
-                        text: 'txPackets'
+                        text: '网络出包量 个/秒'
                     },
                     dataZoom: [
                         {
@@ -329,6 +364,7 @@
                         }],
                     tooltip: {
                         trigger: 'axis',
+                        formatter:'{c1}个/秒'
                     },
                     xAxis: {
                         type: 'time',
@@ -344,7 +380,14 @@
                         }
                     },
                     series: [{
-                        name: '模拟数据',
+                        itemStyle : {
+                            normal : {
+                                lineStyle:{
+                                    color:'#015dda',
+                                    width:'1'
+                                }
+                            }
+                        },
                         type: 'line',
                         showSymbol: false,
                         // showAllSymbol:true,
@@ -355,7 +398,7 @@
                 },
                 option5: {
                     title: {
-                        text: 'cpuUtilization'
+                        text: 'CPU利用率'
                     },
                     dataZoom: [
                         {
@@ -369,6 +412,7 @@
                         }],
                     tooltip: {
                         trigger: 'axis',
+                        formatter:'{c1}%'
                     },
                     xAxis: {
                         type: 'time',
@@ -384,7 +428,14 @@
                         }
                     },
                     series: [{
-                        name: '模拟数据',
+                        itemStyle : {
+                            normal : {
+                                lineStyle:{
+                                    color:'#015dda',
+                                    width:'1'
+                                }
+                            }
+                        },
                         type: 'line',
                         showSymbol: false,
                         // showAllSymbol:true,
@@ -395,7 +446,7 @@
                 },
                 option6: {
                     title: {
-                        text: 'memoryUsage'
+                        text: '内存使用量 Mb'
                     },
                     dataZoom: [
                         {
@@ -409,6 +460,7 @@
                         }],
                     tooltip: {
                         trigger: 'axis',
+                        formatter:'{c1}Mb'
                     },
                     xAxis: {
                         type: 'time',
@@ -424,7 +476,14 @@
                         }
                     },
                     series: [{
-                        name: '模拟数据',
+                        itemStyle : {
+                            normal : {
+                                lineStyle:{
+                                    color:'#015dda',
+                                    width:'1'
+                                }
+                            }
+                        },
                         type: 'line',
                         showSymbol: false,
                         // showAllSymbol:true,
@@ -435,7 +494,7 @@
                 },
                 option7: {
                     title: {
-                        text: 'memoryUtilization'
+                        text: '内存使用率'
                     },
                     dataZoom: [
                         {
@@ -449,6 +508,7 @@
                         }],
                     tooltip: {
                         trigger: 'axis',
+                        formatter:'{c1}%'
                     },
                     xAxis: {
                         type: 'time',
@@ -464,10 +524,16 @@
                         }
                     },
                     series: [{
-                        name: '模拟数据',
+                        itemStyle : {
+                            normal : {
+                                lineStyle:{
+                                    color:'#015dda',
+                                    width:'1'
+                                }
+                            }
+                        },
                         type: 'line',
                         showSymbol: false,
-                        // showAllSymbol:true,
                         connectNulls: true,
                         hoverAnimation: false,
                         data: this.data7
@@ -475,7 +541,7 @@
                 },
                 option8: {
                     title: {
-                        text: 'blockRead'
+                        text: '本地读流量 MB'
                     },
                     dataZoom: [
                         {
@@ -489,6 +555,7 @@
                         }],
                     tooltip: {
                         trigger: 'axis',
+                        formatter:'{c1}MB'
                     },
                     xAxis: {
                         type: 'time',
@@ -504,7 +571,14 @@
                         }
                     },
                     series: [{
-                        name: '模拟数据',
+                        itemStyle : {
+                            normal : {
+                                lineStyle:{
+                                    color:'#015dda',
+                                    width:'1'
+                                }
+                            }
+                        },
                         type: 'line',
                         showSymbol: false,
                         // showAllSymbol:true,
@@ -515,7 +589,7 @@
                 },
                 option9: {
                     title: {
-                        text: 'blockWrite'
+                        text: '本地写流量 MB'
                     },
                     dataZoom: [
                         {
@@ -529,6 +603,7 @@
                         }],
                     tooltip: {
                         trigger: 'axis',
+                        formatter:'{c1}MB'
                     },
                     xAxis: {
                         type: 'time',
@@ -544,7 +619,14 @@
                         }
                     },
                     series: [{
-                        name: '模拟数据',
+                        itemStyle : {
+                            normal : {
+                                lineStyle:{
+                                    color:'#015dda',
+                                    width:'1'
+                                }
+                            }
+                        },
                         type: 'line',
                         showSymbol: false,
                         // showAllSymbol:true,
@@ -600,7 +682,8 @@
         },
         computed: {
             ...mapGetters({
-                userInfo:'getUserInfo'
+                userInfo:'getUserInfo',
+                hostaddr: 'gethostaddr'
             })
         },
         methods: {
@@ -633,7 +716,7 @@
             },
 
             closelc() {
-                $('#sideMenuContainer').animate({left:'1800px'},1000);
+                $('#sideMenuContainer').animate({left:'1700px'},1000);
                 // this.isShow = false;
                 clearInterval(this.time);
             },
@@ -703,7 +786,6 @@
                                 for (let i = 0; i < this.content.length; i++) {
                                     let date1 = new Date(this.content[i].timestamp);
                                     let timestamp1 = date1.toLocaleDateString().replace(/\//g, "-") + " " + date1.toTimeString().substr(0, 8);
-                                    console.log(timestamp1);
                                     let rxbyte = this.content[i].rxBytes.toString();
                                     let txbyte = this.content[i].txBytes.toString();
                                     let rxPackets = this.content[i].rxPackets.toString();
@@ -1163,11 +1245,11 @@
                     .then(response => {
                         if (response.data.code === 0) {
                             this.$message({
-                                message: response.data.data,
+                                message: response.data.message,
                                 type: 'success'
                             });
                         } else {
-                            this.$message.error(response.data.data);
+                            this.$message.error(response.data.message);
                         }
 
                     })
@@ -1177,7 +1259,7 @@
             },
 
             initWebSocket: function () { //初始化weosocket
-                this.websock = new WebSocket("ws://192.168.100.151:9999/ws/"+this.userInfo.userId);
+                this.websock = new WebSocket("ws://"+this.hostaddr+"/ws/" + this.userInfo.userId);
 
                 this.websock.onopen = this.websocketonopen;
 

@@ -77,7 +77,7 @@
       </div>
     </el-dialog>
     <el-pagination
-      background
+        style="float: right;bottom: 30px;right: 50px;position: absolute;"
       layout="total, prev, pager, next,jumper"
       :total="total"
       :current-page.sync="currentPage"
@@ -293,8 +293,9 @@
                             case 2:
                                 this.freeze=[true,true,false,false,false,false];
                                 break;
+                            default:break;
                         }
-                        this.getContainerInfo();
+                        this.getProjectList();
 
                     }).catch(function (err) {
                     console.log(err);
@@ -310,7 +311,7 @@
                     message: '容器开启失败'
                 });
             }
-            thie.loading=[false,false,false,false,false,false];
+            this.loading=[false,false,false,false,false,false];
 
         },
 
@@ -337,12 +338,13 @@
 
 <style scoped>
     #project{
+        position: relative;
         padding: 50px;
         margin: 20px;
         box-shadow: 3px 3px 10px #dddddd;
         background-color: white;
         border-radius: 15px;
-        min-height: 400px;
+        min-height: 670px;
     }
   #createProjectbtn{
     margin-left: 100px;

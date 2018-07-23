@@ -55,7 +55,7 @@
               </el-table-column>
             </el-table>
 
-            <!--展示从dockerhun上拉取的信息-->
+            <!--展示从dockerhub上拉取的信息-->
             <el-table
               :data="imageList"
               height="300"
@@ -581,6 +581,19 @@
           }
         }
 
+          if (this.service.port.length>0){
+              for (var i=0;i<this.service.port.length;i++) {
+                  if (this.service.port[i].in<1 || this.service.port[i].in>65535) {
+                      this.$message.error("内部端口号范围1~65535");
+                      return;
+                  }
+                  if (this.service.port[i].out<10000 || this.service.port[i].out>65535) {
+                      this.$message.error("外端口号范围10000~65535");
+                      return;
+                  }
+              }
+          }
+
         this.service.projectId = this.projectId;
         //判断服务名称是否填写
         if (this.service.serviceName == ''){
@@ -628,7 +641,8 @@
         })
           .then((res)=>{
             if (res.data.code == 0){
-              this.$message.success("正在创建服务")
+                this.$message.success("正在创建服务");
+                this.$router.push('/projectPage')
             } else {
               this.$message.error(res.data.message)
             }

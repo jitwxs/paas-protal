@@ -22,14 +22,14 @@
                                 <el-option key="4" label="其他通知" value="4"></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="是否全部发送">
+                        <el-form-item label="全部发送">
                             <el-switch
                                 v-model="sendForm.sendAll"
                                 active-color="#13ce66"
                                 inactive-color="#ff4949">
                             </el-switch>
                         </el-form-item>
-                        <el-form-item label="发送对象" v-show="!sendForm.sendAll">
+                        <el-form-item label="发送对象（多个逗号分隔）" v-show="!sendForm.sendAll" label-width="200px">
                             <el-input v-model="sendForm.receivers" placeholder="输入要发送通知的用户名"></el-input>
                         </el-form-item>
                     </el-form>
@@ -89,7 +89,7 @@
                 sendForm:{
                     title:'',
                     type:'',
-                    sendAll:'',
+                    sendAll:false,
                     receivers:'',
                     content:'',
                 },

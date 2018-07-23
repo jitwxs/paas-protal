@@ -86,6 +86,13 @@
                 this.getLocalImage();
             },
 
+            //    查看详情
+            handleView:function (index, row) {
+            //      id放入vuex
+                this.$store.commit('SET_CURRENTMIRROR_ID',row.id);
+                this.$router.push({path:'/mirrorDetail/detail'})
+            },
+
             //    导出镜像
             handleExport:function (index, row) {
                 this.$axios.get("/image/export/" + row.id)
@@ -121,6 +128,6 @@
         box-shadow: 3px 3px 10px #dddddd;
         background-color: white;
         border-radius: 15px;
-        min-height: 400px;
+        min-height: 670px;
     }
 </style>

@@ -332,6 +332,9 @@
 
              this.total = res.data.data.total
              this.imageList = res.data.data.records;
+             for(var i = 0;i<this.imageList.length;i++){
+                 this.imageList[i].size = bitConvert(this.imageList[i].size)
+             }
              this.loading = false;
            } else {
 
@@ -513,6 +516,15 @@
              this.$message.error("端口号"+i +"未填写");
              return;
            }
+           if (this.container.port[i].out<10000 || this.container.port[i].out>65535){
+               this.$message.error("外部端口范围为10000~65535");
+               return;
+           }
+           if (this.container.port[i].in<1 || this.container.port[i].in>65535) {
+               this.$message.error("内部端口范围为1~65535");
+               return;
+           }
+
          }
        }
        this.container.projectId = this.projectId;
@@ -540,9 +552,11 @@
        let portMap={}
        this.container.port.forEach((item, index) => {
          let key = item.in.toString();
-         portMap[key] = item.out
-       })
+         portMap[key] = item.out;
+       });
 
+
+       console.log(portMap);
        this.$axios.post("/container/create",{
          imageId:this.container.imageId,
          containerName:this.container.containerName,
@@ -555,6 +569,7 @@
          .then((res)=>{
            if (res.data.code == 0){
              this.$message.success("正在创建容器");
+               this.$router.push('/projectPage');
            } else {
              this.$message.error("配置错误")
            }
@@ -634,7 +649,7 @@
      websocketonmessage:function(e){
        var data = eval('('+e.data+')');
        if (data.info == null) {
-         console.log(data)
+         console.log(data);
          if (data.code == 0){
            this.$notify({
              type: 'success',
@@ -644,7 +659,6 @@
            this.container.imageId = data.data.imageId;
            this.container.port = [];
            this.initPortLength = data.data.exportPort.length;
-             this.$router.push('/projectPage');
          } else {
            this.$notify({
              type: 'error',

@@ -15,15 +15,15 @@
                 </div>
                 <!-- 消息中心 -->
                 <div class="btn-bell">
-                    <el-tooltip effect="dark" :content="message?`有${message}条未读消息`:`消息中心`" placement="bottom">
+                    <el-tooltip effect="dark" :content="unreadMessageNum?`有${unreadMessageNum}条未读消息`:`消息中心`" placement="bottom">
                         <router-link to="/NoticePage">
                             <i class="el-icon-bell"></i>
                         </router-link>
                     </el-tooltip>
-                    <span class="btn-bell-badge" v-if="message"></span>
+                    <span class="btn-bell-badge" v-if="unreadMessageNum"></span>
                 </div>
                 <!-- 用户头像 -->
-                <div class="user-avator"><img src="static/img/rabbit.jpg"></div>
+                <div class="user-avator"><img src="../../../static/img/docker.png"></div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
@@ -39,19 +39,22 @@
 </template>
 <script>
     import bus from '../common/bus';
+    import {mapGetters} from 'vuex';
     export default {
         data() {
             return {
                 collapse: false,
                 fullscreen: false,
                 name: 'linxin',
-                message: 0
             }
         },
         computed:{
             username(){
                 return sessionStorage.getItem('userName');
-            }
+            },
+            ...mapGetters({
+                unreadMessageNum:'getUnreadMessageNum'
+            })
         },
         methods:{
             // 用户名下拉菜单选择事件
@@ -65,6 +68,7 @@
                                 sessionStorage.removeItem("userName");
                                 sessionStorage.removeItem("userToken");
                                 this.$router.push('/index');
+                                this.$router.go(0);
                             }
                         }).catch(function (err) {
                             console.log(err);
@@ -108,7 +112,7 @@
                 this.$axios.get('/notice/countUnRead')
                     .then(response=>{
                         if(response.data.code === 0){
-                            this.message = response.data.data;
+                            this.$store.dispatch('setUnreadMessageNum',response.data.data);
                         }
                     })
                     .catch(function (err) {

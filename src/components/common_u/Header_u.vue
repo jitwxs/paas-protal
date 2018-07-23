@@ -4,7 +4,7 @@
         <div class="collapse-btn" @click="collapseChage">
             <i class="el-icon-menu"></i>
         </div>
-        <div class="logo">PAAS管理系统</div>
+        <div class="logo">PaaS云平台</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
@@ -15,15 +15,15 @@
                 </div>
                 <!-- 消息中心 -->
                 <div class="btn-bell">
-                    <el-tooltip effect="dark" :content="message?`有${message}条未读消息`:`消息中心`" placement="bottom">
+                    <el-tooltip effect="dark" :content="unreadMessageNum?`有${unreadMessageNum}条未读消息`:`消息中心`" placement="bottom">
                         <router-link to="/NoticePage">
                             <i class="el-icon-bell"></i>
                         </router-link>
                     </el-tooltip>
-                    <span class="btn-bell-badge" v-if="message"></span>
+                    <span class="btn-bell-badge" v-if="unreadMessageNum"></span>
                 </div>
                 <!-- 用户头像 -->
-                <div class="user-avator"><img src="../../../static/img/img.jpg"></div>
+                <div class="user-avator"><img src="../../../static/img/docker2.png"></div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
@@ -39,6 +39,7 @@
 </template>
 <script>
     import bus from '../common_u/bus';
+    import {mapGetters} from 'vuex';
     export default {
         data() {
             return {
@@ -50,12 +51,15 @@
         computed:{
             username(){
                 return sessionStorage.getItem('userName');
-            }
+            },
+            ...mapGetters({
+                unreadMessageNum:'getUnreadMessageNum'
+            })
         },
         methods:{
             // 用户名下拉菜单选择事件
             handleCommand(command) {
-                if(command == 'loginout'){
+                if(command === 'loginout'){
                     this.$axios.get('/user/logout')
                         .then(response=>{
                             if (response.data.code===0){
@@ -63,6 +67,7 @@
                                 sessionStorage.removeItem("userName");
                                 sessionStorage.removeItem("userToken");
                                 this.$router.push('/index');
+                                this.$router.go(0);
                             }
                         }).catch(function (err) {
                         console.log(err);
@@ -105,7 +110,7 @@
                 this.$axios.get('/notice/countUnRead')
                     .then(response=>{
                         if(response.data.code === 0){
-                            this.message = response.data.data;
+                            this.$store.dispatch('setUnreadMessageNum',response.data.data);
                         }
                     })
                     .catch(function (err) {

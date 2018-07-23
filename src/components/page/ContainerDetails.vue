@@ -1,5 +1,18 @@
 <template>
     <div>
+        <!--数据卷模态框-->
+        <el-dialog title="导入数据卷" :visible.sync="dialogVisible" width="30%">
+            <el-form >
+                <el-form-item label="选择文件">
+                    <input id="imageInput" @change="importVolume($event)" type="file">
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                  <el-button @click="dialogVisible = false">取 消</el-button>
+                  <el-button type="primary" @click="submitvolume">确 定</el-button>
+                </span>
+        </el-dialog>
+
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-date"></i>容器详情</el-breadcrumb-item>
@@ -92,11 +105,11 @@
                             prop="name">
                         </el-table-column>
                         <el-table-column
-                            label="destination"
+                            label="挂载点"
                             prop="destination" width="300">
                         </el-table-column>
                         <el-table-column
-                            label="source"
+                            label="外部目录"
                             prop="source">
                         </el-table-column>
                         <el-table-column
@@ -114,6 +127,32 @@
                         </el-table-column>
                     </el-table>
                 </el-tab-pane>
+                <el-tab-pane label="网络管理" name="fourth">
+
+                    <el-button type="primary" icon="el-icon-refresh" circle style="margin-left: 20px;margin-bottom: 20px" @click="syncNetwork"></el-button>
+                    <el-table
+                        :data="networkList"n
+                        style="width: 100%">
+                        <el-table-column
+                            prop="network.name"
+                            label="名称"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                            prop="network.scope"
+                            label="范围"
+                           >
+                        </el-table-column>
+                        <el-table-column
+                            prop="network.driver"
+                            label="驱动">
+                        </el-table-column>
+                        <el-table-column
+                            prop="createDate"
+                            label="创建日期">
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
             </el-tabs>
         </div>
     </div>
@@ -125,6 +164,8 @@
         name: "ContainerDetails",
         data(){
             return{
+                volumeFile:'',
+                dialogVisible:false,
                 time:'',
                 options: [{
                     value: 10000,
@@ -167,19 +208,74 @@
                 uploadForm:{
                     id:'',
                     file:''
-                }
+                },
+                fileName:'',
+                networkList:[]
             }
         },
         methods:{
-
+            //同步容器网络配置
+            syncNetwork(){
+                this.$axios.get("/network/sync/container/"+this.containerId)
+                    .then((res)=>{
+                        if (res.data.code === 0){
+                            let message = "添加：" + res.data.data.add + "条，删除：" + res.data.data.delete + "条";
+                            this.$notify({
+                                message: message    ,
+                                type: 'success'
+                            });
+                            this.getContainerNetworkList();
+                        }
+                    })
+            },
+            //上传文件改变时
+            importVolume(event){
+                event.preventDefault();//取消默认行为
+                this.volumeFile = event.target.files[0];
+                this.fileName = event.target.files[0].name;
+            },
+            //上传数据卷
+            submitvolume(){
+                let that = this;
+                let formdata = new FormData();
+                formdata.append('id',this.volumeId);
+                formdata.append('file',this.volumeFile);
+                $.ajax({
+                    type: "post",
+                    async: true,
+                    url: "/api/volumes/upload",
+                    dataType: 'json',
+                    headers:{
+                        'Authorization': sessionStorage.userToken
+                    },
+                    // 告诉jQuery不要去处理发送的数据
+                    processData : false,
+                    // 告诉jQuery不要去设置Content-Type请求头
+                    contentType: false,
+                    data: formdata,
+                    success: function (res) {
+                        if(res.code === 0) {
+                            that.dialogVisible = false;
+                            that.$message.success("上传成功");
+                            that.getVolumeInfo();
+                            that.volumeFile = '';
+                            that.fileName='';
+                        } else {
+                            that.$message.success(res.message);
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            },
             refreshNow:function(){
                 this.jsonmessage=[];
                 this.$axios.get('/container/top/'+this.containerId)
                     .then(response=>{
                         if (this.status ===1){
-                            // $("#showjson").html(JSON.strsingify(respone.data.data, null, 4));
-                            for (var i=0 ; i<response.data.data.Processes.length; i++){
-                                var json = {};
+                            for (let i=0 ; i<response.data.data.Processes.length; i++){
+                                let json = {};
                                 json.UID = response.data.data.Processes[i][0];
                                 json.PID = response.data.data.Processes[i][1];
                                 json.PPID = response.data.data.Processes[i][2];
@@ -196,6 +292,21 @@
                 })
             },
 
+            //获取容器网络信息
+            getContainerNetworkList(){
+
+                this.$axios.get("/network/container/"+this.containerId)
+                    .then((res)=>{
+
+                        if (res.data.code === 0){
+
+                            this.networkList = res.data.data;
+                        }
+                    })
+                    .catch((err)=>{
+                        console.log(err);
+                    })
+            },
             projectTabSwitch:function () {
                 this.jsonmessage=[];
                 if(this.activeName === 'second'){
@@ -203,9 +314,8 @@
                     this.$axios.get('/container/top/'+this.containerId)
                         .then(respone=>{
                             if (this.status ===1){
-                                // $("#showjson").html(JSON.stringify(respone.data.data, null, 4));
-                                for (var i=0 ; i<respone.data.data.Processes.length; i++){
-                                    var json = {};
+                                for (let i=0 ; i<respone.data.data.Processes.length; i++){
+                                    let json = {};
                                     json.UID = respone.data.data.Processes[i][0];
                                     json.PID = respone.data.data.Processes[i][1];
                                     json.PPID = respone.data.data.Processes[i][2];
@@ -219,7 +329,7 @@
                             }
                         }).catch(function (err) {
                         console.log(err);
-                    })
+                    });
                     this.refresh();
                 } else{
 
@@ -233,14 +343,12 @@
                     if (!that.containerId) {
                         clearInterval(that.time)
                     }
-                    console.log(that.containerId);
                     that.jsonmessage=[];
                     that.$axios.get('/container/top/'+that.containerId)
                         .then(response=>{
                             if (this.status ===1){
-                                // $("#showjson").html(JSON.strsingify(respone.data.data, null, 4));
-                                for (var i=0 ; i<response.data.data.Processes.length; i++){
-                                    var json = {};
+                                for (let i=0 ; i<response.data.data.Processes.length; i++){
+                                    let json = {};
                                     json.UID = response.data.data.Processes[i][0];
                                     json.PID = response.data.data.Processes[i][1];
                                     json.PPID = response.data.data.Processes[i][2];
@@ -259,17 +367,24 @@
             },
 
             //上传文件到数据卷
-            uploadFiles(index,data){
-
-                this.uploadForm.id = data.id;
-
+            uploadFiles(index,row){
+                this.volumeId = row.id;
+                this.dialogVisible=true;
+            },
+            getVolumeInfo(){
+                this.$axios.get("/volumes/list/obj?objId="+this.containerId+"&current="+this.currentPage)
+                    .then((res)=>{
+                        this.total = res.data.data.total;
+                        this.volumeInfo = res.data.data.records;
+                    })
+                    .catch((err)=>{
+                        console.log(err)
+                    })
             }
 
         },
 
         mounted() {
-
-            // this.$axios.get('')
         },
 
         computed:{
@@ -280,7 +395,7 @@
 
         created(){
             this.activeName = 'first';
-            // this.id = this.$route.query.id;
+            this.getContainerNetworkList();
             this.$axios.get('/container/'+this.containerId)
                 .then(respone=>{
                     this.name = respone.data.data.name;
@@ -316,22 +431,13 @@
 
                     if (this.status===1){
                         this.tabbool=false;
-                        // console.log(this.tabbool);
                     }
                 }).catch(function (err) {
                 console.log(err);
             });
 
-            this.$axios.get("/volumes/list/obj?objId="+this.containerId+"&current="+this.currentPage)
-                .then((res)=>{
+            this.getVolumeInfo();
 
-                    console.log(res.data.data)
-                    this.total = res.data.data.total;
-                    this.volumeInfo = res.data.data.records;
-                })
-                .catch((err)=>{
-                    console.log(err)
-                })
         },
         beforeDestroy(){
             clearInterval(this.time)

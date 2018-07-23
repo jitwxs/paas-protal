@@ -9,8 +9,9 @@
             <!--输入关键词搜索部分-->
             <div class="handle-box">
                 <el-select v-model="select_hasPublic" placeholder="选择网络性质" class="handle-select mr10" >
-                    <el-option key="1" label="公共网络" value="true"></el-option>
-                    <el-option key="2" label="非公共网络" value="false"></el-option>
+                    <el-option key="0" label="所有网络" value=""></el-option>
+                    <el-option key="1" label="公共网络" value=true></el-option>
+                    <el-option key="2" label="非公共网络" value=false></el-option>
                 </el-select>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
                 <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncNetwork">同步
@@ -29,15 +30,15 @@
                 </el-table-column>
                 <el-table-column prop="scope" label="覆盖范围">
                 </el-table-column>
-                <el-table-column prop="hasIpv6" label="是否开启ipv6">
+                <el-table-column prop="driver" label="驱动">
                 </el-table-column>
                 <el-table-column prop="hasPublic" label="网络性质">
                 </el-table-column>
+                <el-table-column prop="createDate" label="创建时间">
+                </el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <p style="float: left;margin-left: 5px;cursor: pointer"><i class="el-icon-delete"
-                                                                                   @click="handleDelete(scope.$index, scope.row)"></i>
-                        </p>
+                        <p style="float: left;margin-left: 5px;cursor: pointer"><i class="el-icon-delete" @click="handleDelete(scope.$index, scope.row)"></i> </p>
                     </template>
                 </el-table-column>
             </el-table>
@@ -134,8 +135,7 @@
             },
             //删除标签
             del(item){
-
-                let index = this.networkForm.labels.indexOf(item)
+                let index = this.networkForm.labels.indexOf(item);
                 if (index !== -1) {
                     this.networkForm.labels.splice(index, 1)
                 }
@@ -222,10 +222,8 @@
                 this.networkForm.labels.forEach((item,index)=>{
 
                     if (item.aa ==="" ||item.bb === "") {
-
                         this.$message.warning("标签"+index+"未填写完成");
                         this.networkFormVisible = true;
-                        return ;
                     }
                 });
                 let labelsMap = {};
@@ -266,15 +264,9 @@
                     this.$axios.delete('/network/delete/' + row.id)
                         .then(response => {
                             if (response.data.code === 0) {
-                                this.$message.success({
-                                    message: "删除网络信息成功！",
-                                    showClose: true
-                                })
+                                this.$message.success("删除网络信息成功！")
                             } else {
-                                this.$message.error({
-                                    message: "删除网络信息失败！",
-                                    showClose: true
-                                })
+                                this.$message.error(response.data.message)
                             }
                         })
                         .catch(function (err) {

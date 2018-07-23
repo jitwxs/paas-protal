@@ -1,12 +1,15 @@
 <template>
         <div id="network">
             <el-tabs v-model="activeName">
-                <el-tab-pane label="公共网络" name="first">
+                <el-tab-pane label="公共网络" name="first" style="min-height: 530px">
                     <el-table
                         :data="publicNetWorkInfo"
                         tooltip-effect="dark"
                         style="width: 100%">
-                        <el-table-column prop="name" label="网络名称" >
+                        <el-table-column label="网络名称" >
+                            <template slot-scope="scope">
+                                <span @click="handlepubView(scope.$index, scope.row)" style="cursor:pointer;">{{scope.row.name}}</span>
+                            </template>
                         </el-table-column>
                         <el-table-column prop="scope" label="覆盖范围" >
                         </el-table-column>
@@ -17,7 +20,7 @@
                     </el-table>
                     <!--分页区域-->
                     <el-pagination
-                        style="float: right;margin-top: 20px;margin-right: 30px"
+                        style="float: right;bottom: 30px;right: 50px;position: absolute;"
                         @current-change="pubhandleCurrentChange"
                         :current-page.sync="pubcurrentPage"
                         @size-change="pubhandleSizeChange"
@@ -27,7 +30,8 @@
                         :total="pubtotalCount">
                     </el-pagination>
                 </el-tab-pane>
-                <el-tab-pane label="个人网络" name="second">
+
+                <el-tab-pane label="个人网络" name="second" style="min-height: 530px">
                     <div class="handle-box">
                         <el-button type="primary" icon="el-icon-circle-plus-outline"  @click="handleCreate">创建</el-button>
                     </div>
@@ -35,7 +39,10 @@
                         :data="privateNetWorkInfo"
                         tooltip-effect="dark"
                         style="width: 100%">
-                        <el-table-column prop="name" label="网络名称" >
+                        <el-table-column  label="网络名称" >
+                            <template slot-scope="scope">
+                                <span @click="handlepriView(scope.$index, scope.row)" style="cursor:pointer;">{{scope.row.name}}</span>
+                            </template>
                         </el-table-column>
                         <el-table-column prop="scope" label="覆盖范围" >
                         </el-table-column>
@@ -51,6 +58,7 @@
                     </el-table>
                     <!--分页区域-->
                     <el-pagination
+                        style="float: right;bottom: 30px;right: 50px;position: absolute;"
                         @current-change="prihandleCurrentChange"
                         :current-page.sync="pricurrentPage"
                         @size-change="prihandleSizeChange"
@@ -98,12 +106,7 @@
             getPublicNetworkInfo:function(){
                 this.$axios.get('/network/list' + "?current="+this.pubcurrentPage+" &size="+this.pubpageSize+"&type=1")
                     .then(response=>{
-                        // console.log(response.data);
                         if(response.data.code == 0){
-                            this.$message.success({
-                                message: response.data.message,
-                                showClose: true
-                            });
                             this.publicNetWorkInfo = response.data.data.records;
                             for(var i=0; i< this.publicNetWorkInfo.length; i++){
                                 if(this.publicNetWorkInfo[i].hasPublic){
@@ -134,10 +137,6 @@
                     .then(response=>{
                         console.log(response.data);
                         if(response.data.code == 0){
-                            this.$message.success({
-                                message: response.data.message,
-                                showClose: true
-                            });
                             this.privateNetWorkInfo = response.data.data.records;
                             for(var i=0; i< this.privateNetWorkInfo.length; i++){
                                 if(this.privateNetWorkInfo[i].hasPublic){
@@ -162,6 +161,15 @@
                     .catch(function (err) {
                         console.log(err)
                     })
+            },
+            // 点击名称跳转
+            handlepubView(index,row){
+                this.$store.commit('SET_NETWORKID',row.id);
+                this.$router.push('/networkDetails')
+            },
+            handlepriView(index,row){
+                this.$store.commit('SET_NETWORKID',row.id);
+                this.$router.push('/networkDetails')
             },
             // 分页函数
             pubhandleCurrentChange:function (val) {
@@ -197,34 +205,7 @@
             handleCreate:function(){
                 this.$router.push('/createNetwork');
             },
-            // 创建网络信息
-            // createNetwork:function(){
-            //     this.networkFormVisible = false;
-            //     this.$axios.post('/network/self/create',{
-            //         name: this.networkForm.name,
-            //         driver:this.networkForm.driver,
-            //         labels: this.networkForm.labels,
-            //         hasIpv6: this.networkForm.hasIpv6
-            //     })
-            //         .then(response=>{
-            //             console.log(response)
-            //             if(response.data.code == 0){
-            //                 this.$message.success({
-            //                     message: "创建网络信息成功！",
-            //                     showClose: true
-            //                 })
-            //                 this.getNetworkInfo();
-            //             }else {
-            //                 this.$message.error({
-            //                     message: "创建网络信息失败！",
-            //                     showClose: true
-            //                 })
-            //             }
-            //         })
-            //         .catch(function (err) {
-            //             console.log(err)
-            //         })
-            // },
+
             // 删除网络信息
             priDelete(id){
                 this.$axios.delete('/network/delete/' + id)
@@ -255,12 +236,13 @@
 
 <style scoped>
     #network{
+        position: relative;
         padding: 50px;
         margin: 20px;
         box-shadow: 3px 3px 10px #dddddd;
         background-color: white;
         border-radius: 15px;
-        min-height: 400px;
+        min-height: 670px;
     }
 
     .handle-box {

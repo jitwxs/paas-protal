@@ -14,7 +14,7 @@
                         <el-input v-model="select_publicImage" placeholder="输入镜像名称"
                                   class="handle-input mr10"></el-input>
                         <el-button type="primary" icon="el-icon-search" @click="searchPublicImage">搜索</el-button>
-                        <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage">同步
+                        <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage(1)">同步
                         </el-button>
                     </div>
                     <el-table
@@ -37,26 +37,28 @@
                             prop="size">
                         </el-table-column>
                         <el-table-column
-                            label="镜像类型"
-                            prop="type">
-                        </el-table-column>
-                        <el-table-column
                             label="镜像仓库"
                             prop="repo">
+                        </el-table-column>
+                        <el-table-column
+                            label="入库时间"
+                            prop="createDate">
                         </el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
                                 <ul style="float: left;list-style-type: none">
-                                    <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer"
+                                    <li style="float: left;margin-right: 10px;color: #409EFF;cursor: pointer"
                                         @click="handleExport(scope.$index, scope.row)">导出
                                     </li>
                                     <router-link style=" text-decoration: none;"
                                                  :to="{path:'/publiclocalimage', query:{id:scope.row.id}}">
-                                        <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer">详情</li>
+                                        <li style="float: left;margin-right: 10px;color: #409EFF;cursor: pointer">详情
+                                        </li>
                                     </router-link>
-                                    <li style="float: left;margin-left: 5px;cursor: pointer">
+                                    <li style="float: left;margin-left: 10px;cursor: pointer">
                                         <i class="el-icon-delete" @click="handleDelete(scope.$index, scope.row)"></i>
                                     </li>
+
                                 </ul>
                             </template>
                         </el-table-column>
@@ -80,7 +82,7 @@
                         <el-input v-model="select_userImage" placeholder="输入镜像名称" class="handle-input mr10"></el-input>
                         <el-button type="primary" icon="el-icon-search" @click="searchUserImage">搜索</el-button>
                         <el-button type="primary" @click="handleImport">导入</el-button>
-                        <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage">同步
+                        <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage(2)">同步
                         </el-button>
                     </div>
                     <el-table
@@ -99,12 +101,8 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                            label="容量大小"
+                            label="镜像大小"
                             prop="size">
-                        </el-table-column>
-                        <el-table-column
-                            label="镜像类型"
-                            prop="type">
                         </el-table-column>
                         <el-table-column
                             label="所属用户"
@@ -113,6 +111,10 @@
                         <el-table-column
                             label="是否公开"
                             prop="hasOpen">
+                        </el-table-column>
+                        <el-table-column
+                            label="上传时间"
+                            prop="createDate">
                         </el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
@@ -144,32 +146,57 @@
                     </div>
                 </el-tab-pane>
 
+                <!--hub镜像管理-->
+                <el-tab-pane label="Hub镜像" name="third">
+                    <el-button type="primary" icon="el-icon-refresh" style="margin-bottom: 20px" @click="syncPassHubImgage">同步
+                    </el-button>
+
+                    <el-table :data="imageList" height="300" style="width: 100%"
+                              @row-dblclick="getpasshubImageId($event)">
+                        <el-table-column prop="name" label="镜像名称" width="220"></el-table-column>
+                        <el-table-column label="镜像标签" width="150">
+                            <template slot-scope="scope">
+                                <div slot="reference" class="name-wrapper">
+                                    <el-tag size="medium">{{ scope.row.tag }}</el-tag>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="authName" label="上传者" width="150"
+                                         show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="repo" label="镜像仓库" width="200" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="digest" label="Digest" show-overflow-tooltip></el-table-column>
+                        <el-table-column label="操作" width="200">
+                            <template slot-scope="scope">
+                                <el-button size="mini"
+                                           @click="pullloadHubImage(scope.row.id,scope.row.name)" type="primary">拉取
+                                </el-button>
+                                <el-button size="mini"
+                                           @click="deleteHubImage(scope.row.id,scope.row.name)" type="danger">删除
+                                </el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                </el-tab-pane>
+
                 <!--导入镜像的模态框-->
-                <div class="importImage">
-                    <el-dialog title="导入镜像" :visible.sync="importImageVisible">
-                        <el-form :model="importImageInfo">
-                            <el-form-item label="选择镜像文件" :label-width="formLabelWidth"></el-form-item>
-                            <el-upload
-                                class="upload-demo"
-                                action=url
-                                name=name
-                                :on-change="handleChange"
-                                :file-list="fileList"
-                                style="margin-left: 20%;margin-top: -6%">
-                                <el-button size="small" type="primary">点击上传</el-button>
-                            </el-upload>
-                            <el-form-item label="镜像名称" :label-width="formLabelWidth">
-                                <el-input v-model="importImageInfo.name" auto-complete="off"></el-input>
-                            </el-form-item>
-                            <el-form-item label="镜像标签" :label-width="formLabelWidth">
-                                <el-input v-model="importImageInfo.tag" auto-complete="off"></el-input>
-                            </el-form-item>
-                        </el-form>
-                        <div slot="footer" class="dialog-footer">
-                            <el-button type="primary" @click="importImage">确 定</el-button>
-                        </div>
-                    </el-dialog>
-                </div>
+                <el-dialog title="导入数据卷" :visible.sync="dialogVisible" width="30%">
+                    <el-form>
+                        <el-form-item label="选择文件">
+                            <input id="imageInput" @change="importImages($event)" type="file">
+                        </el-form-item>
+                        <el-form-item label="镜像名称">
+                            <el-input v-model="imageNameUpload"></el-input>
+                        </el-form-item>
+                        <el-form-item label="标签">
+                            <el-input v-model="tagToUpload"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <span slot="footer" class="dialog-footer">
+                  <el-button @click="dialogVisible = false">取 消</el-button>
+                  <el-button type="primary" @click="submitUploadImages">确 定</el-button>
+                </span>
+                </el-dialog>
 
                 <!--删除镜像的确认弹框-->
                 <div class="deleteImage">
@@ -239,20 +266,125 @@
                 formLabelWidth: '120px',
 
                 // 上传文件相关属性
-                url: 'http://192.168.100.151:8080/image/import',
-                name: 'a.tar.gz',
                 fileList: [],
-                // headers: {
-                //     Authorization: 'Bearer ' + sessionStorage.getItem('userToken')
-                // },
+                imageList: [],
+                nameList: [],
+                volumeFile: '',
+                fileName: '',
+                imageNameUpload: '',
+                tagToUpload: '',
+                dialogVisible: false
             }
         },
         computed: {
             ...mapGetters({
-                userInfo: 'getUserInfo'
+                userInfo: 'getUserInfo',
+                hostaddr: 'gethostaddr'
             })
         },
         methods: {
+            //上传文件改变
+            importImages(event) {
+
+                event.preventDefault();//取消默认行为
+                this.volumeFile = event.target.files[0];
+                this.fileName = event.target.files[0].name;
+            },
+            //上传镜像
+            submitUploadImages() {
+                if (this.imageNameUpload === "") {
+                    this.$message.warning("未填写镜像名称");
+                    return;
+                }
+                let that = this;
+                let formdata = new FormData();
+                formdata.append('file', this.volumeFile);
+                formdata.append('name', this.imageNameUpload);
+                formdata.append('tag', this.tagToUpload);
+                $.ajax({
+                    type: "post",
+                    async: true,
+                    url: '/api' + "/image/import",
+                    dataType: 'json',
+                    headers: {
+                        'Authorization': sessionStorage.userToken
+                    },
+                    // 告诉jQuery不要去处理发送的数据
+                    processData: false,
+                    // 告诉jQuery不要去设置Content-Type请求头
+                    contentType: false,
+                    data: formdata,
+                    success: function (res) {
+                        if (res.code === 0) {
+                            that.dialogVisible = false;
+                            that.$message.success(res.data.message);
+                            that.volumeFile = '';
+                            that.fileName = '';
+                        } else {
+                            that.$message.success(res.data.message);
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            },
+            //同步passHub
+            syncPassHubImgage() {
+                this.$axios.get("/hub/sync")
+                    .then((res) => {
+                        if (res.data.code === 0) {
+                            let message = "新增记录数" + res.data.data.add + "," + "错误记录数" + res.data.data.error + "," + "删除记录数" + res.data.data.delete + ".";
+                            this.$notify({
+                                message: message,
+                                type: 'success'
+                            });
+                            this.getFromPassHub();
+                        } else {
+                            this.$message.error(res.data.message)
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
+            },
+            //拉取hub镜像
+            pullloadHubImage(id, index) {
+                this.$axios.post("/hub/pull", {
+                    id: id
+                })
+                    .then((res) => {
+                        if (res.data.code === 0) {
+                            this.$message.success(res.data.data)
+                        } else {
+                            this.$message.error(res.data.message)
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
+            },
+            //删除hub镜像
+            deleteHubImage(id, index) {
+                this.$axios.delete("/hub/delete/" + id)
+                    .then((res) => {
+                        if (res.data.code === 0) {
+                            this.$message.success("删除成功")
+                        } else {
+
+                            this.$message.error(res.data.message)
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
+            },
+            //获取passhub镜像的id
+            getpasshubImageId(column) {
+                this.service.imageId = '';
+                this.passhubId = column.id;
+                this.service.imageName = column.name;
+            },
             // 格式化镜像数据
             formatImageData: function (data) {
                 for (let i = 0; i < data.length; i++) {
@@ -386,26 +518,9 @@
                         console.log(err)
                     })
             },
-            // 上传镜像
-            uploadImage: function () {
-
-            },
-            // 上传之前判断输入格式
-            beforeUpload: function () {
-                if (this.importImageInfo.type === "" || this.importImageInfo.tag === "") {
-                    this.$message.error({
-                        message: "请完善镜像文件信息!",
-                        showClose: true
-                    })
-                }
-            },
-            handleChange: function (file, fileList) {
-                this.fileList = fileList.slice(-3);
-            },
-
             // 点击导入显示模态框
             handleImport: function () {
-                this.importImageVisible = true
+                this.dialogVisible = true;
             },
             // 导入镜像
             importImage: function () {
@@ -413,44 +528,43 @@
                 CancelToken.source();
 
                 this.importImageVisible = false;
-                    this.$axios.post('/image/import',
-                        {
-                            "file": this.importImageInfo.file,
-                            "name": this.importImageInfo.name,
-                            "tag": this.importImageInfo.tag,
-                        }, {
-                            header: {
-                                'Content-Type': 'multipart/form-data',
-                            }
-                        })
-                        .then(response => {
-                            if (response.data.code === 0) {
-                                this.getUserLocalImage();
-                            } else {
-                                this.$message.error({
-                                    message: response.data.message,
-                                    showClose: true
-                                })
-                            }
-                        })
-                        .catch(function (err) {
-                            console.log(err)
-                        })
+                this.$axios.post('/image/import',
+                    {
+                        "file": this.importImageInfo.file,
+                        "name": this.importImageInfo.name,
+                        "tag": this.importImageInfo.tag,
+                    }, {
+                        header: {
+                            'Content-Type': 'multipart/form-data',
+                        }
+                    })
+                    .then(response => {
+                        if (response.data.code === 0) {
+                            this.getUserLocalImage();
+                        } else {
+                            this.$message.error({
+                                message: response.data.message,
+                                showClose: true
+                            })
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
             },
             // 本地镜像和远程镜像同步操作
-            syncImage: function () {
+            syncImage: function (type) {
                 this.$axios.get('/image/sync')
                     .then(response => {
                         if (response.data.code === 0) {
-                            this.$message.success({
-                                message: "镜像同步成功！",
-                                showClose: true
-                            })
+                            this.$message.success("镜像同步成功！");
+                            switch(type) {
+                                case 1: this.getPublicLocalImage(); break;
+                                case 2: this.getUserLocalImage(); break;
+                                default: break;
+                            }
                         } else {
-                            this.$message.error({
-                                message: "镜像同步失败！",
-                                showClose: true
-                            })
+                            this.$message.error(response.data.message)
                         }
                     })
                     .catch(function (err) {
@@ -480,22 +594,55 @@
                 this.deleteDialogVisible = true;
                 this.imageId = row.id;
             },
+            //从passHub获取name
+            getFromPassHub() {
+                this.loading = true;
+                this.imageList = [];
+                this.$axios.get("/hub/list")
+                    .then((res) => {
+                        this.nameList = res.data.data;
+                        this.getTagFromPass();
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                    });
+
+                this.loading = false;
+            },
+            //从passHub获取tag
+            getTagFromPass() {
+                for (let i = 0; i < this.nameList.length; i++) {
+                    let item = this.nameList[i];
+                    this.$axios.get("/hub/list/name?name=" + item.name)
+                        .then((res) => {
+                            let tags = res.data.data;
+                            for (let j = 0; j < tags.length; j++) {
+
+                                this.imageList.push({
+                                    id: tags[j].id,
+                                    name: item.showName,
+                                    tag: tags[j].tag,
+                                    repo: item.repo,
+                                    authName: item.username,
+                                    digest: tags[j].digest,
+                                })
+                            }
+                        })
+                        .catch((err) => {
+                            console.log(err)
+                        })
+                }
+            },
             confirmDelete: function () {
                 this.deleteDialogVisible = false;
                 this.$axios.delete('/image/delete/' + this.imageId)
                     .then(response => {
                         if (response.data.code === 0) {
-                            this.$message.success({
-                                message: "镜像删除成功！",
-                                showClose: true
-                            })
+                            this.$message.success("镜像删除成功！");
                             this.getPublicLocalImage();
                             this.getUserLocalImage();
                         } else {
-                            this.$message.error({
-                                message: "镜像删除失败！",
-                                showClose: true
-                            })
+                            this.$message.error(response.data.message)
                         }
                     })
                     .catch(function (err) {
@@ -505,7 +652,7 @@
 
             // 初始化websocket
             initWebSocket: function () { //初始化weosocket
-                this.websock = new WebSocket("ws://192.168.100.151:9999/ws/" + this.userInfo.id);
+                this.websock = new WebSocket("ws://" + this.hostaddr + "/ws/" + this.userInfo.userId);
 
                 this.websock.onopen = this.websocketonopen;
 
@@ -525,12 +672,26 @@
             },
 
             websocketonmessage: function (e) { //数据接收
-                // const redata = JSON.parse(e.data);
-                //注意：长连接我们是后台直接1秒推送一条数据，
-                //但是点击某个列表时，会发送给后台一个标识，后台根据此标识返回相对应的数据，
-                //这个时候数据就只能从一个出口出，所以让后台加了一个键，例如键为1时，是每隔1秒推送的数据，为2时是发送标识后再推送的数据，以作区分
-                // console.log(redata.value);
-                console.log(e)
+                let data = eval('(' + e.data + ')');
+                if (data.info == null) {
+                    if (data.code === 0) {
+                        this.$notify({
+                            type: 'success',
+                            message: data.message,
+                            duration: 3000
+                        });
+
+                    } else {
+                        this.$notify({
+                            type: 'error',
+                            message: data.message,
+                            duration: 3000
+                        });
+                    }
+                }
+                else {
+                    console.log(data.info)
+                }
             },
 
             websocketsend: function (agentData) {//数据发送
@@ -542,11 +703,10 @@
             },
 
         },
-
         created() {
             this.getPublicLocalImage();
             this.getUserLocalImage();
-            // this.getHubImage();
+            this.getFromPassHub();
             this.initWebSocket();
         }
     }

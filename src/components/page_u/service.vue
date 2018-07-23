@@ -10,8 +10,12 @@
                 <el-table-column
                     label="服务名称"
                     width="200"
-                    prop="name"
                     show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <ul style="float: left;list-style-type: none" >
+                            <li style="float: left;margin-right: 5px;cursor: pointer" @click="toDetails(scope.row.id)">{{scope.row.name}}</li>
+                        </ul>
+                    </template>
                 </el-table-column>
                 <el-table-column label="项目名" prop="projectName" show-overflow-tooltip>
                     <template slot-scope="scope">
@@ -44,16 +48,6 @@
                     show-overflow-tooltip>
                     <template slot-scope="scope">
                         <el-input-number v-model="serviceList[scope.$index].replicas" @change="replicasChange(scope.row,scope.$index)" :min="1" :max="10" label="描述文字"></el-input-number>
-                    </template>
-                </el-table-column>
-
-                <el-table-column
-                    label="详情"
-                    show-overflow-tooltip>
-                    <template slot-scope="scope">
-                        <ul style="float: left;list-style-type: none" >
-                            <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer" @click="toDetails(scope.row.id)">详情</li>
-                        </ul>
                     </template>
                 </el-table-column>
 
@@ -93,7 +87,7 @@
                         for(var i=0;i<this.serviceList.length; i++){
                             var port = this.serviceList[i].port;
                             // 去除引号
-                            this.serviceList[i].port = port.toString().replace("\\","").replace("{","").replace("}","");
+                            this.serviceList[i].port = port.toString().replace("\\","").replace("{","").replace("}","").replace("\"","").replace("\"","");
 
                         }
 
