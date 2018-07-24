@@ -31,29 +31,29 @@
                 collapse: false,
                 items: [
                     {
-                        icon: 'el-icon-setting',
+                        icon: 'iconfont jitwxs-dashbord',
                         index: '/xitongshouye_u',
-                        title: '仪表盘'
+                        title: ' 仪表盘'
                     },
                     {
-                        icon: 'el-icon-tickets',
+                        icon: 'iconfont jitwxs-project',
                         index: '/projectPage',
-                        title: '项目'
+                        title: ' 项目'
                     },
                     {
-                        icon: 'el-icon-mobile-phone',
+                        icon: 'iconfont jitwxs-container',
                         index: '/containerAllList',
-                        title: '容器'
+                        title: ' 容器'
                     },
                     {
-                        icon: 'el-icon-date',
+                        icon: 'iconfont jitwxs-swarm',
                         index: '/service',
-                        title: '服务'
+                        title: ' 服务'
                     },
                     {
-                        icon: 'el-icon-document',
+                        icon: 'iconfont jitwxs-docker_image',
                         index: '/mirror',
-                        title: '镜像',
+                        title: ' 镜像',
                         subs:[
                             {
                                 index:'/mirror',
@@ -66,15 +66,15 @@
                         ]
                     },
                     {
-                        icon: 'el-icon-goods',
+                        icon: 'iconfont jitwxs-network',
                         index: '/netWork',
-                        title: '网络'
+                        title: ' 网络'
                     },
                     {
-                        icon: 'el-icon-setting',
-                        index: '/system',
-                        title: '系统'
-                    },
+                        icon: 'iconfont jitwxs-help',
+                        index: '/help',
+                        title: ' 帮助'
+                    }
                 ]
             }
         },

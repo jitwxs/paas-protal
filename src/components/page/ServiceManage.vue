@@ -18,6 +18,18 @@
                 </el-table-column>
                 <el-table-column prop="image" label="服务镜像" >
                 </el-table-column>
+                <el-table-column
+                prop="ip"
+                label="IP地址"
+                width="200"
+                show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                    prop="port"
+                    label="端口映射"
+                    width="200"
+                    show-overflow-tooltip>
+                </el-table-column>
                 <el-table-column prop="replicas" label="横向扩展" >
                 </el-table-column>
                 <el-table-column label="操作" >
@@ -66,6 +78,7 @@
                     if (data[i].statusName == null) {
                         data[i].statusName = '无'
                     }
+                    data[i].port = formatPort2(data[i].port);
                 }
                 return data;
             },

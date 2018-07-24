@@ -125,7 +125,7 @@
                 </el-table-column>
                 <el-table-column
                     prop="port"
-                    label="端口组"
+                    label="端口映射"
                     width="200"
                     show-overflow-tooltip>
                 </el-table-column>
@@ -154,11 +154,6 @@
                 </el-pagination>
             </div>
         </div>
-
-        <!--远程终端弹框-->
-        <el-dialog title="远程终端" :visible.sync="dialogFormVisible" width="55%">
-            <iframe :src="frameUrl" width="100%" height="400px" frameborder='0'></iframe>
-        </el-dialog>
     </div>
 </template>
 
@@ -169,8 +164,6 @@
         name: "ContainerManage",
         data() {
             return {
-                dialogFormVisible: false,
-                frameUrl:'../../../static/term.html',
                 str:'',
                 row:'',
                 timeout:10000,
@@ -678,6 +671,7 @@
 
                 openmessage: '',
                 hassendmonitor: false,
+                wsflag:0,
             }
         },
         computed: {
@@ -747,7 +741,11 @@
                 this.radio = '实时';
                 this.flag=0;
                 this.row = row;
-                this.handleView(this.row,10000,"actual");
+                if (row.status===0){
+                    this.$message('请先运行容器');
+                }else {
+                    this.handleView(this.row,10000,"actual");
+                }
             },
             handleView: function (row,val,str) {
                 this.hassendmonitor = true;
@@ -1010,7 +1008,6 @@
             // 打开终端
             consoleopen: function (row) {
                 if (row.status === 1) {
-
                     this.$axios.post('/container/terminal/', {
                         "containerId": row.id,
                         "curs": 50,
@@ -1020,11 +1017,15 @@
                         "height": document.documentElement.clientHeight,
                     })
                         .then(response => {
-                            this.dialogFormVisible = true;
-                            sessionStorage.setItem('terminalCursorBlink', response.data.data.cursorBlink);
-                            sessionStorage.setItem('terminalRows', response.data.data.rows);
-                            sessionStorage.setItem('terminalCols', response.data.data.cols);
-                            sessionStorage.setItem('terminalUrl', response.data.data.url);
+                            if(response.data.code === 0) {
+                                sessionStorage.setItem('terminalCursorBlink', response.data.data.cursorBlink);
+                                sessionStorage.setItem('terminalRows', response.data.data.rows);
+                                sessionStorage.setItem('terminalCols', response.data.data.cols);
+                                sessionStorage.setItem('terminalUrl', response.data.data.url);
+                                window.open('../../../static/term.html');
+                            } else {
+                                this.$message(response.data.message);
+                            }
                         })
                         .catch(function (err) {
                             console.log(err)
@@ -1046,20 +1047,7 @@
                             this.containerInfo = response.data.data.records;
                             this.totalCount = response.data.data.total;
                             for (let i = 0; i < this.containerInfo.length; i++) {
-                                var port = this.containerInfo[i].port;
-                                // 去除引号
-                                port = port.toString().replace("\\", "");
-                                port = eval('(' + port + ')');
-
-                                this.containerInfo[i].port = "";
-                                for (var key in port) {
-                                    var value = port[key];
-                                    var valArray = new Array();
-                                    for (var j = 0; j < value.length; j++) {
-                                        valArray.push(value[j].HostPort);
-                                    }
-                                    this.containerInfo[i].port = this.containerInfo[i].port + key + ":" + valArray.join(",");
-                                }
+                                this.containerInfo[i].port = formatPort1(this.containerInfo[i].port);
                             }
                         } else {
                             this.$message.error({
@@ -1133,6 +1121,7 @@
             // 容器操作
             getStart: function (clickId) {
                 this.loadbutton1 = true;
+                this.timeout();
                 this.$axios.get('/container/start/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1151,6 +1140,7 @@
             },
             pauseContainer: function (clickId) {
                 this.loadbutton2 = true;
+                this.timeout();
                 this.$axios.get('/container/pause/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1169,6 +1159,7 @@
             },
             recoverContainer: function (clickId) {
                 this.loadbutton3 = true;
+                this.timeout();
                 this.$axios.get('/container/continue/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1187,6 +1178,7 @@
             },
             stopContainer: function (clickId) {
                 this.loadbutton4 = true;
+                this.timeout();
                 this.$axios.get('/container/stop/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1205,6 +1197,7 @@
             },
             killContainer: function (clickId) {
                 this.loadbutton5 = true;
+                this.timeout();
                 this.$axios.get('/container/kill/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1223,6 +1216,7 @@
             },
             restartContainer: function (clickId) {
                 this.loadbutton6 = true;
+                this.timeout();
                 this.$axios.get('/container/restart/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1241,6 +1235,7 @@
             },
             deleteContainer: function (clickId) {
                 this.loadbutton7 = true;
+                this.timeout();
                 this.$axios.delete('/container/delete/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1256,6 +1251,23 @@
                     .catch(function (err) {
                         console.log(err)
                     })
+            },
+
+            judge(){
+                console.log(this.wsflag);
+                if (this.wsflag==0){
+                    this.$notify.error({
+                        title:'超时',
+                        message:'请重新操作',
+                    });
+                    this.loading=[false,false,false,false,false,false];
+                    this.getContainerList();
+                }
+            },
+            timeout(){
+                this.wsflag=0;
+                console.log("开始计时");
+                setTimeout(this.judge,5000)
             },
 
             initWebSocket: function () { //初始化weosocket

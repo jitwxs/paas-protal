@@ -59,7 +59,7 @@
         methods:{
             // 用户名下拉菜单选择事件
             handleCommand(command) {
-                if(command === 'loginout'){
+                if(command === 'loginout') {
                     this.$axios.get('/user/logout')
                         .then(response=>{
                             if (response.data.code===0){

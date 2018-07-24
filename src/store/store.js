@@ -9,7 +9,7 @@ const state = {
     projectId: '',
     editeContainerProjectId: '',
     containerId :'',
-    hostaddr:'192.168.100.151:9999',
+    hostaddr:'192.168.100.110:9999',
     serviceId:'',
     currentMirrorId:'',
     unreadMessageNum:0,

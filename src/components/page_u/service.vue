@@ -36,12 +36,12 @@
                     show-overflow-tooltip
                     width="200">
                 </el-table-column>
+                <el-table-column prop="ip" label="IP地址" show-overflow-tooltip></el-table-column>
                 <el-table-column
                     prop="port"
-                    label="端口"
+                    label="端口映射"
                     show-overflow-tooltip>
                 </el-table-column>
-
                 <el-table-column
                     prop="replicas"
                     label="横向扩展"
@@ -82,15 +82,14 @@
             getServiceInfo(){
                 this.$axios.get('/service/list')
                     .then(response=>{
-                        this.serviceList = response.data.data.records;
-
-                        for(var i=0;i<this.serviceList.length; i++){
-                            var port = this.serviceList[i].port;
-                            // 去除引号
-                            this.serviceList[i].port = port.toString().replace("\\","").replace("{","").replace("}","").replace("\"","").replace("\"","");
-
+                        if(response.data.code === 0) {
+                            this.serviceList = response.data.data.records;
+                            for(let i=0;i<this.serviceList.length; i++){
+                                this.serviceList[i].port = formatPort2(this.serviceList[i].port);
+                            }
+                        } else {
+                            this.$message.error(response.data.message);
                         }
-
                     }).catch(function (err) {
                     console.log(err);
                 })
@@ -99,7 +98,11 @@
             getProjectInfo(){
                 this.$axios.get('/project/self/list')
                     .then(response=>{
-                        this.projectInfo = response.data.data.records;
+                        if(response.data.code === 0) {
+                            this.projectInfo = response.data.data.records;
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
                     }).catch(function (err) {
                     console.log(err);
                 })
@@ -126,7 +129,7 @@
                     'num':this.serviceList[index].replicas,
                 })
                     .then(response=>{
-                        this.$message(response.data.message);
+                        this.$message.info(response.data.message);
                         this.getServiceInfo();
                     }).catch(function (err) {
                     console.log(err);
@@ -168,18 +171,21 @@
             initWebSocket:function(){ //初始化weosocket
                 this.$axios.post('/token')
                     .then(response=>{
-                        this.userId = response.data.data.userId;
+                        if(response.data.code === 0) {
+                            this.userId = response.data.data.userId;
 
-                        this.websock = new WebSocket("ws://" + this.hostaddr + "/ws/"+this.userId);
+                            this.websock = new WebSocket("ws://" + this.hostaddr + "/ws/"+this.userId);
 
-                        this.websock.onopen = this.websocketonopen;
+                            this.websock.onopen = this.websocketonopen;
 
-                        // this.websock.onerror = this.websocketonerror;
+                            // this.websock.onerror = this.websocketonerror;
 
-                        this.websock.onmessage = this.websocketonmessage;
+                            this.websock.onmessage = this.websocketonmessage;
 
-                        this.websock.onclose = this.websocketclose;
-
+                            this.websock.onclose = this.websocketclose;
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
                     })
                     .catch(function (err) {
                         console.log(err)

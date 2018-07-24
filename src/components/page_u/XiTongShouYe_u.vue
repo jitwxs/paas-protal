@@ -21,14 +21,14 @@
                             <div slot="header" class="clearfix">
                                 <span>使用详情</span>
                             </div>
-                            容器运行数量
+                            容器运行
                             <el-progress :percentage="containerRunPer" color="#42b983"></el-progress>
-                            上传镜像数量
+                            容器暂停
+                            <el-progress :percentage="containerPausePer" color="#f1e05a"></el-progress>
+                            容器停止
+                            <el-progress :percentage="containerStopPer" color="#f56c6c"></el-progress>
+                            上传镜像
                             <el-progress :percentage="this.selfInfo.uploadImageNum" color="#f1e05a"></el-progress>
-                            HUB镜像数量
-                            <el-progress :percentage="this.selfInfo.hubImageNum" color="#f56c6c"></el-progress>
-                            未读消息数量
-                            <el-progress :percentage="this.noticeUnreadNum" color="#f56c6c"></el-progress>
                         </el-card>
 
                     </el-col>
@@ -140,6 +140,8 @@
                 name: sessionStorage.getItem('userName'),
                 roleId: sessionStorage.getItem('currentRole'),
                 containerRunPer: 0,
+                containerPausePer: 0,
+                containerStopPer: 0,
                 noticeUnreadNum: 0,
                 selfInfo: {},
                 hostInfo:'',
@@ -151,6 +153,14 @@
             }
         },
         methods:{
+            formatPer(fenZi, fenMu) {
+                if(fenZi === 0) {
+                    return 0;
+                } else {
+                    let per = fenZi / fenMu;
+                    return per.toFixed(2) * 100;
+                }
+            },
             //获取个人信息
             getSelfInfo:function () {
                 this.$axios.get('/monitor/self/info')
@@ -158,12 +168,9 @@
                         if(response.data.code === 0){
                             this.selfInfo = response.data.data;
 
-                            if(this.selfInfo.containerRunningNum === 0) {
-                                this.containerRunPer = 0;
-                            } else {
-                                let per = this.selfInfo.containerRunningNum / this.selfInfo.containerNum;
-                                this.containerRunPer = per.toFixed(2) * 100;
-                            }
+                            this.containerRunPer = this.formatPer(this.selfInfo.containerRunningNum, this.selfInfo.containerNum);
+                            this.containerPausePer = this.formatPer(this.selfInfo.containerPauseNum, this.selfInfo.containerNum);
+                            this.containerStopPer = this.formatPer(this.selfInfo.containerStopNum, this.selfInfo.containerNum);
                         }else{
                             this.$message.error({
                                 message:"获取个人信息失败！",
@@ -191,8 +198,7 @@
                 this.$axios.get('/notice/countUnRead')
                     .then(response=>{
                         if(response.data.code === 0){
-                            console.log(response.data.data)
-                            this.noticeUnreadNum = response.data.data.toString().toFixed(2);
+                            this.noticeUnreadNum = response.data.data.toFixed(2);
                         }
                     })
                     .catch(function (err) {

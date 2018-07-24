@@ -99,7 +99,7 @@
                         <h4>集群节点</h4>
                     </div>
                     <el-collapse accordion>
-                        <el-collapse-item v-for="(item,index) in hostInfo.nodes"  :name=index>
+                        <el-collapse-item v-for="(item,index) in hostInfo.nodes" key="index" :name=index>
                             <template slot="title">
                                 <el-tag v-if="item.hasLeader" type="danger">Leader</el-tag>
                                 <el-tag  v-else>Worker</el-tag>

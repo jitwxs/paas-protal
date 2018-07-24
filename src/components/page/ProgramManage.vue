@@ -36,7 +36,7 @@
                 </el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <p style="float: left;margin-left: 5px;cursor: pointer"><i class="el-icon-refresh" @click="handleUpdate(scope.$index, scope.row)"></i>
+                        <p style="float: left;margin-left: 5px;cursor: pointer"><i class="el-icon-edit" @click="handleUpdate(scope.$index, scope.row)"></i>
                         </p>
                     </template>
                 </el-table-column>

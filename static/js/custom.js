@@ -63,3 +63,31 @@ function syntaxHighlight(json) {
         return '<span class="' + cls + '">' + match + '</span>';
     });
 }
+
+//形如：{\"80\":[{\"HostIp\":\"0.0.0.0\",\"HostPort\":\"14752\"}]}
+function formatPort1(port) {
+    if(port === null || port === "") {
+        return null;
+    }
+
+    port = port.toString().replace("\\", "");
+    port = eval('(' + port + ')');
+
+    let resArry = new Array();
+    for (let key in port) {
+        let value = port[key][0].HostPort;
+        resArry.push(value + ":" + key);
+    }
+    return resArry.join(",");
+}
+
+// 形如：{\"80\":32111}
+function formatPort2(port) {
+    if(port === null || port === "") {
+        return port;
+    }
+    let foo = port.toString().replace("\\","").replace("{","").replace("}","").replace("\"","").replace("\"","");
+    let arr = foo.split(":");
+    arr.reverse();
+    return arr.join(":");
+}

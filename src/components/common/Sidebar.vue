@@ -31,14 +31,14 @@
                 collapse: false,
                 items: [
                     {
-                        icon: 'el-icon-document',
+                        icon: 'iconfont jitwxs-dashbord',
                         index: 'xitongshouye',
-                        title: '系统首页'
+                        title: ' 仪表盘'
                     },
                     {
-                        icon: 'el-icon-news',
+                        icon: 'iconfont jitwxs-user',
                         index: 'usermanage',
-                        title: '用户管理',
+                        title: ' 用户管理',
                         subs: [
                             {
                                 index: 'usermanage',
@@ -51,43 +51,43 @@
 
                     },
                     {
-                        icon: 'el-icon-tickets',
+                        icon: 'iconfont jitwxs-project',
                         index: 'projectmanage',
-                        title: '项目管理'
+                        title: ' 项目管理'
                     },
                     {
-                        icon: 'el-icon-goods',
+                        icon: 'iconfont jitwxs-container',
                         index: 'containermanage',
-                        title: '容器管理'
+                        title: ' 容器管理'
                     },
                     {
-                        icon: 'el-icon-bell',
-                        index: 'imagemanage',
-                        title: '镜像管理'
-                    },
-                    {
-                        icon: 'el-icon-phone-outline',
-                        index: 'networkmanage',
-                        title: '网络管理'
-                    },
-                    {
-                        icon: 'el-icon-printer',
-                        index: 'volumesmanage',
-                        title: '数据卷管理'
-                    },
-                    {
-                        icon: 'el-icon-service',
+                        icon: 'iconfont jitwxs-swarm',
                         index: 'servicemanage',
-                        title: '服务管理'
+                        title: ' 服务管理'
                     },
                     {
-                        icon: 'el-icon-message',
+                        icon: 'iconfont jitwxs-docker_image',
+                        index: 'imagemanage',
+                        title: ' 镜像管理'
+                    },
+                    {
+                        icon: 'iconfont jitwxs-network',
+                        index: 'networkmanage',
+                        title: ' 网络管理'
+                    },
+                    {
+                        icon: 'iconfont jitwxs-data',
+                        index: 'volumesmanage',
+                        title: ' 数据卷管理'
+                    },
+                    {
+                        icon: 'iconfont jitwxs-notice',
                         index: 'noticemanage',
-                        title: '通知管理'
+                        title: ' 通知管理'
                     },
                     {
-                        icon: 'el-icon-view',
-                        title: '三方监控',
+                        icon: 'iconfont jitwxs-monitor',
+                        title: ' 三方监控',
                         index:' ',
                         subs: [
                             {
@@ -101,9 +101,9 @@
                         ]
                     },
                     {
-                        icon: 'el-icon-setting',
+                        icon: 'iconfont jitwxs-system',
                         index: 'systemmanage',
-                        title: '系统管理',
+                        title: ' 系统管理',
                         subs: [
                             {
                                 index: 'systemlog',

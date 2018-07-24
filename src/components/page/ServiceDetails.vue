@@ -138,7 +138,6 @@
                     success: function (res) {
                         that.getVolumesInfo();
                         this.volumeFile = '';
-                        this.fileName='';
                         this.volumeName='';
                         this.dialogVisible = false
                     },
@@ -151,7 +150,6 @@
             importVolume(event){
                 event.preventDefault();//取消默认行为
                 this.volumeFile = event.target.files[0];
-                this.fileName = event.target.files[0].name;
             },
             //获取服务基本信息
             getServiceBasicInfo(){
@@ -159,8 +157,9 @@
                     .then((res)=>{
                         if (res.data.code === 0) {
                             this.serviceBasicInfo = res.data.data;
+                            this.serviceBasicInfo.port = formatPort2(this.serviceBasicInfo.port);
                         } else {
-                            console.log(res.data.message);
+                            this.$message.error(res.data.message);
                         }
                     })
                     .catch((err)=>{
@@ -192,7 +191,7 @@
             getVolumesInfo: function () {
                 this.$axios.get('/volumes/list/obj' + "?objId=" + this.serviceId)
                     .then(response => {
-                        if (response.data.code == 0) {
+                        if (response.data.code === 0) {
                             this.volumesInfo = response.data.data.records;
                         } else {
                             this.$message.error("获取服务数据卷信息失败！");

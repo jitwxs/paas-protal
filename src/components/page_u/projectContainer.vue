@@ -59,7 +59,8 @@
                   </template>
               </el-table-column>
               <el-table-column prop="image" label="镜像" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="port" label="端口" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="ip" label="IP地址" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="port" label="端口映射" show-overflow-tooltip></el-table-column>
               <el-table-column label="终端" >
                 <template slot-scope="scope">
                     <ul style="float: left;list-style-type: none" >
@@ -112,12 +113,12 @@
             show-overflow-tooltip
             width="200">
           </el-table-column>
+            <el-table-column prop="ip" label="IP地址" show-overflow-tooltip></el-table-column>
           <el-table-column
             prop="port"
-            label="端口"
+            label="端口映射"
             show-overflow-tooltip>
           </el-table-column>
-
           <el-table-column
             label="操作"
             width="100">
@@ -179,6 +180,7 @@
           clickStatus:'',
           userId:'',
           enconsole:true,
+          wsflag:0,
 
           serviceId:'',
           num:1,
@@ -647,9 +649,6 @@
           })
       },
     methods:{
-        numChange(value){
-
-        },
           // 分页函数
         handleCurrentChange:function (val) {
             this.currentPage = val;
@@ -675,7 +674,6 @@
         getprojectinfo(){
             this.$axios.get('/project/'+this.projectId)
                 .then(response=>{
-                    // console.log(response.data.data);
                     this.projectInfo = response.data.data;
                     console.log(this.projectInfo)
                 }).catch(function (err) {
@@ -725,8 +723,7 @@
 
         // 打开终端
         consoleopen(row){
-            if (row.status==1){
-                window.open('../../../static/term.html');
+            if (row.status===1){
                 this.$axios.post('/container/terminal/' ,{
                     "containerId": row.id,
                     "cursorBlink": false,
@@ -736,10 +733,15 @@
                     "height": document.documentElement.clientHeight,
                 })
                     .then(response=>{
-                        sessionStorage.setItem('terminalCursorBlink',response.data.data.cursorBlink);
-                        sessionStorage.setItem('terminalRows',response.data.data.rows);
-                        sessionStorage.setItem('terminalCols',response.data.data.cols);
-                        sessionStorage.setItem('terminalUrl',response.data.data.url);
+                        if(response.data.code === 0) {
+                            sessionStorage.setItem('terminalCursorBlink',response.data.data.cursorBlink);
+                            sessionStorage.setItem('terminalRows',response.data.data.rows);
+                            sessionStorage.setItem('terminalCols',response.data.data.cols);
+                            sessionStorage.setItem('terminalUrl',response.data.data.url);
+                            window.open('../../../static/term.html');
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
                     })
                     .catch(function (err) {
                         console.log(err)
@@ -749,7 +751,7 @@
             }
         },
 
-        //日志分页   有bug
+        //日志分页
         logPage:function(val){
             this.$axios.get('/project/log/?projectId='+this.projectId+'&?current=' + val + '&size=10')
                 .then(response => {
@@ -766,31 +768,14 @@
         this.$axios.get(url)
           .then((res)=>{
 
-            if (res.data.code == 0) {
-
-              // console.log(res.data)
+            if (res.data.code === 0) {
               this.containerList = res.data.data.records;
               this.total = res.data.data.total;
 
-              for(var i=0;i<this.containerList.length; i++){
-                var port = this.containerList[i].port;
-                // 去除引号
-                port = port.toString().replace("\\","");
-                port = eval('(' + port + ')');
-
-                this.containerList[i].port = "";
-                for(var key in port){
-                  var value = port[key];
-                  var valArray = new Array();
-                  for(var j=0;j<value.length; j++) {
-                    valArray.push(value[j].HostPort);
-                  }
-                  this.containerList[i].port  = this.containerList[i].port+ key + ":" + valArray.join(",") ;
-                }
+              for(let i=0;i<this.containerList.length; i++){
+                  this.containerList[i].port = formatPort1(this.containerList[i].port);
               }
-
             } else {
-
               this.$message.error("获取列表失败")
             }
           })
@@ -825,28 +810,6 @@
             $('#sideMenuContainer').animate({left:'1800px'},1000);
             // this.isShow = false;
             clearInterval(this.time);
-        },
-        createEcharts: function () {
-            // let myChart = this.$echarts.init(document.getElementById('main'));
-            // let chart2 = this.$echarts.init(document.getElementById('main2'));
-            // let chart3 = this.$echarts.init(document.getElementById('main3'));
-            // let chart4 = this.$echarts.init(document.getElementById('main4'));
-            // let chart5 = this.$echarts.init(document.getElementById('main5'));
-            // let chart6 = this.$echarts.init(document.getElementById('main6'));
-            // let chart7 = this.$echarts.init(document.getElementById('main7'));
-            // let chart8 = this.$echarts.init(document.getElementById('main8'));
-            // let chart9 = this.$echarts.init(document.getElementById('main9'));
-            //
-            //
-            // myChart.setOption(this.option);
-            // chart2.setOption(this.option2);
-            // chart3.setOption(this.option3);
-            // chart4.setOption(this.option4);
-            // chart5.setOption(this.option5);
-            // chart6.setOption(this.option6);
-            // chart7.setOption(this.option7);
-            // chart8.setOption(this.option8);
-            // chart9.setOption(this.option9);
         },
         // 查看echarts图表
         getrow(row){
@@ -892,8 +855,6 @@
             chart7.setOption(this.option7);
             chart8.setOption(this.option8);
             chart9.setOption(this.option9);
-
-
 
             $('#sideMenuContainer').animate({left:'700px'},1000);
 
@@ -1150,7 +1111,6 @@
                 })
                 .catch(() => {
                 });
-            // this.getContainerList(1,this.pageSize, this.projectId);
         },
 
         //删除服务
@@ -1168,7 +1128,6 @@
                     type: 'success',
                     message: '删除成功!'
                   });
-                  // this.getProjectList(this.currentPage,this.pageSize);
                 }
               })
               .catch( err =>{
@@ -1179,15 +1138,14 @@
           });
       },
 
-        //获取容器列表信息
+        //获取服务列表信息
         getServiceInfo(){
             this.$axios.get('/service/'+this.projectId+'/list')
                 .then(response=>{
                     this.serviceList = response.data.data.records;
-                    for (var i=0;i<this.serviceList.length;i++){
-                        this.serviceList[i].port = this.serviceList[i].port.toString().replace("\\","").replace("{","").replace("}","").replace("\"","").replace("\"","");
+                    for (let i=0;i<this.serviceList.length;i++){
+                        this.serviceList[i].port = formatPort2(this.serviceList[i].port);
                     }
-                    // console.log(this.serviceList);
                 }).catch(function (err) {
                 console.log(err);
             })
@@ -1223,6 +1181,7 @@
       // 容器操作
       getStart:function(){
         this.loading[0] = true;
+          this.timeout();
         this.$axios.get('/container/start/' + this.targetRow)
           .then(response=>{
             if (response.data.code===0){
@@ -1241,6 +1200,7 @@
       },
       pauseContainer:function(){
         this.loading[1] = true;
+          this.timeout();
         this.$axios.get('/container/pause/' + this.targetRow)
             .then(response=>{
                 if (response.data.code===0){
@@ -1260,6 +1220,7 @@
       },
       recoverContainer:function(){
         this.loading[2] = true;
+          this.timeout();
         this.$axios.get('/container/continue/' + this.targetRow)
             .then(response=>{
                 if (response.data.code===0){
@@ -1278,6 +1239,7 @@
       },
       stopContainer:function(){
         this.loading[3] = true;
+          this.timeout();
         this.$axios.get('/container/stop/' + this.targetRow)
             .then(response=>{
                 if (response.data.code===0){
@@ -1296,6 +1258,7 @@
       },
       killContainer:function(){
         this.loading[4]= true;
+          this.timeout();
         this.$axios.get('/container/kill/' + this.targetRow)
             .then(response=>{
                 if (response.data.code===0){
@@ -1314,6 +1277,7 @@
       },
       restartContainer:function(){
         this.loading[5] = true;
+          this.timeout();
         this.$axios.get('/container/restart/' +this.targetRow)
             .then(response=>{
                 if (response.data.code===0){
@@ -1330,6 +1294,24 @@
                 console.log(err)
             })
       },
+
+
+        judge(){
+            console.log(this.wsflag);
+            if (this.wsflag==0){
+                this.$notify.error({
+                    title:'超时',
+                    message:'请重新操作',
+                });
+                this.loading=[false,false,false,false,false,false];
+                this.getContainerList();
+            }
+        },
+        timeout(){
+            this.wsflag=0;
+            console.log("开始计时");
+            setTimeout(this.judge,5000)
+        },
 
 
         //websocket
@@ -1365,6 +1347,7 @@
             if (e.code === 0){
                 //容器相关
                 if (e.data.type===0){
+                    this.wsflag=1;
                     this.$axios.get('/container/status/'+this.targetRow)
                         .then(respone=>{
                             console.log(respone.data);
@@ -1413,7 +1396,6 @@
     },
     mounted(){
       this.getContainerList(1,this.pageSize, this.projectId);
-      this.createEcharts();
     },
 
       created(){

@@ -176,59 +176,10 @@ export const asyncRouterMap = [
                 meta: {title: '项目管理'}
             },
             {
-                path: '/projectdetails_u',
-                component: resolve => require(['../components/page_u/ProjectDetails_u.vue'], resolve),
-                meta: {title: '项目详情'}
-            },
-            {
-                path: '/containermanage_u',
-                component: resolve => require(['../components/page_u/ContainerManage_u.vue'], resolve),
-                meta: {title: '容器管理'}
-            },
-            {
-                // vue-schart组件
-                path: '/charts',
-                component: resolve => require(['../components/page_u/BaseCharts.vue'], resolve),
-                meta: {title: 'schart图表'}
-            },
-            {
-                path: '/form',
-                component: resolve => require(['../components/page_u/BaseForm.vue'], resolve),
-                meta: {title: '基础表单'}
-            },
-            {
-                // 拖拽列表组件
-                path: '/drag',
-                component: resolve => require(['../components/page_u/DragList.vue'], resolve),
-                meta: {title: '拖拽列表'}
-            },
-            {
                 // markdown组件
                 path: '/markdown',
                 component: resolve => require(['../components/page_u/Markdown.vue'], resolve),
                 meta: {title: 'markdown编辑器'}
-            },
-            {
-                path: '/permission',
-                component: resolve => require(['../components/page_u/Permission.vue'], resolve),
-                meta: {title: '权限测试'}
-            },
-            {
-                path: '/tabs',
-                component: resolve => require(['../components/page_u/Tabs.vue'], resolve),
-                meta: {title: 'tabs选项卡'}
-            },
-            {
-                // 图片上传组件
-                path: '/upload',
-                component: resolve => require(['../components/page_u/Upload.vue'], resolve),
-                meta: {title: '文件上传'}
-            },
-            {
-                // 富文本编辑器组件
-                path: '/editor',
-                component: resolve => require(['../components/page_u/VueEditor.vue'], resolve),
-                meta: {title: '富文本编辑器'}
             },
             {
                 path: '/projectContainer',
@@ -259,11 +210,6 @@ export const asyncRouterMap = [
                 path: '/serviceDetails_u',
                 component: resolve => require(['../components/page_u/serviceDetails.vue'], resolve),
                 meta: {title: '服务详情'}
-            },
-            {
-                path: '/system',
-                component: resolve => require(['../components/page_u/system.vue'], resolve),
-                meta: {title: '系统'}
             },
             {
                 path: '/containerDetails',
@@ -320,9 +266,15 @@ export const asyncRouterMap = [
                 meta: {title: '个人通知'}
             },
             {
+                path: '/help',
+                name: 'help',
+                component: resolve => require(['../components/page_u/help.vue'], resolve),
+                meta: {title: '帮助'}
+            },
+            {
                 path: '*',
                 redirect: '/404'
             }
         ]
     }
-]
+];

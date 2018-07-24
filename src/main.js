@@ -57,8 +57,9 @@ axios.interceptors.request.use( (config) => {
 
 axios.interceptors.response.use(function (res) {
     if (res.data.code===28 || res.data.code===29 || res.data.code===30){
+        alert("token已过期，请重新登录");
         router.replace({
-            path:'/'
+            path:'/index'
         })
     }
     return res;

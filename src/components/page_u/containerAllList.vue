@@ -81,7 +81,8 @@
               </template>
           </el-table-column>
           <el-table-column prop="image" label="镜像" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="port" label="端口" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="ip" label="IP地址" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="port" label="端口映射" show-overflow-tooltip></el-table-column>
           <el-table-column label="终端" >
               <template slot-scope="scope">
                   <ul style="float: left;list-style-type: none" >
@@ -111,10 +112,6 @@
       </el-pagination>
 
       <br/><br/>
-      <!--远程终端弹框-->
-      <el-dialog title="远程终端" :visible.sync="dialogFormVisible" width="55%">
-          <iframe :src="frameUrl" width="100%" height="400px" frameborder='0'></iframe>
-      </el-dialog>
   </div>
 </template>
 
@@ -127,8 +124,6 @@
           projectInfo:[],
           projectNum:0,
           value:[],
-          dialogFormVisible: false,
-          frameUrl:'../../../static/term.html',
 
           row:'',
           str:'',
@@ -600,14 +595,15 @@
         // 容器操作
         getStart:function(){
             this.loading[0] = true;
+            this.timeout();
             this.$axios.get('/container/start/' + this.targetRow)
                 .then(response=>{
+                    this.wsflag=0;
                     if (response.data.code===0){
                         this.$message({
                             message: response.data.data,
                             type: 'success'
                         });
-                        this.timeout();
                     } else {
                         this.$message.error(response.data.data);
                     }
@@ -619,14 +615,15 @@
         },
         pauseContainer:function(){
             this.loading[1] = true;
+            this.timeout();
             this.$axios.get('/container/pause/' + this.targetRow)
                 .then(response=>{
+                    this.wsflag=0;
                     if (response.data.code===0){
                         this.$message({
                             message: response.data.data,
                             type: 'success'
                         });
-                        this.timeout();
                     } else {
                         this.$message.error(response.data.data);
                     }
@@ -639,14 +636,15 @@
         },
         recoverContainer:function(){
             this.loading[2] = true;
+            this.timeout();
             this.$axios.get('/container/continue/' + this.targetRow)
                 .then(response=>{
+                    this.wsflag=0;
                     if (response.data.code===0){
                         this.$message({
                             message: response.data.data,
                             type: 'success'
                         });
-                        this.timeout();
                     } else {
                         this.$message.error(response.data.data);
                     }
@@ -658,14 +656,15 @@
         },
         stopContainer:function(){
             this.loading[3] = true;
+            this.timeout();
             this.$axios.get('/container/stop/' + this.targetRow)
                 .then(response=>{
+                    this.wsflag=0;
                     if (response.data.code===0){
                         this.$message({
                             message: response.data.data,
                             type: 'success'
                         });
-                        this.timeout();
                     } else {
                         this.$message.error(response.data.data);
                     }
@@ -677,14 +676,15 @@
         },
         killContainer:function(){
             this.loading[4]= true;
+            this.timeout();
             this.$axios.get('/container/kill/' + this.targetRow)
                 .then(response=>{
+                    this.wsflag=0;
                     if (response.data.code===0){
                         this.$message({
                             message: response.data.data,
                             type: 'success'
                         });
-                        this.timeout();
                     } else {
                         this.$message.error(response.data.data);
                     }
@@ -696,14 +696,15 @@
         },
         restartContainer:function(){
             this.loading[5] = true;
+            this.timeout();
             this.$axios.get('/container/restart/' +this.targetRow)
                 .then(response=>{
+                    this.wsflag=0;
                     if (response.data.code===0){
                         this.$message({
                             message: response.data.data,
                             type: 'success'
                         });
-                        this.timeout();
                     } else {
                         this.$message.error(response.data.data);
                     }
@@ -719,6 +720,7 @@
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(()=>{
+                this.wsflag=0;
                 this.$axios.delete('/container/delete/' + clickId)
                 .then(response => {
                     if (response.data.code === 0) {
@@ -735,18 +737,22 @@
                 })
             });
         },
+
+        judge(){
+            console.log(this.wsflag);
+            if (this.wsflag==0){
+                this.$notify.error({
+                    title:'超时',
+                    message:'请重新操作',
+                });
+                this.loading=[false,false,false,false,false,false];
+                this.getContainerList();
+            }
+        },
         timeout(){
-            setTimeout(function () {
-                if (this.wsflag===0){
-                    this.$notify.error({
-                        title:'超时',
-                        message:'请重新操作',
-                    });
-                    this.getContainerList();
-                    this.loading=[false,false,false,false,false,false];
-                    this.wsflag=0;
-                }
-            },30000)
+            this.wsflag=0;
+            console.log("开始计时");
+            setTimeout(this.judge,5000)
         },
 
         //获取容器当前id
@@ -790,31 +796,14 @@
             let url = "/container/list/?current="+this.currentPage + "&size="+this.pageSize;
             this.$axios.get(url)
                 .then((res)=>{
-                    if (res.data.code == 0) {
-                        console.log(res.data.data);
-                        // console.log(res.data)
+                    if (res.data.code === 0) {
                         this.containerList = res.data.data.records;
                         this.totalCount = res.data.data.total;
-
-                        for(var i=0;i<this.containerList.length; i++){
-                            var port = this.containerList[i].port;
-                            // 去除引号
-                            port = port.toString().replace("\\","");
-                            port = eval('(' + port + ')');
-
-                            this.containerList[i].port = "";
-                            for(var key in port){
-                                var value = port[key];
-                                var valArray = new Array();
-                                for(var j=0;j<value.length; j++) {
-                                    valArray.push(value[j].HostPort);
-                                }
-                                this.containerList[i].port  = this.containerList[i].port+ key + ":" + valArray.join(",") ;
-                            }
+                        for(let i=0;i<this.containerList.length; i++){
+                            this.containerList[i].port = formatPort1(this.containerList[i].port);
+                            console.log(this.containerList[i].port)
                         }
-
                     } else {
-
                         this.$message.error("获取列表失败")
                     }
                 })
@@ -1142,8 +1131,7 @@
 
         // 打开终端
         consoleopen(row){
-            if (row.status==1){
-
+            if (row.status===1){
                 this.$axios.post('/container/terminal/' ,{
                     "containerId": row.id,
                     "cursorBlink": false,
@@ -1153,11 +1141,15 @@
                     "height": document.documentElement.clientHeight,
                 })
                     .then(response=>{
-                        this.dialogFormVisible = true;
-                        sessionStorage.setItem('terminalCursorBlink',response.data.data.cursorBlink);
-                        sessionStorage.setItem('terminalRows',response.data.data.rows);
-                        sessionStorage.setItem('terminalCols',response.data.data.cols);
-                        sessionStorage.setItem('terminalUrl',response.data.data.url);
+                       if(response.data.code === 0) {
+                           sessionStorage.setItem('terminalCursorBlink', response.data.data.cursorBlink);
+                           sessionStorage.setItem('terminalRows',response.data.data.rows);
+                           sessionStorage.setItem('terminalCols',response.data.data.cols);
+                           sessionStorage.setItem('terminalUrl',response.data.data.url);
+                           window.open('../../../static/term.html');
+                       } else {
+                           this.$message(response.data.message);
+                       }
                     })
                     .catch(function (err) {
                         console.log(err)
@@ -1205,12 +1197,15 @@
             console.log("WebSocket连接发生错误");
         },
 
+
         websocketonmessage:function(e){ //数据接收
+            var that= this;
             e = eval('('+e.data+')');
             if (e.code === 0){
                 //容器相关
                 if (e.data.type===0){
-                    this.wsflag=1;
+                    that.wsflag=1;
+                    // console.log(that.wsflag);
                     this.$axios.get('/container/status/'+this.targetRow)
                         .then(respone=>{
                             console.log(respone.data);
