@@ -2,25 +2,25 @@
     <div id="networkDetail">
         <el-form :label-position="labelPosition" label-width="80px" :model="networkInfo">
             <el-form-item label="名称">
-                <p>{{networkInfo.name}}</p>
+                <span>{{networkInfo.name}}</span>
             </el-form-item>
             <el-form-item label="网络范围">
                 <span >{{networkInfo.scope}}</span>
             </el-form-item>
             <el-form-item label="网络驱动">
-                <p>{{networkInfo.driver}}</p>
+                <span>{{networkInfo.driver}}</span>
             </el-form-item>
             <el-form-item label="是否内部">
-                <p >{{networkInfo.hasInternal}}</p>
+                <span>{{networkInfo.hasInternal}}</span>
             </el-form-item>
             <el-form-item label="标签">
-                <p >{{networkInfo.labels}}</p>
+                <span>{{networkInfo.labels}}</span>
             </el-form-item>
             <el-form-item label="是否公开">
-                <p >{{networkInfo.hasPublic}}</p>
+                <span>{{networkInfo.hasPublic}}</span>
             </el-form-item>
             <el-form-item label="创建时间">
-                <p>{{networkInfo.createDate}}</p>
+                <span>{{networkInfo.createDate}}</span>
             </el-form-item>
         </el-form>
     </div>

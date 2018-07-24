@@ -75,7 +75,7 @@
             <el-table-column
                 label="名称">
                 <template slot-scope="scope">
-                    <span @click="handleView(scope.$index, scope.row)" style="cursor:pointer;">{{scope.row.name}}</span>
+                    <span  style="cursor:pointer;" @click="handleView(scope.row)">{{scope.row.name}}</span>
                 </template>
             </el-table-column>
 
@@ -111,22 +111,13 @@
 
             <el-table-column label="操作" width="350">
                 <template slot-scope="scope">
-                    <el-button
-                        size="mini"
-                        @click="handleEdit(scope.$index, scope.row)">上传
-                    </el-button>
-                    <el-button
-                        size="mini"
-                        type="primary"
-                        @click="handleExport(scope.$index, scope.row)">导出
-                    </el-button>
-                    <el-button
-                        size="mini"
-                        type="danger"
-                        @click="handleDelete(scope.$index, scope.row)">删除
-                    </el-button>
+                    <el-button type="primary" size="mini" icon="el-icon-tickets" @click="handleView(scope.row)" ></el-button>
+                    <el-button type="warning" size="mini" icon="el-icon-upload2" @click="handleEdit(scope.$index, scope.row)" ></el-button>
+                    <el-button type="info" size="mini" icon="el-icon-download" @click="handleExport(scope.$index, scope.row)" ></el-button>
+                    <el-button type="danger" size="mini" icon="el-icon-delete" @click="handleDelete(scope.$index, scope.row)" ></el-button>
                 </template>
             </el-table-column>
+
         </el-table>
 
         <!--分页-->
@@ -207,7 +198,7 @@
             },
 
 //    查看详情
-            handleView: function (index, row) {
+            handleView: function (row) {
 //      id放入vuex
                 this.$store.commit('SET_CURRENTMIRROR_ID', row.id);
                 this.$router.push({path: '/mirrorDetail/detail'})
@@ -220,7 +211,8 @@
             },
 
             uploadlocalhub(){
-                this.$confirm('请确认上传镜像操作', '提示', {
+
+                this.$confirm('上传后该镜像允许他人使用，确认上传吗', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -431,6 +423,7 @@
             },
             //初始化websocket
             initWebSocket() {
+
                 this.websock = new WebSocket("ws://" + this.hostaddr + "/ws/" + this.userInfo.userId);
                 this.websock.onopen = this.websocketonopen;
 

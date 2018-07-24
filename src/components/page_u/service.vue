@@ -13,7 +13,7 @@
                     show-overflow-tooltip>
                     <template slot-scope="scope">
                         <ul style="float: left;list-style-type: none" >
-                            <li style="float: left;margin-right: 5px;cursor: pointer" @click="toDetails(scope.row.id)">{{scope.row.name}}</li>
+                            <li style="float: left;margin-right: 5px;cursor: pointer" @click="toDetails(scope.row)">{{scope.row.name}}</li>
                         </ul>
                     </template>
                 </el-table-column>
@@ -26,7 +26,6 @@
                                 :label="item.name"
                                 :value="item.id">
                             </el-option>
-                            <!--<el-option :selected='true' :label="test" :key="test" :value="test"></el-option>-->
                         </el-select>
                     </template>
                 </el-table-column>
@@ -51,11 +50,12 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column
-                    label="操作"
-                    width="100">
+                <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <el-button type="danger" icon="el-icon-delete" circle @click="deleteService(scope.row.id)"></el-button>
+                        <ul style="float: left;list-style-type: none" >
+                            <li style="float: left;color: #409EFF;cursor: pointer" @click="toDetails(scope.row)">详情</li>
+                            <li style="float: left;color: #409EFF;cursor: pointer;margin-left: 10px" @click="deleteService(scope.row.id)">删除</li>
+                        </ul>
                     </template>
                 </el-table-column>
 
@@ -136,8 +136,8 @@
                 })
             },
 
-            toDetails(id){
-                this.$store.dispatch("saveServiceId",id);
+            toDetails(row){
+                this.$store.dispatch("saveServiceId",row.id);
                 this.$router.push("/serviceDetails_u")
             },
 

@@ -17,12 +17,8 @@ export default {
       getMirrorHistory:function () {
         this.$axios.get('/image/history/' + this.mirrorId)
           .then(response => {
-            if (response.data.code == 0){
-              this.$message.success({
-                message:response.data.message,
-                showClose:true
-              });
-              var json = response.data.data
+            if (response.data.code === 0){
+              var json = response.data.data;
               $('#editor').jsonEditor(json, { change: function() {
                 $('#json').html(JSON.stringify(json));
               } });

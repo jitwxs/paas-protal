@@ -99,7 +99,7 @@
                         <h4>集群节点</h4>
                     </div>
                     <el-collapse accordion>
-                        <el-collapse-item v-for="(item,index) in hostInfo.nodes" key="index" :name=index>
+                        <el-collapse-item v-for="item in hostInfo.nodes"  >
                             <template slot="title">
                                 <el-tag v-if="item.hasLeader" type="danger">Leader</el-tag>
                                 <el-tag  v-else>Worker</el-tag>
@@ -173,6 +173,7 @@
                     .then(response => {
                         if (response.data.code === 0) {
                             this.hostInfo = response.data.data;
+                            console.log(this.hostInfo.nodes);
 
                             let myChart = this.$echarts.init(document.getElementById('main'));
                             myChart.setOption({
@@ -239,17 +240,10 @@
                     })
             },
             // 绘制关于容器数据的echarts
-            createEcharts: function () {
-                let myChart = this.$echarts.init(document.getElementById('main'));
-                myChart.setOption(this.option);
-            },
         },
         created() {
             this.getHostInfo();
             this.getSelfInfo();
-        },
-        mounted() {
-            this.createEcharts();
         },
         computed: {
             role() {

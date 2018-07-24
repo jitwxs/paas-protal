@@ -16,38 +16,37 @@
             <el-tabs v-model="activeName" @tab-click="projectTabSwitch">
                 <el-tab-pane  label="容器信息" name="first">
                     <el-form :label-position='labelpos' label-width="80px" >
-                        <el-form-item label="容器Id">
-                            <p>{{id}}</p>
-                        </el-form-item>
                         <el-form-item label="容器名称">
-                            <p>{{name}}</p>
+                            <span>{{name}}</span>
                         </el-form-item>
                         <el-form-item label="项目Id">
-                            <p>{{projectId}}</p>
+                            <span>{{projectId}}</span>
                         </el-form-item>
                         <el-form-item label="项目名称">
-                            <p>{{projectName}}</p>
+                            <span>{{projectName}}</span>
                         </el-form-item>
                         <el-form-item label="默认指令">
-                            <p>{{command}}</p>
+                            <span>{{command}}</span>
                         </el-form-item>
                         <el-form-item label="默认端口">
-                            <p>{{port}}</p>
+                            <span>{{port}}</span>
                         </el-form-item>
                         <el-form-item label="镜像名称">
-                            <p>{{image}}</p>
+                            <span>{{image}}</span>
                         </el-form-item>
                         <el-form-item label="环境参数">
-                            <p>{{env}}</p>
+                            <span>{{env}}</span>
                         </el-form-item>
                         <el-form-item label="创建时间">
-                            <p>{{createDate}}</p>
+                            <span>{{createDate}}</span>
                         </el-form-item>
                         <el-form-item label="修改时间">
-                            <p>{{updateDate}}</p>
+                            <span>{{updateDate}}</span>
                         </el-form-item>
                         <el-form-item label="运行状态">
-                            <p>{{statusName}}</p>
+                            <template slot-scope="scope">
+                                <el-tag>{{statusName}}</el-tag>
+                            </template>
                         </el-form-item>
                     </el-form>
                 </el-tab-pane>
@@ -131,12 +130,12 @@
 
                 <el-tab-pane  label="网络" name="forth"  >
                     <div class="handle-box">
-                        <el-button type="primary" icon="el-icon-circle-plus-outline"  @click="handleCreate">创建网络连接</el-button>
                         <el-button type="primary" icon="el-icon-circle-plus-outline"  @click="createLink">连接网络</el-button>
+                        <el-button type="success" icon="el-icon-refresh" @click="syncNetwork">同步网络</el-button>
                     </div>
 
                     <el-dialog title="选择要连接的网络" :visible.sync="linkVisiable">
-                        <el-table :data="linkableNetwork"@row-dblclick="linkNet($event)">
+                        <el-table :data="linkableNetwork" @row-dblclick="linkNet($event)">
                             <el-table-column property="name" label="名称" width="150"></el-table-column>
                             <el-table-column property="scope" label="类型" width="200"></el-table-column>
                             <el-table-column property="hasPublic" label="是否公开"></el-table-column>
@@ -158,7 +157,7 @@
                         </el-table-column>
                         <el-table-column label="操作" >
                             <template slot-scope="scope">
-                                <ul>
+                                <ul style="float: left;list-style-type: none" >
                                     <li style="float: left;color: #409EFF;cursor: pointer" @click="priDelete(scope.row.id)">取消连接</li>
                                 </ul>
                             </template>
@@ -363,14 +362,23 @@
                     }
                 });
             },
-
             getContainerNetworkInfo(){
                 this.$axios.get('/network/container/'+this.id)
                     .then(response=>{
-                        console.log(response.data);
+                        console.log(response.data.code);
                         if(response.data.code === 0){
-                            this.privateNetWorkInfo = response.data.data.records;
-                            console.log(response.data);
+                            console.log(response.data.data[0].network.name);
+                            this.privateNetWorkInfo=[];
+                            for (var i=0;i<response.data.data.length;i++){
+                                let json = {};
+                                json.id = response.data.data[i].network.id;
+                                json.name = response.data.data[i].network.name;
+                                json.scope = response.data.data[i].network.scope;
+                                json.hasIpv6 = response.data.data[i].network.hasIpv6;
+                                json.hasPublic = response.data.data[i].network.hasPublic;
+                                this.privateNetWorkInfo.push(json)
+                            }
+                            // this.privateNetWorkInfo = response.data.data[0].network;
                             for(var i=0; i< this.privateNetWorkInfo.length; i++){
                                 if(this.privateNetWorkInfo[i].hasPublic){
                                     this.privateNetWorkInfo[i].hasPublic = '公共网络'
@@ -384,10 +392,7 @@
                                 }
                             }
                         }else {
-                            this.$message.error({
-                                message: response.data.message,
-                                showClose: true
-                            })
+                            this.$message.error(response.data.message)
                         }
                     })
                     .catch(function (err) {
@@ -421,23 +426,32 @@
                         this.linkVisiable=false;
                         this.$axios.get('/network/sync/container/'+this.id)
                             .then(response=>{
-                                console.log(response.data);
+                                if(response.data.code === 0) {
+                                    this.getContainerNetworkInfo();
+                                } else {
+                                    this.$message.error(response.data.message);
+                                }
                             });
-                        this.getContainerNetworkInfo();
-
                     }).catch(function (err) {
                     console.log(err);
                 })
             },
-
-            handleCreate(){
-                this.$router.push('/createNetwork');
-            },
-
             createLink(){
                 this.linkVisiable=true;
             },
-
+            syncNetwork() {
+                this.$axios.get('/network/sync/container/' + this.id)
+                    .then(response=>{
+                        if(response.data.code === 0) {
+                            this.$message.success("网络同步成功");
+                            this.getContainerNetworkInfo();
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    }).catch(function (err) {
+                    console.log(err);
+                })
+            },
             priDelete(id){
                 this.$confirm('确认删除网络连接吗 是否继续?', '提示', {
                     confirmButtonText: '确定',
@@ -451,6 +465,7 @@
                         })
                             .then(response=>{
                                 this.$message(response.data.message);
+                                this.getContainerNetworkInfo();
                             }).catch(function (err) {
                             console.log(err);
                         })

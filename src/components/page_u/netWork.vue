@@ -8,7 +8,7 @@
                         style="width: 100%">
                         <el-table-column label="网络名称" >
                             <template slot-scope="scope">
-                                <span @click="handlepubView(scope.$index, scope.row)" style="cursor:pointer;">{{scope.row.name}}</span>
+                                <span  style="cursor:pointer;" @click="handlepubView(scope.row)">{{scope.row.name}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="scope" label="覆盖范围" >
@@ -16,6 +16,13 @@
                         <el-table-column prop="hasIpv6" label="是否开启ipv6" >
                         </el-table-column>
                         <el-table-column prop="hasPublic" label="网络性质" >
+                        </el-table-column>
+                        <el-table-column label="操作" >
+                            <template slot-scope="scope">
+                            <ul style="float: left;list-style-type: none" >
+                                <li style="float: left;color: #409EFF;cursor: pointer" @click="handlepubView(scope.row)">详情</li>
+                            </ul>
+                            </template>
                         </el-table-column>
                     </el-table>
                     <!--分页区域-->
@@ -33,7 +40,7 @@
 
                 <el-tab-pane label="个人网络" name="second" style="min-height: 530px">
                     <div class="handle-box">
-                        <el-button type="primary" icon="el-icon-circle-plus-outline"  @click="handleCreate">创建</el-button>
+                        <el-button icon="el-icon-circle-plus-outline"  @click="handleCreate">创建</el-button>
                     </div>
                     <el-table
                         :data="privateNetWorkInfo"
@@ -41,7 +48,7 @@
                         style="width: 100%">
                         <el-table-column  label="网络名称" >
                             <template slot-scope="scope">
-                                <span @click="handlepriView(scope.$index, scope.row)" style="cursor:pointer;">{{scope.row.name}}</span>
+                                <span style="cursor:pointer;" @click="handlepubView(scope.row)">{{scope.row.name}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="scope" label="覆盖范围" >
@@ -52,7 +59,10 @@
                         </el-table-column>
                         <el-table-column label="操作" >
                             <template slot-scope="scope">
-                                <el-button type="danger" icon="el-icon-delete" circle @click="priDelete(scope.row.id)"></el-button>
+                                <ul style="float: left;list-style-type: none" >
+                                    <li style="float: left;color: #409EFF;cursor: pointer;margin-left: 10px" @click="handlepubView(scope.row)">详情</li>
+                                    <li style="float: left;color: #409EFF;cursor: pointer;margin-left: 10px" @click="priDelete(scope.row.id)">删除</li>
+                                </ul>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -131,7 +141,7 @@
                 this.$axios.get('/network/list' + "?current="+this.pricurrentPage+" &size="+this.pripageSize+"&type=2")
                     .then(response=>{
                         if(response.data.code === 0){
-                            this.publicNetWorkInfo = this.formatNetworkData(response.data.data.records);
+                            this.privateNetWorkInfo = this.formatNetworkData(response.data.data.records);
                             this.pritotalCount = response.data.data.total;
                         }else {
                             this.$message.error({
@@ -145,7 +155,7 @@
                     })
             },
             // 点击名称跳转
-            handlepubView(index,row){
+            handlepubView(row){
                 this.$store.commit('SET_NETWORKID',row.id);
                 this.$router.push('/networkDetails')
             },

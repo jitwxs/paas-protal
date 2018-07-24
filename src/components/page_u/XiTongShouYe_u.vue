@@ -22,13 +22,13 @@
                                 <span>使用详情</span>
                             </div>
                             容器运行
-                            <el-progress :percentage="containerRunPer" color="#42b983"></el-progress>
-                            容器暂停
-                            <el-progress :percentage="containerPausePer" color="#f1e05a"></el-progress>
-                            容器停止
-                            <el-progress :percentage="containerStopPer" color="#f56c6c"></el-progress>
-                            上传镜像
-                            <el-progress :percentage="this.selfInfo.uploadImageNum" color="#f1e05a"></el-progress>
+                            <el-progress :text-inside="true" :stroke-width="18" :percentage="containerRunPer" color="#42b983"></el-progress>
+                            <br>容器暂停
+                            <el-progress :text-inside="true" :stroke-width="18" :percentage="containerPausePer" color="#f1e05a"></el-progress>
+                            <br>容器停止
+                            <el-progress :text-inside="true" :stroke-width="18" :percentage="containerStopPer" color="#f56c6c"></el-progress>
+                            <br>上传镜像
+                            <el-progress :text-inside="true" :stroke-width="18" :percentage="this.selfInfo.uploadImageNum" color="#f1e05a"></el-progress>
                         </el-card>
 
                     </el-col>
@@ -158,7 +158,7 @@
                     return 0;
                 } else {
                     let per = fenZi / fenMu;
-                    return per.toFixed(2) * 100;
+                    return per.toFixed(4) * 100;
                 }
             },
             //获取个人信息

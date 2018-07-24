@@ -36,7 +36,7 @@
           <el-button type="primary" :loading="loading[6]" :disabled="freeze[5]" icon="el-icon-success" @click="restartContainer()">restart</el-button>
       </el-button-group>
       <!--列表-->
-      <el-table ref="singleTable" :data="containerList" tooltip-effect="dark" style="width: 100%" highlight-current-row @current-change="getCurrentContainerRow">
+      <el-table ref="singleTable" :data="containerList" tooltip-effect="dark" style="width: 100%" highlight-current-row @current-change="getCurrentContainerRow" >
 
           <el-table-column label="容器名称" show-overflow-tooltip>
               <template slot-scope="scope">
@@ -89,10 +89,10 @@
                   </ul>
               </template>
           </el-table-column>
-          <el-table-column label="删除">
+          <el-table-column label="操作">
               <template slot-scope="scope">
-                  <!--跳tab-->
                   <ul style="float: left;list-style-type: none" >
+                      <li style="float: left;color: #409EFF;cursor: pointer" @click="todetail(scope.row)">详情</li>
                       <li style="float: left;color: #409EFF;cursor: pointer;margin-left: 10px" @click="deleteContainer(scope.row.id)">删除</li>
                   </ul>
               </template>
@@ -737,6 +737,14 @@
             });
         },
 
+        todetail(row){
+            this.$router.push({
+                path: '/containerDetails',
+                query: {
+                    id: row.id,
+                }
+            })
+        },
         judge(){
             if (this.wsflag===0){
                 this.$notify.error({
