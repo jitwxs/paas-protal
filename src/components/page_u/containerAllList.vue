@@ -2,7 +2,7 @@
   <div id="container">
       <!--echarts图表展示区域-->
       <div id="sideMenuContainer" class="conta" v-show="true"
-           style="z-index: 2;position: absolute;background-color: white;width: 1000px;height: 850px;top:-60px;left: 1800px;box-shadow:0 0 10px #dddddd;border-radius: 15px;padding-left: 50px;">
+           style="z-index: 2;position: absolute;background-color: white;width: 1000px;height: 850px;top:-90px;left: 1800px;box-shadow:0 0 10px #dddddd;border-radius: 15px;padding-left: 50px;">
           <h4 style="font-family: 微软雅黑;margin-bottom: 2%">容器实时监控</h4>
           <p style="font-family: 微软雅黑;font-size: 14px;color: #409EFF;margin-bottom: 2%;margin-left: 1%;cursor: pointer"
              @click="closelc">返回</p>
@@ -48,7 +48,7 @@
                   </ul>
               </template>
           </el-table-column>
-          <el-table-column label="项目名" prop="projectName" show-overflow-tooltip>
+          <el-table-column label="项目" prop="projectName" show-overflow-tooltip>
               <template slot-scope="scope">
                   <el-select v-model="containerList[scope.$index].projectName" style="width: 80%;" placeholder="请选择" @change="changeProject(scope.row,scope.$index)">
                       <el-option
@@ -57,7 +57,6 @@
                           :label="item.name"
                           :value="item.id">
                       </el-option>
-                      <!--<el-option :selected='true' :label="test" :key="test" :value="test"></el-option>-->
                   </el-select>
               </template>
           </el-table-column>
@@ -739,8 +738,7 @@
         },
 
         judge(){
-            console.log(this.wsflag);
-            if (this.wsflag==0){
+            if (this.wsflag===0){
                 this.$notify.error({
                     title:'超时',
                     message:'请重新操作',
@@ -751,13 +749,11 @@
         },
         timeout(){
             this.wsflag=0;
-            console.log("开始计时");
             setTimeout(this.judge,5000)
         },
 
         //获取容器当前id
         getCurrentContainerRow(row){
-            // console.log(row.id);
             if (row === null) {
                 return ;
             }
@@ -801,7 +797,6 @@
                         this.totalCount = res.data.data.total;
                         for(let i=0;i<this.containerList.length; i++){
                             this.containerList[i].port = formatPort1(this.containerList[i].port);
-                            console.log(this.containerList[i].port)
                         }
                     } else {
                         this.$message.error("获取列表失败")
@@ -904,7 +899,6 @@
                 .then(response => {
                     if (response.data.code === 0) {
                         this.content = response.data.data;
-                        // console.log(this.content);
                         this.content = this.content.toString().replace("\\", "");
                         this.content = eval('[' + this.content + ']');
 
@@ -912,7 +906,6 @@
                             for (let i = 0; i < this.content.length; i++) {
                                 let date1 = new Date(this.content[i].timestamp);
                                 let timestamp1 = date1.toLocaleDateString().replace(/\//g, "-") + " " + date1.toTimeString().substr(0, 8);
-                                // console.log(timestamp1);
                                 let rxbyte = this.content[i].rxBytes.toString();
                                 let txbyte = this.content[i].txBytes.toString();
                                 let rxPackets = this.content[i].rxPackets.toString();
@@ -1116,7 +1109,6 @@
         },
 
         changeProject(row,val){
-            console.log(row.id+this.value[val]);
             this.$axios.post('/container/changeProject',{
                 "containerId":row.id,
                 "projectId":this.containerList[val].projectName,
@@ -1205,10 +1197,8 @@
                 //容器相关
                 if (e.data.type===0){
                     that.wsflag=1;
-                    // console.log(that.wsflag);
                     this.$axios.get('/container/status/'+this.targetRow)
                         .then(respone=>{
-                            console.log(respone.data);
                             switch (respone.data.data){
                                 case 0:
                                     this.freeze=[false,true,true,true,true,false];

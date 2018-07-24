@@ -42,11 +42,10 @@
         methods:{
             //获取token表格
             getToken(){
-                this.tokenInfo = []
+                this.tokenInfo = [];
                 this.$axios.get('/token/list')
                     .then(response=>{
                         var json = response.data.data;
-                        console.log(json);
                         for (var i in json){
                             var obj = {};
                             obj.userName = i;

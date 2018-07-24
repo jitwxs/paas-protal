@@ -238,10 +238,9 @@
                 }
                 this.$axios.get('/container/top/'+that.id)
                     .then(response=>{
-                        if (this.status ===1){
-                            // $("#showjson").html(JSON.strsingify(respone.data.data, null, 4));
-                            for (var i=0 ; i<response.data.data.Processes.length; i++){
-                                var json = {};
+                        if (this.status === 1){
+                            for (let i=0 ; i<response.data.data.Processes.length; i++){
+                                let json = {};
                                 json.UID = response.data.data.Processes[i][0];
                                 json.PID = response.data.data.Processes[i][1];
                                 json.PPID = response.data.data.Processes[i][2];
@@ -264,8 +263,8 @@
                     this.$axios.get('/container/top/'+this.id)
                         .then(respone=>{
                             if (this.status ===1){
-                                for (var i=0 ; i<respone.data.data.Processes.length; i++){
-                                    var json = {};
+                                for (let i=0 ; i<respone.data.data.Processes.length; i++){
+                                    let json = {};
                                     json.UID = respone.data.data.Processes[i][0];
                                     json.PID = respone.data.data.Processes[i][1];
                                     json.PPID = respone.data.data.Processes[i][2];
@@ -291,9 +290,8 @@
                     that.jsonmessage=[];
                     that.$axios.get('/container/top/'+that.id)
                         .then(response=>{
-                                // $("#showjson").html(JSON.strsingify(respone.data.data, null, 4));
-                                for (var i=0 ; i<response.data.data.Processes.length; i++){
-                                    var json = {};
+                                for (let i=0 ; i<response.data.data.Processes.length; i++){
+                                    let json = {};
                                     json.UID = response.data.data.Processes[i][0];
                                     json.PID = response.data.data.Processes[i][1];
                                     json.PPID = response.data.data.Processes[i][2];
@@ -314,8 +312,6 @@
             getVolumeInfo(){
                 this.$axios.get("/volumes/list/obj?objId="+this.id+"&current="+this.currentPage)
                     .then((res)=>{
-
-                        console.log(res.data.data)
                         this.total = res.data.data.total;
                         this.volumeInfo = res.data.data.records;
                     })
@@ -340,7 +336,6 @@
                 let formdata = new FormData();
                 formdata.append('id',this.volumeId);
                 formdata.append('file',this.volumeFile);
-                // formdata.append('name',this.volumeName);
                 $.ajax({
                     type: "post",
                     async: true,
@@ -373,11 +368,7 @@
                 this.$axios.get('/network/container/'+this.id)
                     .then(response=>{
                         console.log(response.data);
-                        if(response.data.code == 0){
-                            this.$message.success({
-                                message: response.data.message,
-                                showClose: true
-                            });
+                        if(response.data.code === 0){
                             this.privateNetWorkInfo = response.data.data.records;
                             console.log(response.data);
                             for(var i=0; i< this.privateNetWorkInfo.length; i++){
@@ -408,7 +399,7 @@
                 this.$axios.get('/network/list')
                     .then(response=>{
                         this.linkableNetwork = response.data.data.records;
-                        for(var i=0; i< this.linkableNetwork.length; i++){
+                        for(let i=0; i< this.linkableNetwork.length; i++){
                             if(this.linkableNetwork[i].hasPublic){
                                 this.linkableNetwork[i].hasPublic = '公共网络'
                             }else {
@@ -511,14 +502,12 @@
 
                     if (this.status===1){
                         this.tabbool=false;
-                        // console.log(this.tabbool);
                     }
                 }).catch(function (err) {
                 console.log(err);
             });
 
             this.getVolumeInfo();
-// 获取数据卷信息
         }
     }
 </script>

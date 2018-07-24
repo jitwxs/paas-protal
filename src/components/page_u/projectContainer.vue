@@ -1,7 +1,7 @@
 <template>
   <div id="projectContainer" >
       <div id="sideMenuContainer" class="conta" v-show="true"
-           style="z-index: 2;position: absolute;background-color: white;width: 1000px;height: 850px;top:0px;left: 1800px;box-shadow:0 0 10px #dddddd;border-radius: 15px;padding-left: 50px;">
+           style="z-index: 2;position: absolute;background-color: white;width: 1000px;height: 850px;top:-90px;left: 1800px;box-shadow:0 0 10px #dddddd;border-radius: 15px;padding-left: 50px;">
           <h4 style="font-family: 微软雅黑;margin-bottom: 2%">容器实时监控</h4>
           <p style="font-family: 微软雅黑;font-size: 14px;color: #409EFF;margin-bottom: 2%;margin-left: 1%;cursor: pointer"
              @click="closelc">返回</p>
@@ -12,7 +12,7 @@
               <el-radio-button label="每周"></el-radio-button>
           </el-radio-group>
 
-          <div style="margin-top: 50px;position: fixed">
+          <div style="margin-top: 70px;">
               <div id="main" style="width: 300px;height:200px;float: left"></div>
               <div id="main2" style="width: 300px;height:200px;float: left"></div>
               <div id="main3" style="width: 300px;height:200px;float: left"></div>
@@ -23,6 +23,7 @@
               <div id="main8" style="width: 300px;height:200px;float: left"></div>
               <div id="main9" style="width: 300px;height:200px;float: left"></div>
           </div>
+
       </div>
     <el-tabs v-model="activeName">
       <el-tab-pane label="容器列表" name="first" class="pane">
@@ -36,7 +37,7 @@
           <el-button type="primary" :loading="loading[6]" :disabled="freeze[5]" icon="el-icon-success" @click="restartContainer()">restart</el-button>
         </el-button-group>
 
-        <el-button @click="addContainer">添加容器</el-button>
+        <el-button @click="addContainer" icon="el-icon-plus">添加容器</el-button>
           <el-table ref="singleTable" :data="containerList" tooltip-effect="dark" style="width: 100%" highlight-current-row @current-change="getCurrentContainerRow">
               <el-table-column label="容器名称" prop="name" show-overflow-tooltip></el-table-column>
               <el-table-column
@@ -85,7 +86,7 @@
 
       <el-tab-pane label="服务列表" name="second" class="pane">
 
-        <el-button @click="addService">添加服务</el-button>
+        <el-button @click="addService" icon="el-icon-plus">添加服务</el-button>
         <el-table
           ref="serviceTable"
           :data="serviceList"
@@ -675,7 +676,6 @@
             this.$axios.get('/project/'+this.projectId)
                 .then(response=>{
                     this.projectInfo = response.data.data;
-                    console.log(this.projectInfo)
                 }).catch(function (err) {
                 console.log(err)
             });
@@ -856,7 +856,7 @@
             chart8.setOption(this.option8);
             chart9.setOption(this.option9);
 
-            $('#sideMenuContainer').animate({left:'700px'},1000);
+            $('#sideMenuContainer').animate({left:'593px'},1000);
 
             this.$axios.get('/monitor/container/'+str+'/' + row.id)
                 .then(response => {
@@ -1309,7 +1309,6 @@
         },
         timeout(){
             this.wsflag=0;
-            console.log("开始计时");
             setTimeout(this.judge,5000)
         },
 
@@ -1350,7 +1349,6 @@
                     this.wsflag=1;
                     this.$axios.get('/container/status/'+this.targetRow)
                         .then(respone=>{
-                            console.log(respone.data);
                             switch (respone.data.data){
                                 case 0:
                                     this.freeze=[false,true,true,true,true,false];

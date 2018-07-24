@@ -57,7 +57,7 @@
                         subs:[
                             {
                                 index:'/mirror',
-                                title:'本地镜像'
+                                title:'我的镜像'
                             },
                             {
                                 index:'/publicMirror',

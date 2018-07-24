@@ -124,7 +124,6 @@
             getSendRecordInfo:function(){
               this.$axios.get('/notice/send/list' + "?current=1" + "&size=5")
                   .then(response=>{
-                      console.log(response);
                       if(response.data.code === 0){
                           this.sendRecord = response.data.data.records;
                           this.totalCount = response.data.data.total;
@@ -151,12 +150,7 @@
                         console.log(err)
                     })
             },
-
-            onEditorChange({ editor, html, text }) {
-                this.content = html;
-            },
             submit(){
-                console.log(this.content);
                 this.$message.success('提交成功！');
             },
             showContent(row,event) {

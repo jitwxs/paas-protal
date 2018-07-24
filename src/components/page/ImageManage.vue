@@ -14,8 +14,8 @@
                         <el-input v-model="select_publicImage" placeholder="输入镜像名称"
                                   class="handle-input mr10"></el-input>
                         <el-button type="primary" icon="el-icon-search" @click="searchPublicImage">搜索</el-button>
-                        <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage(1)">同步
-                        </el-button>
+                        <el-button type="warning" icon="el-icon-delete" style="float: right" @click="cleanImage()">清理</el-button>
+                        <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage(1)">同步</el-button>
                     </div>
                     <el-table
                         :data="publicLocalImage"
@@ -82,6 +82,7 @@
                         <el-input v-model="select_userImage" placeholder="输入镜像名称" class="handle-input mr10"></el-input>
                         <el-button type="primary" icon="el-icon-search" @click="searchUserImage">搜索</el-button>
                         <el-button type="primary" @click="handleImport">导入</el-button>
+                        <el-button type="warning" icon="el-icon-delete" style="float: right" @click="cleanImage()">清理</el-button>
                         <el-button type="primary" icon="el-icon-refresh" style="float: right" @click="syncImage(2)">同步
                         </el-button>
                     </div>
@@ -283,9 +284,22 @@
             })
         },
         methods: {
+            // 清理镜像
+            cleanImage() {
+                this.$axios.get("/image/clean")
+                    .then((res) => {
+                        if (res.data.code === 0) {
+                            this.$message.success("清理成功，成功：" + res.data.data.success + "个，失败：" + res.data.data.error + "个");
+                        } else {
+                            this.$message.error(res.data.message)
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
+            },
             //上传文件改变
             importImages(event) {
-
                 event.preventDefault();//取消默认行为
                 this.volumeFile = event.target.files[0];
                 this.fileName = event.target.files[0].name;

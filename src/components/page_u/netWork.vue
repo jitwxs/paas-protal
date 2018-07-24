@@ -102,24 +102,19 @@
             }
         },
         methods:{
+            formatNetworkData(data) {
+                for(let i=0; i< data.length; i++){
+                    data[i].hasPublic = data[i].hasPublic ? '公共网络' : '个人网络';
+                    data[i].hasIpv6 = data[i].hasIpv6 ? '是' : '否';
+                }
+                return data;
+            },
             // 获取网络列表信息
             getPublicNetworkInfo:function(){
                 this.$axios.get('/network/list' + "?current="+this.pubcurrentPage+" &size="+this.pubpageSize+"&type=1")
                     .then(response=>{
-                        if(response.data.code == 0){
-                            this.publicNetWorkInfo = response.data.data.records;
-                            for(var i=0; i< this.publicNetWorkInfo.length; i++){
-                                if(this.publicNetWorkInfo[i].hasPublic){
-                                    this.publicNetWorkInfo[i].hasPublic = '公共网络'
-                                }else {
-                                    this.publicNetWorkInfo[i].hasPublic = '个人网络'
-                                }
-                                if(this.publicNetWorkInfo[i].hasIpv6){
-                                    this.publicNetWorkInfo[i].hasIpv6 = '是'
-                                }else {
-                                    this.publicNetWorkInfo[i].hasIpv6 = '否'
-                                }
-                            }
+                        if(response.data.code === 0){
+                            this.publicNetWorkInfo = this.formatNetworkData(response.data.data.records);
                             this.pubtotalCount = response.data.data.total;
                         }else {
                             this.$message.error({
@@ -135,21 +130,8 @@
             getPrivateNetworkInfo(){
                 this.$axios.get('/network/list' + "?current="+this.pricurrentPage+" &size="+this.pripageSize+"&type=2")
                     .then(response=>{
-                        console.log(response.data);
-                        if(response.data.code == 0){
-                            this.privateNetWorkInfo = response.data.data.records;
-                            for(var i=0; i< this.privateNetWorkInfo.length; i++){
-                                if(this.privateNetWorkInfo[i].hasPublic){
-                                    this.privateNetWorkInfo[i].hasPublic = '公共网络'
-                                }else {
-                                    this.privateNetWorkInfo[i].hasPublic = '个人网络'
-                                }
-                                if(this.privateNetWorkInfo[i].hasIpv6){
-                                    this.privateNetWorkInfo[i].hasIpv6 = '是'
-                                }else {
-                                    this.privateNetWorkInfo[i].hasIpv6 = '否'
-                                }
-                            }
+                        if(response.data.code === 0){
+                            this.publicNetWorkInfo = this.formatNetworkData(response.data.data.records);
                             this.pritotalCount = response.data.data.total;
                         }else {
                             this.$message.error({

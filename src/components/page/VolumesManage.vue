@@ -14,24 +14,27 @@
                     <el-option key="2" label="服务数据卷" value="2"></el-option>
                 </el-select>
                 <el-button type="primary" icon="el-icon-search" @click="search">查看</el-button>
-                <el-button type="danger"   style="float: right" @click="clean_container">清理容器</el-button>
-                <el-button type="danger"   style="float: right" @click="clean_service">清理服务</el-button>
+                <el-button type="danger" style="float: right" @click="clean_container">清理容器</el-button>
+                <el-button type="danger" style="float: right" @click="clean_service">清理服务</el-button>
             </div>
 
             <!--用户信息展示部分-->
             <el-table
                 :data="volumesInfo"
                 tooltip-effect="light"
-                style="width: 100%">
-                <el-table-column prop="Name" label="数据卷名称" width="500px" show-overflow-tooltip >
+                style="width: 100%"
+                height="600">
+                <el-table-column prop="Name" label="数据卷名称" width="500px" show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column prop="Scope" label="覆盖范围"></el-table-column>
                 <el-table-column prop="Driver" label="驱动"></el-table-column>
                 <el-table-column prop="Mountpoint" label="挂载点" width="500px"></el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <ul style="float: left;list-style-type: none" >
-                            <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer" @click="getXiangQingInfo(scope.$index, scope.row)">详情</li>
+                        <ul style="float: left;list-style-type: none">
+                            <li style="float: left;margin-right: 5px;color: #409EFF;cursor: pointer"
+                                @click="getXiangQingInfo(scope.$index, scope.row)">详情
+                            </li>
                         </ul>
                     </template>
                 </el-table-column>
@@ -67,59 +70,38 @@
 <script>
     export default {
         name: "VolumesManage",
-        data(){
-            return{
+        data() {
+            return {
                 // 搜索输入的关键词
-                select_volumesType:'',
+                select_volumesType: '',
                 // 数据卷信息
-                volumesInfo:[],
+                volumesInfo: [],
                 // 详情信息
-                xiangQingInfo:{},
-                xiangQingVisible:false,
-
-                // 上传相关属性
-                uploadFormVisible:false,
-                formLabelWidth:'120px',
-
-                uploadForm:{
-                    id:'',
-                    file:''
-                },
-                name:'request',
-                headers:{
-                    Authorization: 'Bearer ' + sessionStorage.getItem('userToken')
-                },
-                labelpos:'left',
-
+                xiangQingInfo: {},
+                xiangQingVisible: false,
+                name: 'request',
+                labelpos: 'left'
             }
         },
-        methods:{
-
-            //选择文件
-            importVolume(event){
-
-                event.preventDefault();//取消默认行为
-                this.volumeFile = event.target.files[0];
-                this.fileName = event.target.files[0].name;
-            },
+        methods: {
             // 获取容器数据卷信息
-            getContainerVolumesInfo:function(){
+            getContainerVolumesInfo: function () {
                 this.$axios.get('/volumes/list/1')
-                    .then(response=>{
-                        if (response.data.code === 0){
+                    .then(response => {
+                        if (response.data.code === 0) {
                             this.volumesInfo = response.data.data.Volumes;
-                            for(let i=0; i< this.volumesInfo.length; i++){
-                                if(this.volumesInfo[i].Scope === 'local'){
+                            for (let i = 0; i < this.volumesInfo.length; i++) {
+                                if (this.volumesInfo[i].Scope === 'local') {
                                     this.volumesInfo[i].Scope = '本地'
                                 }
-                                if(this.volumesInfo[i].Status === null){
+                                if (this.volumesInfo[i].Status === null) {
                                     this.volumesInfo[i].Status = '无'
                                 }
                             }
-                        }else {
+                        } else {
                             this.$message.error({
-                                message:"获取数据卷信息失败！",
-                                showClose:true
+                                message: "获取数据卷信息失败！",
+                                showClose: true
                             })
                         }
                     })
@@ -128,23 +110,23 @@
                     })
             },
             // 获取容器数据卷信息
-            getServiceVolumesInfo:function(){
+            getServiceVolumesInfo: function () {
                 this.$axios.get('/volumes/list/2')
-                    .then(response=>{
-                        if (response.data.code === 0){
+                    .then(response => {
+                        if (response.data.code === 0) {
                             this.volumesInfo = response.data.data.Volumes;
-                            for(let i=0; i< this.volumesInfo.length; i++){
-                                if(this.volumesInfo[i].Scope === 'local'){
+                            for (let i = 0; i < this.volumesInfo.length; i++) {
+                                if (this.volumesInfo[i].Scope === 'local') {
                                     this.volumesInfo[i].Scope = '本地'
                                 }
-                                if(this.volumesInfo[i].Status == null){
+                                if (this.volumesInfo[i].Status == null) {
                                     this.volumesInfo[i].Status = '无'
                                 }
                             }
-                        }else {
+                        } else {
                             this.$message.error({
-                                message:"获取数据卷信息失败！",
-                                showClose:true
+                                message: "获取数据卷信息失败！",
+                                showClose: true
                             })
                         }
                     })
@@ -154,28 +136,28 @@
             },
 
             // 搜索数据卷
-            search:function () {
-                if(this.select_volumesType === "1") {
+            search: function () {
+                if (this.select_volumesType === "1") {
                     this.getContainerVolumesInfo();
-                }else if(this.select_volumesType === "2"){
+                } else if (this.select_volumesType === "2") {
                     this.getServiceVolumesInfo();
                 }
             },
             // 清理容器数据卷
-            clean_container:function(){
+            clean_container: function () {
                 this.$axios.delete('/volumes/clean/1')
-                    .then(response=>{
-                        if(response.data.code === 0){
+                    .then(response => {
+                        if (response.data.code === 0) {
                             this.$message.success({
                                 message: "清理容器数据卷成功！",
-                                showClose:true
-                            })
+                                showClose: true
+                            });
                             this.getContainerVolumesInfo();
 
-                        }else {
+                        } else {
                             this.$message.error({
                                 message: "清理容器数据卷失败！",
-                                showClose:true
+                                showClose: true
                             })
                         }
                     })
@@ -184,19 +166,19 @@
                     })
             },
             // 清理服务数据卷
-            clean_service:function(){
+            clean_service: function () {
                 this.$axios.delete('/volumes/clean/2')
-                    .then(response=>{
-                        if(response.data.code === 0){
+                    .then(response => {
+                        if (response.data.code === 0) {
                             this.$message.success({
                                 message: "清理服务数据卷成功！",
-                                showClose:true
-                            })
+                                showClose: true
+                            });
                             this.getServiceVolumesInfo();
-                        }else {
+                        } else {
                             this.$message.error({
                                 message: "清理服务数据卷失败！",
-                                showClose:true
+                                showClose: true
                             })
                         }
                     })
@@ -205,13 +187,13 @@
                     })
             },
             // 获取数据卷详情
-            getXiangQingInfo:function(index, row){
+            getXiangQingInfo: function (index, row) {
                 this.$axios.get('/volumes/inspect/name/' + row.Name)
-                    .then(response=>{
-                        if(response.data.code === 0){
+                    .then(response => {
+                        if (response.data.code === 0) {
                             this.xiangQingInfo = response.data.data;
                             this.xiangQingVisible = true;
-                        }else {
+                        } else {
                             this.$message.error(response.data.message);
                         }
                     })
@@ -220,7 +202,7 @@
                     })
             },
         },
-        created(){
+        created() {
             this.getContainerVolumesInfo();
         }
     }
@@ -239,7 +221,8 @@
         width: 150px;
         display: inline-block;
     }
-    .infoP{
+
+    .infoP {
 
         color: rgba(76, 0, 0, 0.55);
     }

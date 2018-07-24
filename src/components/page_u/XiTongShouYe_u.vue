@@ -187,7 +187,6 @@
                     .then(response=> {
                         if (response.data.code === 0) {
                             this.hostInfo = response.data.data;
-                            console.log(this.hostInfo)
                         }
                     }).catch(function (err) {
                     console.log(err);

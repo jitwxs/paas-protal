@@ -88,10 +88,7 @@
                                 }
                             });
                         } else {
-                            this.$message.error({
-                                message: "获取镜像详情信息失败！",
-                                showClose: true
-                            })
+                            this.$message.error(response.data.message);
                         }
                     })
                     .catch(function (err) {
@@ -106,17 +103,12 @@
                             this.historyInfo = response.data.data;
 
                             this.historyInfo.forEach((item, index) => {
-
-
                                 this.historyInfo[index].Size = bitConvert(item.Size);
                                 this.historyInfo[index].Created = getLocalTime(item.Created);
                                 console.log(this.historyInfo[index].Created)
                             })
                         } else {
-                            this.$message.error({
-                                message: "获取镜像历史信息失败！",
-                                showClose: true
-                            })
+                            this.$message.error(response.data.message);
                         }
                     })
                     .catch(function (err) {
@@ -127,14 +119,10 @@
             getPortInfo: function () {
                 this.$axios.get('/image/' + this.imageId + '/exportPort')
                     .then(response => {
-                        // console.log(response)
-                        if (response.data.code == 0) {
+                        if (response.data.code === 0) {
                             this.portInfo = response.data.data;
                         } else {
-                            this.$message.error({
-                                message: "获取镜像接口信息失败！",
-                                showClose: true
-                            })
+                            this.$message.error(response.data.message);
                         }
                     })
                     .catch(function (err) {

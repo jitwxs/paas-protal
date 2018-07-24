@@ -294,7 +294,6 @@
 
             //获取容器网络信息
             getContainerNetworkList(){
-
                 this.$axios.get("/network/container/"+this.containerId)
                     .then((res)=>{
 
@@ -404,7 +403,7 @@
                     if (respone.data.data.command) {
                         this.command = respone.data.data.command.replace("[","").replace("]","");
                     }
-                    this.port = respone.data.data.port;
+                    this.port = formatPort1(respone.data.data.port);
                     this.image = respone.data.data.image;
                     if (respone.data.data.env) {
                         this.env = respone.data.data.env.replace("[","").replace("]","");
@@ -413,22 +412,6 @@
                     this.createDate = respone.data.data.createDate;
                     this.updateDate = respone.data.data.updateDate;
                     this.statusName = respone.data.data.statusName;
-
-                    var port = this.port;
-                    // 去除引号
-                    port = port.toString().replace("\\", "");
-                    port = eval('(' + port + ')');
-
-                    this.port = "";
-                    for (var key in port) {
-                        var value = port[key];
-                        var valArray = new Array();
-                        for (var j = 0; j < value.length; j++) {
-                            valArray.push(value[j].HostPort);
-                        }
-                        this.port = this.port + key + ":" + valArray.join(",");
-                    }
-
                     if (this.status===1){
                         this.tabbool=false;
                     }

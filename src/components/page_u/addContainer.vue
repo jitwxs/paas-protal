@@ -76,7 +76,7 @@
                                 prop="description"
                                 label="描述"
                                 show-overflow-tooltip
-                                width="320"
+                                width="520"
                             >
                             </el-table-column>
                             <el-table-column
@@ -293,8 +293,8 @@
                 Registry: [
                     {label: "本地公共镜像", id: "/image/list/local?type=1"},
                     {label: "本地个人镜像", id: "/image/list/local?type=2"},
-                    {label: "dockerHub", id: "/image/list/hub?name="},
-                    {label: "passHub", id: "/hub/list"}
+                    {label: "DockerHub", id: "/image/list/hub?name="},
+                    {label: "PasSHub", id: "/hub/list"}
                 ],
                 showTable: false,
                 imageList: [],

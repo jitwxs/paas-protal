@@ -55,7 +55,7 @@
               </el-table-column>
             </el-table>
 
-            <!--展示从dockerhub上拉取的信息-->
+            <!--展示从Dockerhub上拉取的信息-->
             <el-table
               :data="imageList"
               height="300"
@@ -74,7 +74,7 @@
                 prop="description"
                 label="描述"
                 show-overflow-tooltip
-                width="320"
+                width="520"
               >
               </el-table-column>
               <el-table-column
@@ -90,8 +90,7 @@
               </el-table-column>
 
               <el-table-column
-                label="操作"
-                width="200">
+                label="操作">
                 <template slot-scope="scope">
                   <el-button
                     size="mini"
@@ -101,8 +100,7 @@
 
             </el-table>
 
-            <!--展示从passHub上拉取的信息-->
-
+            <!--展示从PaaSHub上拉取的信息-->
             <el-table
               :data="imageList"
               height="300"
@@ -301,8 +299,8 @@
         Registry:[
           {label:"本地公共镜像",id:"/image/list/local?type=1"},
           {label:"本地个人镜像",id:"/image/list/local?type=2"},
-          {label:"dockerHub",id:"/image/list/hub?name="},
-          {label:"passHub",id:"/hub/list"}
+          {label:"DockerHub",id:"/image/list/hub?name="},
+          {label:"PaaSHub",id:"/hub/list"}
         ],
         showTable:false,
         imageList:[],
@@ -342,11 +340,11 @@
         this.showSearchName = false;
         this.showTable=true;
         this.imageList=[];
-        this.searchName = ''
-        this.service.imageId=''
+        this.searchName = '';
+        this.service.imageId='';
         this.service.port=[{in:'',out:''}];
         this.service.labels=[{aa:'',bb:''}];
-        this.service.imageName = ''
+        this.service.imageName = '';
         //dockerHub
         if (val == "/image/list/hub?name=") {
 
@@ -373,8 +371,12 @@
           .then((res)=>{
             if (res.data.code == 0) {
 
-              this.total = res.data.data.total
+              this.total = res.data.data.total;
               this.imageList = res.data.data.records;
+              for(let i=0; i<this.imageList.length; i++) {
+                  this.imageList[i].size = bitConvert(this.imageList[i].size);
+              }
+
               this.loading = false;
             } else {
 
@@ -385,7 +387,7 @@
       //从dockerhub上搜索
       searchFromDocker(){
         if (this.searchName == '')
-          return
+          return;
         this.loading = true;
         this.$axios.get("/image/list/hub?name="+this.searchName)
           .then((res)=>{
@@ -486,13 +488,13 @@
       },
       //获取dockerHub的镜像id
       getDockerImageId(column) {
-        this.service.imageId = ''
+        this.service.imageId = '';
         this.service.imageName = column.name;
       },
       //获取passhub镜像的id
       getpasshubImageId(column){
 
-        this.service.imageId = ''
+        this.service.imageId = '';
         this.passhubId = column.id;
         this.service.imageName = column.name;
       },

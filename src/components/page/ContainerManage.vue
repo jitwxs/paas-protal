@@ -71,7 +71,9 @@
                 </el-button>
 
             </el-button-group>
-            <el-button type="primary" icon="el-icon-refresh" circle @click="refresh"></el-button>
+            <el-tooltip class="item" effect="dark" content="刷新容器状态" placement="right-end">
+                <el-button type="primary" icon="el-icon-refresh" circle @click="refresh"></el-button>
+            </el-tooltip>
 
             <el-table
                 :data="containerInfo"
@@ -776,7 +778,6 @@
                     .then(response => {
                         if (response.data.code === 0) {
                             this.content = response.data.data;
-                            // console.log(this.content);
                             this.content = this.content.toString().replace("\\", "");
                             this.content = eval('[' + this.content + ']');
 
@@ -1121,7 +1122,7 @@
             // 容器操作
             getStart: function (clickId) {
                 this.loadbutton1 = true;
-                this.timeout();
+                this.Timeout();
                 this.$axios.get('/container/start/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1140,7 +1141,7 @@
             },
             pauseContainer: function (clickId) {
                 this.loadbutton2 = true;
-                this.timeout();
+                this.Timeout();
                 this.$axios.get('/container/pause/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1159,7 +1160,7 @@
             },
             recoverContainer: function (clickId) {
                 this.loadbutton3 = true;
-                this.timeout();
+                this.Timeout();
                 this.$axios.get('/container/continue/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1178,7 +1179,7 @@
             },
             stopContainer: function (clickId) {
                 this.loadbutton4 = true;
-                this.timeout();
+                this.Timeout();
                 this.$axios.get('/container/stop/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1197,7 +1198,7 @@
             },
             killContainer: function (clickId) {
                 this.loadbutton5 = true;
-                this.timeout();
+                this.Timeout();
                 this.$axios.get('/container/kill/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1216,7 +1217,7 @@
             },
             restartContainer: function (clickId) {
                 this.loadbutton6 = true;
-                this.timeout();
+                this.Timeout();
                 this.$axios.get('/container/restart/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1235,7 +1236,7 @@
             },
             deleteContainer: function (clickId) {
                 this.loadbutton7 = true;
-                this.timeout();
+                this.Timeout();
                 this.$axios.delete('/container/delete/' + clickId)
                     .then(response => {
                         if (response.data.code === 0) {
@@ -1254,19 +1255,17 @@
             },
 
             judge(){
-                console.log(this.wsflag);
                 if (this.wsflag==0){
                     this.$notify.error({
                         title:'超时',
                         message:'请重新操作',
                     });
                     this.loading=[false,false,false,false,false,false];
-                    this.getContainerList();
+                    this.getPaginationInfo();
                 }
             },
-            timeout(){
+            Timeout(){
                 this.wsflag=0;
-                console.log("开始计时");
                 setTimeout(this.judge,5000)
             },
 
@@ -1296,9 +1295,9 @@
                 //但是点击某个列表时，会发送给后台一个标识，后台根据此标识返回相对应的数据，
                 //这个时候数据就只能从一个出口出，所以让后台加了一个键，例如键为1时，是每隔1秒推送的数据，为2时是发送标识后再推送的数据，以作区分
                 e = eval('(' + e.data + ')');
-                console.log(e);
                 this.openmessage = e.data.message;
                 if (e.code === 0) {
+                    this.wsflag=1;
                     this.$axios.get('/container/status/' + this.clickId)
                         .then(response => {
                             switch (response.data.data) {
