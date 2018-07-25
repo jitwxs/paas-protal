@@ -757,7 +757,7 @@
         },
         timeout(){
             this.wsflag=0;
-            setTimeout(this.judge,5000)
+            setTimeout(this.judge,10000)
         },
 
         //获取容器当前id
@@ -1136,7 +1136,7 @@
                     "containerId": row.id,
                     "cursorBlink": false,
                     "rows": 50,
-                    "cols": 100,
+                    "cols": 200,
                     "width": document.documentElement.clientWidth,
                     "height": document.documentElement.clientHeight,
                 })

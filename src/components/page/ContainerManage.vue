@@ -1012,6 +1012,7 @@
                     this.$axios.post('/container/terminal/', {
                         "containerId": row.id,
                         "curs": 50,
+                        "cols": 200,
                         "colsorBlink": false,
                         "rows": 100,
                         "width": document.documentElement.clientWidth,
@@ -1266,7 +1267,7 @@
             },
             Timeout(){
                 this.wsflag=0;
-                setTimeout(this.judge,5000)
+                setTimeout(this.judge,10000)
             },
 
             initWebSocket: function () { //初始化weosocket

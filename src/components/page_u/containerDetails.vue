@@ -1,16 +1,32 @@
 <template>
         <div id="containerdetails">
             <!--数据卷模态框-->
-            <el-dialog title="导入数据卷" :visible.sync="dialogVisible" width="30%">
-                <el-form >
-                    <el-form-item label="选择文件">
-                        <input id="imageInput" @change="importVolume($event)" type="file">
-                    </el-form-item>
-                </el-form>
-                <span slot="footer" class="dialog-footer">
-                  <el-button @click="dialogVisible = false">取 消</el-button>
-                  <el-button type="primary" @click="submitvolume">确 定</el-button>
-                </span>
+            <el-dialog title="上传文件" :visible.sync="dialogVisible" width="30%">
+                <!--<el-form >-->
+                    <!--<el-form-item label="选择文件">-->
+                        <!--<input id="imageInput" @change="importVolume($event)" type="file">-->
+                    <!--</el-form-item>-->
+                <!--</el-form>-->
+                <!--<span slot="footer" class="dialog-footer">-->
+                  <!--<el-button @click="dialogVisible = false">取 消</el-button>-->
+                  <!--<el-button type="primary" @click="submitvolume">确 定</el-button>-->
+                <!--</span>-->
+                <el-upload
+                    class="upload-demo"
+                    drag
+                    ref="upload"
+                    action="http://192.168.100.110:9999/volumes/upload"
+                    :headers="usertoken"
+                    :data="formdata"
+                    :before-upload="beforeupload"
+                    :on-success="successupload"
+                    :file-list="fileList"
+                    :auto-upload="false">
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+
+                </el-upload>
+                <el-button style="margin-left: 10px;margin-top: 10px" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
             </el-dialog>
 
             <el-tabs v-model="activeName" @tab-click="projectTabSwitch">
@@ -175,6 +191,10 @@
         name: "ContainerDetails",
         data(){
             return{
+                usertoken:{'Authorization':sessionStorage.userToken},
+                fileList:[],
+                formdata:{},
+
                 options: [{
                     value: 10000,
                     label: '10秒'
@@ -229,6 +249,16 @@
             }
         },
         methods:{
+            beforeupload(){
+                this.formdata.id=this.volumeId;
+            },
+            submitUpload() {
+                this.$refs.upload.submit();
+            },
+            successupload(){
+                this.$message.success('文件上传成功');
+            },
+
             refreshNow:function(){
                 let that=this;
                 this.jsonmessage=[];

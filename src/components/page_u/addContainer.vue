@@ -288,7 +288,6 @@
                     destination: [{value: ''}],
                     imageName: '',
                     port: [{in: '', out: ''}],
-
                 },
                 Registry: [
                     {label: "本地公共镜像", id: "/image/list/local?type=1"},
@@ -539,6 +538,36 @@
             //提交
             onSubmit() {
                 //判断必填的端口号是否已经填写
+                if (this.container.containerName.indexOf(';')!=-1){
+                    this.$message.error("请确认输入不包含分号‘；’");
+                    return;
+                }
+                if (this.container.env.length>0) {
+                    for (var i = 0; i < this.container.env.length; i++) {
+                        if (this.container.env[i].value.indexOf(";") != -1) {
+                            this.$message.error("请确认输入不包含分号‘；’");
+                            return;
+                        }
+                    }
+                }
+                if (this.container.cmd.length>0){
+                    for(var i = 0; i < this.container.cmd.length; i++){
+                            if (this.container.cmd[i].value.indexOf(";")!=-1){
+                                this.$message.error("请确认输入不包含分号‘；’");
+                                return;
+                            }
+                        }
+                }
+
+                if (this.container.destination.length>0){
+                    for(var i = 0; i < this.container.destination.length; i++){
+                            if (this.container.destination[i].value.indexOf(";")!=-1){
+                                this.$message.error("请确认输入不包含分号‘；’");
+                                return;
+                            }
+                        }
+                }
+
 
                 if (this.container.port.length > 0) {
 
@@ -557,8 +586,12 @@
                             this.$message.error("内部端口范围为1~65535");
                             return;
                         }
-
+                        if (this.container.port[i].in.indexOf(";")!=-1||this.container.port[i].out.indexOf(";")!=-1){
+                            this.$message.error("请确认输入不包含分号‘；’");
+                            return;
+                        }
                     }
+
                 }
                 this.container.projectId = this.projectId;
                 //判断容器名称是否填写
@@ -602,7 +635,7 @@
                     .then((res) => {
                         if (res.data.code == 0) {
                             this.$message.success("正在创建容器");
-                            this.$router.push('/projectPage');
+                            this.$router.push('/projectContainer');
                         } else {
                             this.$message.error("配置错误")
                         }

@@ -124,7 +124,11 @@
             label="操作"
             width="100">
             <template slot-scope="scope">
-              <el-button type="danger" icon="el-icon-delete" circle @click="deleteService(scope.row.id)"></el-button>
+                <ul style="float: left;list-style-type: none">
+                    <li style="float: left;color: #409EFF;cursor:pointer" @click="todetail(scope.row.id)">详情</li>
+                    <li style="float: left;color: #409EFF;cursor: pointer;margin-left: 10px"
+                        @click="deleteService(scope.row.id)">删除</li>
+                </ul>
             </template>
           </el-table-column>
         </el-table>
@@ -728,7 +732,7 @@
                     "containerId": row.id,
                     "cursorBlink": false,
                     "rows": 50,
-                    "cols": 100,
+                    "cols": 200,
                     "width": document.documentElement.clientWidth,
                     "height": document.documentElement.clientHeight,
                 })
@@ -1113,6 +1117,10 @@
                 });
         },
 
+        todetail(id){
+            this.$store.dispatch("saveServiceId",id);
+            this.$router.push("/serviceDetails_u")
+        },
         //删除服务
         deleteService(id){
         this.$confirm('此操作将永久删除该服务 是否继续?', '提示', {
@@ -1309,7 +1317,7 @@
         },
         timeout(){
             this.wsflag=0;
-            setTimeout(this.judge,5000)
+            setTimeout(this.judge,10000)
         },
 
 

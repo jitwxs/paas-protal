@@ -9,9 +9,6 @@
         <!--导入镜像模态框-->
         <el-dialog title="导入镜像" :visible.sync="dialogVisible3" width="30%">
             <el-form :model="mirrorForm">
-                <el-form-item label="选择镜像" :label-width="formLabelWidth">
-                    <input id="imageInput" @change="importImage($event)" type="file">
-                </el-form-item>
                 <el-form-item label="名字（必填，不能包含大写字符）" :label-width="formLabelWidth">
                     <el-input v-model="mirrorForm.name"></el-input>
                 </el-form-item>
@@ -19,10 +16,26 @@
                     <el-input v-model="mirrorForm.tag"></el-input>
                 </el-form-item>
             </el-form>
-            <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible3 = false">取 消</el-button>
-          <el-button type="primary" @click="importMirror">确 定</el-button>
-        </span>
+
+            <el-upload
+                class="upload-demo"
+                drag
+                ref="upload"
+                action="http://192.168.100.110:9999/image/import"
+                :headers="usertoken"
+                :data="formdata"
+                accept=".gz"
+                :before-upload="beforeupload"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :file-list="fileList"
+                :auto-upload="false">
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+
+                <div slot="tip" class="el-upload__tip">只能上传tar.gz文件</div>
+            </el-upload>
+            <el-button style="margin-left: 10px;margin-top: 10px" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
         </el-dialog>
 
 
@@ -144,6 +157,10 @@
         name: 'mirror',
         data() {
             return {
+                usertoken:{'Authorization':sessionStorage.userToken},
+                fileList:[],
+                formdata:{},
+
                 activeName:'first',
                 dialogVisible: false,
                 dialogVisible2: false,
@@ -180,6 +197,23 @@
             }
         },
         methods: {
+            beforeupload(file){
+                if (this.mirrorForm.name==""){
+                    this.$message.error("请填写镜像名称");
+                    return;
+                }
+                this.formdata.imageName = this.mirrorForm.name;
+                this.formdata.tag = this.mirrorForm.tag;
+            },
+            submitUpload() {
+                this.$refs.upload.submit();
+            },
+            handleRemove(file, fileList) {
+                console.log(file, fileList);
+            },
+            handlePreview(file) {
+                console.log(file);
+            },
 //    拉取个人镜像列表
             getMirrorList: function () {
                 this.$axios.get("/image/self?current=" + this.currentPage + "&size=" + this.pageSize + "&orderByField=size&asc=false")

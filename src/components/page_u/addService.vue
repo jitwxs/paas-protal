@@ -599,33 +599,42 @@
             //提交
             onSubmit() {
                 //判断必填的端口号是否已经填写
+                if (this.service.serviceName.indexOf(';')!=-1){
+                    this.$message.error("请确认输入不包含分号‘；’");
+                    return;
+                }
+                if (this.service.env.length>0) {
+                    for (var i = 0; i < this.service.env.length; i++) {
+                        if (this.service.env[i].value.indexOf(";") != -1) {
+                            this.$message.error("请确认输入不包含分号‘；’");
+                            return;
+                        }
+                    }
+                }
+                if (this.service.cmd.length>0){
+                    for(var i = 0; i < this.service.cmd.length; i++){
+                        if (this.service.cmd[i].value.indexOf(";")!=-1){
+                            this.$message.error("请确认输入不包含分号‘；’");
+                            return;
+                        }
+                    }
+                }
 
+                if (this.service.destination.length>0){
+                    for(var i = 0; i < this.service.destination.length; i++){
+                        if (this.service.destination[i].value.indexOf(";")!=-1){
+                            this.$message.error("请确认输入不包含分号‘；’");
+                            return;
+                        }
+                    }
+                }
 
                 if (this.service.port.length > 0) {
-
-
                     for (var i = 0; i < this.service.port.length; i++) {
                         if (this.service.port[i].out == "" || this.service.port[i].in == "") {
-
                             this.$message.error("端口号" + i + "未填写");
                             return;
                         }
-                    }
-                }
-
-                if (this.service.labels.length > 0) {
-
-                    for (var i = 0; i < this.service.labels.length; i++) {
-                        if (this.service.labels[i].aa == "" || this.service.labels[i].bb == "") {
-
-                            this.$message.error("标签" + i + "未填写");
-                            return;
-                        }
-                    }
-                }
-
-                if (this.service.port.length > 0) {
-                    for (var i = 0; i < this.service.port.length; i++) {
                         if (this.service.port[i].in < 1 || this.service.port[i].in > 65535) {
                             this.$message.error("内部端口号范围1~65535");
                             return;
@@ -634,8 +643,27 @@
                             this.$message.error("外端口号范围10000~65535");
                             return;
                         }
+                        if (this.service.port[i].in.indexOf(";")!=-1||this.service.port[i].out.indexOf(";")!=-1){
+                            this.$message.error("请确认输入不包含分号‘；’");
+                            return;
+                        }
                     }
                 }
+                if (this.service.labels.length > 0) {
+                    for (var i = 0; i < this.service.labels.length; i++) {
+                        if (this.service.labels[i].aa == "" || this.service.labels[i].bb == "") {
+
+                            this.$message.error("标签" + i + "未填写");
+                            return;
+                        }
+                        if (this.service.labels[i].aa.indexOf(';')!=-1 || this.service.labels[i].bb.indexOf(';')!=-1) {
+                            this.$message.error("请确认输入不包含分号‘；’");
+                            return;
+                        }
+                    }
+                }
+
+
 
                 this.service.projectId = this.projectId;
                 //判断服务名称是否填写
@@ -685,7 +713,7 @@
                     .then((res) => {
                         if (res.data.code == 0) {
                             this.$message.success("正在创建服务");
-                            this.$router.push('/projectPage')
+                            this.$router.push('/projectContainer')
                         } else {
                             this.$message.error(res.data.message)
                         }
