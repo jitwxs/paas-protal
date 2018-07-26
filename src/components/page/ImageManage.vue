@@ -210,7 +210,7 @@
                         class="upload-demo"
                         drag
                         ref="upload"
-                        action="http://192.168.100.110:9999/image/import"
+                        action="/api/image/import"
                         :headers="usertoken"
                         :data="formdata"
                         accept=".gz"
@@ -265,6 +265,7 @@
 
                 // 公共镜像信息
                 publicLocalImage: [{name: 'hhv'}],
+                mirrorForm:[],
                 // 公共分页当前页码
                 currentPage_Public: 1,
                 // 公共分页总条数
@@ -339,6 +340,8 @@
                     .then((res) => {
                         if (res.data.code === 0) {
                             this.$message.success("清理成功，成功：" + res.data.data.success + "个，失败：" + res.data.data.error + "个");
+                            this.getPublicLocalImage();
+                            this.getUserLocalImage();
                         } else {
                             this.$message.error(res.data.message)
                         }
@@ -346,51 +349,6 @@
                     .catch((err) => {
                         console.log(err);
                     })
-            },
-            //上传文件改变
-            importImages(event) {
-                event.preventDefault();//取消默认行为
-                this.volumeFile = event.target.files[0];
-                this.fileName = event.target.files[0].name;
-            },
-            //上传镜像
-            submitUploadImages() {
-                if (this.imageNameUpload === "") {
-                    this.$message.warning("未填写镜像名称");
-                    return;
-                }
-                let that = this;
-                let formdata = new FormData();
-                formdata.append('file', this.volumeFile);
-                formdata.append('name', this.imageNameUpload);
-                formdata.append('tag', this.tagToUpload);
-                $.ajax({
-                    type: "post",
-                    async: true,
-                    url: '/api' + "/image/import",
-                    dataType: 'json',
-                    headers: {
-                        'Authorization': sessionStorage.userToken
-                    },
-                    // 告诉jQuery不要去处理发送的数据
-                    processData: false,
-                    // 告诉jQuery不要去设置Content-Type请求头
-                    contentType: false,
-                    data: formdata,
-                    success: function (res) {
-                        if (res.code === 0) {
-                            that.dialogVisible = false;
-                            that.$message.success(res.data.message);
-                            that.volumeFile = '';
-                            that.fileName = '';
-                        } else {
-                            that.$message.success(res.data.message);
-                        }
-                    },
-                    error: function (error) {
-                        console.log(error);
-                    }
-                });
             },
             //同步passHub
             syncPassHubImgage() {
@@ -432,9 +390,9 @@
                 this.$axios.delete("/hub/delete/" + id)
                     .then((res) => {
                         if (res.data.code === 0) {
-                            this.$message.success("删除成功")
+                            this.$message.success("删除成功");
+                            this.getFromPassHub();
                         } else {
-
                             this.$message.error(res.data.message)
                         }
                     })

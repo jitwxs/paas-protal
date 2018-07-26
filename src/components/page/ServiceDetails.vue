@@ -7,7 +7,7 @@
                 class="upload-demo"
                 drag
                 ref="upload"
-                action="http://192.168.100.110:9999/volumes/upload"
+                action="/api/volumes/upload"
                 :headers="usertoken"
                 :data="formdata"
                 :before-upload="beforeupload"

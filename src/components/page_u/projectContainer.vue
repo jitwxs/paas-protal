@@ -1369,7 +1369,7 @@
                                     break;
                             }
                             this.getContainerList(1,this.pageSize, this.projectId);
-
+                            this.getServiceInfo();
                         }).catch(function (err) {
                         console.log(err);
                     });

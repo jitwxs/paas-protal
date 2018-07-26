@@ -173,7 +173,6 @@
                     .then(response => {
                         if (response.data.code === 0) {
                             this.hostInfo = response.data.data;
-                            console.log(this.hostInfo.nodes);
 
                             let myChart = this.$echarts.init(document.getElementById('main'));
                             myChart.setOption({

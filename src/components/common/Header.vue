@@ -4,7 +4,7 @@
         <div class="collapse-btn" @click="collapseChage">
             <i class="el-icon-menu"></i>
         </div>
-        <div class="logo">无道云平台后台系统</div>
+        <div class="logo">PaaS后台系统</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->

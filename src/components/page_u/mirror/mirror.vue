@@ -21,7 +21,7 @@
                 class="upload-demo"
                 drag
                 ref="upload"
-                action="http://192.168.100.110:9999/image/import"
+                action="/api/image/import"
                 :headers="usertoken"
                 :data="formdata"
                 accept=".gz"
