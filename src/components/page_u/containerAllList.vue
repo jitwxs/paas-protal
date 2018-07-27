@@ -26,6 +26,21 @@
           </div>
 
       </div>
+
+      <el-dialog title="打包容器" width="30%" :visible.sync="packVisible" :before-close="handleClose">
+          <el-form :model="form" label-width="80px">
+              <el-form-item label="镜像名称">
+                  <el-input v-model="form.name"></el-input>
+              </el-form-item>
+              <el-form-item label="标签">
+                  <el-input v-model="form.tag"></el-input>
+              </el-form-item>
+          </el-form>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="handleClose">取 消</el-button>
+            <el-button type="primary" @click="submitpack">确 定</el-button>
+          </span>
+      </el-dialog>
       <!--按钮组-->
       <el-button-group>
           <el-button type="success" :loading="loading[0]" :disabled="freeze[0]" icon="el-icon-success" @click="getStart()">start</el-button>
@@ -34,7 +49,9 @@
           <el-button type="warning" :loading="loading[3]" :disabled="freeze[3]" icon="el-icon-error" @click="stopContainer()">stop</el-button>
           <el-button type="warning" :loading="loading[4]" :disabled="freeze[4]" icon="el-icon-warning" @click="killContainer()">kill</el-button>
           <el-button type="primary" :loading="loading[6]" :disabled="freeze[5]" icon="el-icon-success" @click="restartContainer()">restart</el-button>
+
       </el-button-group>
+      <el-button type="success" style="float:right;margin-right: 100px" round @click="pack" :disabled="packable">容器打包</el-button>
       <!--列表-->
       <el-table ref="singleTable" :data="containerList" tooltip-effect="dark" style="width: 100%" highlight-current-row @current-change="getCurrentContainerRow" >
 
@@ -119,6 +136,12 @@
   export default {
     data() {
       return {
+          packVisible:false,
+          form:{
+              name:'',
+              tag:'',
+          },
+          packable:true,
           // test:'123',
           projectInfo:[],
           projectNum:0,
@@ -737,6 +760,40 @@
             });
         },
 
+        // 打包操作
+        pack(){
+            console.log(this.targetRow);
+            this.packVisible=true;
+        },
+
+        handleClose(){
+            this.$confirm('确认关闭？')
+                .then(_ => {
+                    this.packVisible=false;
+                })
+                .catch(_ => {});
+        },
+
+        submitpack(){
+            if (this.form.name==""){
+                this.$message.error("请填写镜像名称");
+                return;
+            }
+            this.$axios.post('/container/commit',{
+                "containerId":this.targetRow,
+                "name":this.form.name,
+                "tag":this.form.tag
+            })
+                .then(response=>{
+                    if (response.data.code===0){
+                        this.$message.success(response.data.data);
+                        this.packVisible=false;
+                    }
+                }).catch(function (err) {
+                console.log(err);
+            })
+        },
+
         todetail(row){
             this.$router.push({
                 path: '/containerDetails',
@@ -765,6 +822,7 @@
             if (row === null) {
                 return ;
             }
+            this.packable=false;
             this.targetRow = row.id;
             this.clickStatus = row.status;
             switch (this.clickStatus){

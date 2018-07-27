@@ -150,7 +150,7 @@
                     .then(() => {
                         this.$axios.delete("/service/delete/"+id)
                             .then(res =>{
-                                if (res.data.code == 0) {
+                                if (res.data.code === 0) {
                                     this.$message({
                                         type: 'success',
                                         message: '删除成功!'

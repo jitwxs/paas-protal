@@ -47,6 +47,21 @@
             </div>
             <!--容器信息展示区域-->
 
+            <el-dialog title="打包容器" width="30%" :visible.sync="packVisible" :before-close="handleClose">
+                <el-form :model="form" label-width="80px">
+                    <el-form-item label="镜像名称">
+                        <el-input v-model="form.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="标签">
+                        <el-input v-model="form.tag"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+            <el-button @click="handleClose">取 消</el-button>
+            <el-button type="primary" @click="submitpack">确 定</el-button>
+          </span>
+            </el-dialog>
+
             <el-button-group>
                 <el-button type="success" :loading="loadbutton1" :disabled="enbutton1" icon="el-icon-success"
                            @click="getStart(clickId)">start
@@ -71,6 +86,8 @@
                 </el-button>
 
             </el-button-group>
+            <el-button type="success" style="float:right;margin-right: 100px" round @click="pack" :disabled="packable">容器打包</el-button>
+
             <el-tooltip class="item" effect="dark" content="刷新容器状态" placement="right-end">
                 <el-button type="primary" icon="el-icon-refresh" circle @click="refresh"></el-button>
             </el-tooltip>
@@ -166,6 +183,14 @@
         name: "ContainerManage",
         data() {
             return {
+                packVisible:false,
+                form:{
+                    name:'',
+                    tag:'',
+                },
+                packable:true,
+
+
                 str:'',
                 row:'',
                 timeout:10000,
@@ -683,6 +708,39 @@
             })
         },
         methods: {
+            // 打包操作
+            pack(){
+                this.packVisible=true;
+            },
+
+            handleClose(){
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        this.packVisible=false;
+                    })
+                    .catch(_ => {});
+            },
+
+            submitpack(){
+                if (this.form.name==""){
+                    this.$message.error("请填写镜像名称");
+                    return;
+                }
+                this.$axios.post('/container/commit',{
+                    "containerId":this.singleSelection.id,
+                    "name":this.form.name,
+                    "tag":this.form.tag
+                })
+                    .then(response=>{
+                        if (response.data.code===0){
+                            this.$message.success(response.data.data);
+                            this.packVisible=false;
+                        }
+                    }).catch(function (err) {
+                    console.log(err);
+                })
+            },
+
             changeExcel(val) {
                 switch (val){
                     case "实时":
@@ -1068,6 +1126,7 @@
                 if (val == null) {
                     return;
                 }
+                this.packable=false;
                 this.currentPage = val;
                 this.getPaginationInfo();
             },
@@ -1082,6 +1141,7 @@
                 if (val == null){
                     return ;
                 }
+                this.packable=false;
                 this.singleSelection = val;
                 this.clickId = val.id;
                 this.clickStatus = val.status;
