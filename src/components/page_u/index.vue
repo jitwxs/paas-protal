@@ -53,9 +53,9 @@
 
                 <div class="ui text container conbbb" style="height: 600px; margin-top: 100px;">
                     <h1 class="ui inverted header">
-                        无道云Pass云平台
+                        无道云PasS云平台
                     </h1>
-                    <h2>个人级容器云 - 基于 docker 的Pass平台</h2>
+                    <h2>个人级容器云 - 基于 docker 的PasS平台</h2>
                     <router-link to="Login" class="ui huge primary button">Get Started <i class="right arrow icon"></i></router-link>
                 </div>
 

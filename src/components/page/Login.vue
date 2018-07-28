@@ -5,7 +5,7 @@
                 <div style="height: 700px;margin-top: 70px; margin-right: 25%;">
                     <div class="iconUp">
                         <img src="../../../static/img/cloud.png" class="cloudImg"/>
-                        <span class="char">无道云平台</span>
+                        <span class="char">无道容器云</span>
                         <div class="line"></div>
                     </div>
                     <div class="disc">
